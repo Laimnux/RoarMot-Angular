@@ -1,12 +1,13 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http'; // Importante para Django
+
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http'; // <-- AÑADE ESTO
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
-    provideHttpClient() // <-- Y ESTO TAMBIÉN
+    provideHttpClient() // Esto permite que el ApiService funcione
   ]
 };

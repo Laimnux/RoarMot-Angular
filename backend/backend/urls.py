@@ -16,11 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
-# Una funcion rapida para responder
-def hola_desde_django(request):
-    return JsonResponse({'mensaje': 'Hola Django y Angular ya son amigos.'})
+# Esta es una vista rápida de prueba (nuestro controlador inicial)
+@api_view(['GET'])
+def index_api(request):
+    return Response({"mensaje": "¡Conexión exitosa desde Django!", "status": "OK"})
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/saludo/', hola_desde_django), # creamos la ruta
+    path('api/index/', index_api), # Nuestra nueva ruta
 ]

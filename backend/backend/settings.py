@@ -10,6 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+# --- CONFIGURACIÓN DE USUARIO PERSONALIZADO ---
+# Esto le dice a Django que use tu tabla 'usuario' de la app 'users'
+AUTH_USER_MODEL = 'users.Usuario'
+
+# --- PARCHE DE COMPATIBILIDAD PARA XAMPP (MariaDB 10.4) ---
+from django.db.backends.base.base import BaseDatabaseWrapper
+BaseDatabaseWrapper.check_database_version_supported = lambda self: None
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework', # para crear la API
     'corsheaders', # para permitir que Angular se conecte
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +86,15 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mymoto',        # El nombre de tu base de datos
+        'USER': 'root',          # Usuario por defecto de XAMPP
+        'PASSWORD': '',          # Contraseña vacía por defecto
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
@@ -124,3 +140,25 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:4200",
 
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+# Configuración opcional pero recomendada para el tiempo de vida
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # El token dura 1 hora
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),   # El de refresco dura 1 día
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    # ¡ESTA ES LA LÍNEA CLAVE! 
+    # Si en tu models.py la PK se llama ID_USUARIO, ponlo así:
+    'USER_ID_FIELD': 'ID_USUARIO',
+}

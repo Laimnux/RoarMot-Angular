@@ -1,0 +1,51 @@
+/* ==========================================================================
+   6. ANIMACIONES (SHIMMER, PULSE, BOUNCE)
+   ========================================================================== 
+*/
+
+/* Efecto Shimmer (Título "Tu Moto") */
+.shader-text {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.shader-text::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.486),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  100% { left: 150%; }
+}
+
+/* Pulso y Rebote */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s ease-in-out infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}

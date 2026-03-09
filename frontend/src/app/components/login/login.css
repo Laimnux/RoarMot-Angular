@@ -1,0 +1,34 @@
+/* Animación Shake para errores */
+.ng-invalid.ng-touched {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+/* Efecto Shimmer heredado de tu diseño global */
+.shader-text {
+  /* ... (usará la definición que ya tienes en styles.css) */
+}
+
+/* Esta configuración permite que la imagen se ajuste a diferentes pantallas sin perder calidad */
+.login-container {
+    min-height: 100vh;
+    width: 100%;
+    
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), 
+                      url('/assets/image/auth/motoCarre.webp');
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Esto hace que la imagen se quede quieta al hacer scroll, se ve muy pro */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* Para que en celulares el formulario no toque los bordes */
+}

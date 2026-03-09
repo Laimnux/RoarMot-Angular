@@ -1,0 +1,83 @@
+/* Animación para el campo de empresa (opcional) */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Ajustes para el campo de contraseña */
+.peer:not(:placeholder-shown) ~ label {
+    color: #f87171; /* red-400 */
+}
+
+/* Estilo mejorado para el botón del ojo */
+.relative .absolute.right-3 {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+.relative .absolute.right-3:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.relative .absolute.right-3:active {
+    transform: scale(0.95);
+}
+
+.relative .absolute.right-3:focus-visible {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+    background: rgba(220, 38, 38, 0.1);
+}
+
+/* Estilo para el checkbox */
+input[type="checkbox"]:checked {
+    filter: saturate(2) brightness(1.2);
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.4);
+}
+
+/* Mejora para el autocompletado de navegadores */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: white;
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Ajuste responsivo para móviles */
+@media (max-width: 640px) {
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .p-8 {
+        padding: 1.5rem;
+    }
+    
+    .text-3xl {
+        font-size: 1.75rem;
+    }
+    
+    /* Ajuste del ojo en móviles */
+    .relative .absolute.right-3 {
+        right: 0.5rem;
+        padding: 0.5rem;
+    }
+}

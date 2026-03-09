@@ -1,0 +1,70 @@
+/* ===== FUENTES Y SCROLLBAR PERSONALIZADO ===== */
+:host {
+    display: block;
+    --accent: #5C7589;
+    --roar-red: #8B0000;
+}
+
+/* Scrollbar con el estilo que definiste para RoarMot */
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: #0D1118;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 5px;
+    border: 2px solid #0D1118;
+}
+
+/* ===== ANIMACIÓN DE DESTELLO (SPARKLE) PARA BOTONES ===== */
+@keyframes sparkle {
+    0% { transform: translateX(-100%) skewX(-30deg); }
+    100% { transform: translateX(200%) skewX(-30deg); }
+}
+
+.sparkle-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.sparkle-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-100%) skewX(-30deg);
+    pointer-events: none;
+}
+
+.sparkle-button:hover::before {
+    animation: sparkle 0.8s ease-in-out forwards;
+}
+
+/* ===== CLIPS Y GEOMETRÍA DE INGENIERÍA ===== */
+/* Aplicaremos estos a los contenedores para dar ese look de Dashboard de motos */
+.clip-angular-left {
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+}
+
+.clip-angular-right {
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Efecto de inclinación para los inputs que ya tenías */
+.skew-input-container {
+    transform: skewX(-15deg);
+}
+
+.skew-input-content {
+    transform: skewX(15deg);
+}
+
+/* Solución para que el texto no se vea borroso con el skew */
+input {
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}

@@ -1,4 +1,133 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   1. IMPORTACIONES Y CORE (Fuentes y Tailwind)
+   ========================================================================== 
+*/
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-bebas {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* ==========================================================================
+   2. CONFIGURACIÓN GLOBAL DE PÁGINA
+   ========================================================================== 
+*/
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; 
+}
+
+/* ==========================================================================
+   3. PERSONALIZACIÓN DE BARRA DE DESPLAZAMIENTO (SCROLLBAR)
+   ========================================================================== 
+*/
+/* Scrollbar que se adapta al modo claro/oscuro */
+::-webkit-scrollbar {
+    width: 6px;
+    @apply bg-white dark:bg-[#0c0e12];
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff0000 0%, #ffae00 100%); 
+    border-radius: 5px;
+    /* Borde que cambia de color según el modo */
+    @apply border-2 border-white dark:border-[#0c0e12];
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff0062 0%, #ffd900 100%);
+}
+
+/* ==========================================================================
+   4. NAVEGACIÓN - LINKS DEL HEADER
+   ========================================================================== 
+*/
+.nav-link {
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    padding-bottom: 4px;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background: linear-gradient(90deg, #ff0000 0%, #fffb00 100%);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover {
+    color: #213555; /* Tu valor ajustado */
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* ==========================================================================
+   5. NAVEGACIÓN - BOTONES ESPECIALES (SOS & LOGIN)
+   ========================================================================== 
+*/
+
+/* Botón SOS */
+.nav-link-sos {
+    font-size: 0.875rem;
+    font-weight: 900;
+    color: #ff0000;
+    border: 1px solid #ff0000;
+    padding: 6px 16px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.nav-link-sos:hover {
+    background-color: #ff0000;
+    color: #0D1118;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+/* Botón Iniciar Sesión */
+.nav-link-login {
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.nav-link-login::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, #ff0000 0%, #ffae00 100%);
+    transition: width 0.3s ease;
+}
+
+.nav-link-login:hover {
+    color: #264577; /* Tu valor ajustado */
+}
+
+.nav-link-login:hover::after {
+    width: 100%;
+}
+

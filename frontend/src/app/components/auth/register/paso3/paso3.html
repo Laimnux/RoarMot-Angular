@@ -1,0 +1,170 @@
+<div class="text-center mb-6">
+    <div class="flex items-center justify-center space-x-2 mb-2">
+        <img src="assets/image/shared/LogoBlanco.png" alt="Logo" class="h-10 w-auto brightness-200">
+        <h1 class="text-4xl font-bebas text-white tracking-tighter">ROARMOT</h1>
+    </div>
+    <p class="text-gray-500 text-[10px] uppercase tracking-[0.4em] font-bold">Registro Paso 3: Perfil</p>
+</div>
+
+<div class="bg-white/5 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/10 shadow-2xl max-w-lg mx-auto">
+    <h1 class="font-bebas text-3xl text-white text-center mb-1 tracking-wide">COMPLETA TU PERFIL</h1>
+    <p class="text-gray-400 text-center text-xs mb-6">Último paso para unirte a la comunidad</p>
+
+    <form class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Campo Nombre -->
+            <div class="relative">
+                <input type="text" [(ngModel)]="perfil.nombre" name="nombre" required
+                    class="peer w-full bg-black/40 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-red-600 focus:outline-none transition-all placeholder-transparent pt-5"
+                    placeholder="Nombre">
+                <label class="absolute left-4 text-[10px] uppercase font-bold tracking-widest text-gray-500 transition-all duration-200 pointer-events-none
+                              peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500
+                              peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-red-500
+                              peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-gray-400
+                              top-2">
+                    Nombre
+                </label>
+            </div>
+
+            <!-- Campo Apellido -->
+            <div class="relative">
+                <input type="text" [(ngModel)]="perfil.apellido" name="apellido" required
+                    class="peer w-full bg-black/40 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-red-600 focus:outline-none transition-all placeholder-transparent pt-5"
+                    placeholder="Apellido">
+                <label class="absolute left-4 text-[10px] uppercase font-bold tracking-widest text-gray-500 transition-all duration-200 pointer-events-none
+                              peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500
+                              peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-red-500
+                              peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-gray-400
+                              top-2">
+                    Apellido
+                </label>
+            </div>
+        </div>
+
+        <!-- Campo Teléfono -->
+        <div class="relative">
+            <input type="text" [(ngModel)]="perfil.telefono" (input)="validarTelefono($event)" name="telefono" required
+                class="peer w-full bg-black/40 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-red-600 focus:outline-none transition-all placeholder-transparent pt-5"
+                placeholder="Teléfono">
+
+            <label class="absolute left-4 text-[10px] uppercase font-bold tracking-widest text-gray-500 transition-all duration-200 pointer-events-none
+                  peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm
+                  peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-red-500
+                  peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-[10px]
+                  top-2">
+                Teléfono
+            </label>
+
+            <div class="flex justify-between mt-1 px-2">
+                <span class="text-gray-400 text-center text-xs mb-2"
+                    [ngClass]="perfil.telefono.length === 10 ? 'text-green-500' : 'text-gray-500'">
+                    {{ perfil.telefono.length === 10 ? '✓ Número completo' : 'Ingresa 10 dígitos numéricos' }}
+                </span>
+                <span class="text-[9px] text-gray-600">
+                    {{ perfil.telefono.length }}/10
+                </span>
+            </div>
+        </div>
+
+        <!-- Campo Nombre de Empresa (solo para vendedores) -->
+        <div *ngIf="rol === 'vendedor'" class="relative mb-4 animate-fade-in">
+            <input type="text" [(ngModel)]="perfil.nombreEmpresa" name="nombreEmpresa"
+                class="peer w-full bg-black/40 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-red-600 focus:outline-none transition-all placeholder-transparent pt-5"
+                placeholder="Nombre de la Empresa">
+            <label class="absolute left-4 text-[10px] uppercase font-bold tracking-widest text-gray-500 transition-all duration-200 pointer-events-none
+                          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500
+                          peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-red-500
+                          peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-gray-400
+                          top-2">
+                Nombre de la Empresa
+            </label>
+        </div>
+
+        <!-- Campo Contraseña -->
+        <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="perfil.password" name="password"
+                (input)="evaluarPassword()"
+                class="peer w-full bg-black/40 border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-red-600 focus:outline-none transition-all placeholder-transparent pt-5"
+                placeholder="Contraseña">
+            <label class="absolute left-4 text-[10px] uppercase font-bold tracking-widest text-gray-500 transition-all duration-200 pointer-events-none
+          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-500
+          peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-red-500
+          peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:text-gray-400
+          top-2">
+                Contraseña
+            </label>
+
+            <button type="button" (click)="showPassword = !showPassword"
+                class="absolute right-3 top-7 -translate-y-1/2  text-gray-400 hover:text-white focus:outline-none focus:text-red-500 transition-all duration-200 group"
+                [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                <div class="relative w-5 h-5">
+                    <svg *ngIf="!showPassword" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg *ngIf="showPassword" class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                </div>
+            </button>
+
+            <div class="flex space-x-1 mt-2 px-1">
+                <div
+                    [class]="'h-1 flex-1 rounded-full transition-all duration-500 ' + (fortaleza >= 1 ? colorFortaleza : 'bg-gray-800')">
+                </div>
+                <div
+                    [class]="'h-1 flex-1 rounded-full transition-all duration-500 ' + (fortaleza >= 3 ? colorFortaleza : 'bg-gray-800')">
+                </div>
+                <div
+                    [class]="'h-1 flex-1 rounded-full transition-all duration-500 ' + (fortaleza >= 4 ? colorFortaleza : 'bg-gray-800')">
+                </div>
+            </div>
+
+            <div class="mt-3 px-1 grid grid-cols-2 gap-y-1">
+                <span [ngClass]="perfil.password.length >= 8 ? 'text-green-500' : 'text-gray-600'"
+                    class="text-[9px] uppercase font-bold flex items-center transition-colors duration-300">
+                    <span class="mr-1">{{ perfil.password.length >= 8 ? '●' : '○' }}</span> 8+ Caracteres
+                </span>
+                <span [ngClass]="/[A-Z]/.test(perfil.password) ? 'text-green-500' : 'text-gray-600'"
+                    class="text-[9px] uppercase font-bold flex items-center transition-colors duration-300">
+                    <span class="mr-1">{{ /[A-Z]/.test(perfil.password) ? '●' : '○' }}</span> Una Mayúscula
+                </span>
+                <span [ngClass]="/[0-9]/.test(perfil.password) ? 'text-green-500' : 'text-gray-600'"
+                    class="text-[9px] uppercase font-bold flex items-center transition-colors duration-300">
+                    <span class="mr-1">{{ /[0-9]/.test(perfil.password) ? '●' : '○' }}</span> Un Número
+                </span>
+                <span [ngClass]="/[!@#$%^&*]/.test(perfil.password) ? 'text-green-500' : 'text-gray-600'"
+                    class="text-[9px] uppercase font-bold flex items-center transition-colors duration-300">
+                    <span class="mr-1">{{ /[!@#$%^&*]/.test(perfil.password) ? '●' : '○' }}</span> Especial (!@#)
+                </span>
+            </div>
+        </div>
+
+        <!-- Términos y condiciones -->
+        <div class="flex items-center space-x-3 py-2 group cursor-pointer">
+            <div class="relative flex items-center">
+                <input type="checkbox" [(ngModel)]="perfil.terminos" name="terminos" id="terminos" class="w-5 h-5 rounded border-gray-700 bg-black/60 text-red-600 
+                      focus:ring-offset-0 focus:ring-2 focus:ring-red-500 
+                      cursor-pointer transition-all duration-200
+                      checked:bg-red-600 checked:border-red-600">
+            </div>
+            <label for="terminos"
+                class="text-gray-400 text-xs cursor-pointer select-none group-hover:text-gray-300 transition-colors">
+                Acepto los <a href="#" class="text-red-500 hover:underline font-bold">términos y condiciones</a>
+            </label>
+        </div>
+
+        <!-- Botón de finalizar -->
+        <button type="button" (click)="finalizarRegistro()" [disabled]="!esFormularioValido()"
+            class="w-full py-4 bg-red-600 text-white font-bebas text-2xl rounded-xl hover:bg-red-700 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed active:scale-95">
+            FINALIZAR REGISTRO
+        </button>
+    </form>
+</div>

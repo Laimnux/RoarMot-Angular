@@ -1,0 +1,33 @@
+/* CSS Refinado para RoarMot */
+.shader-text {
+  /* Por defecto (Día), no aplicamos gradiente para que Tailwind mande */
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  filter: none;
+}
+
+/* Solo se activa el efecto metálico en Dark Mode */
+.dark .shader-text {
+  background: linear-gradient(to bottom, #fff 20%, #64748b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
+}
+
+/* Ajuste de los items de navegación para que sean legibles en ambos modos */
+.nav-item {
+  @apply flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-bold;
+  /* Colores de día: Texto negro fuerte */
+  @apply text-gray-700 hover:bg-gray-100;
+  /* Colores de noche: Texto gris claro */
+  @apply dark:text-gray-600 dark:hover:text-white dark:hover:bg-white/5;
+}
+
+.dropdown-link {
+  @apply flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors w-full text-left font-bold;
+  /* Día */
+  @apply text-gray-600 hover:bg-gray-100;
+  /* Noche */
+  @apply dark:text-gray-400 dark:hover:bg-white/5;
+}

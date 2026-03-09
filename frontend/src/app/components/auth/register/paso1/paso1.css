@@ -1,0 +1,22 @@
+/* paso1.css */
+
+/* Estilo para los botones del selector cuando NO están seleccionados */
+[data-selected="false"] {
+    background-color: transparent;
+    color: #6b7280; /* gris suave */
+}
+
+/* Estilo para el botón SELECCIONADO (Usa el naranja/rojo de tu marca) */
+[data-selected="true"] {
+    background-color: #ef4444; /* Rojo vibrante como el botón */
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* Reutilizamos el efecto de texto del login si lo deseas */
+.shader-text {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(to bottom, #fff 0%, #999 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

@@ -1,22 +1,32 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. Extraemos el token que guardamos en el AuthService
-  const token = localStorage.getItem('auth_token');
+  // 1. Definimos las rutas que DEBEN ser públicas (sin token)
+  const publicUrls = ['/api/index/', '/api/users/login/', '/api/users/registro/'];
 
-  // 2. Si el token existe, inyectamos la cabecera de seguridad
+  // 2. Si la petición va a una ruta pública, la dejamos pasar sin tocarla
+  const isPublic = publicUrls.some(url => req.url.includes(url));
+  
+  if (isPublic) {
+    console.log('Interceptor: Ruta pública detectada, saltando token');
+    return next(req);
+  }
+
+  // 3. Extraemos el token (Asegúrate de que el nombre coincida con tu AuthService)
+  const token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+
+  // 4. Si el token existe y la ruta es privada, lo inyectamos
   if (token) {
     const cloned = req.clone({
       setHeaders: {
-        // Formato estándar para SimpleJWT en Django
         Authorization: `Bearer ${token}`
       }
     });
     
-    console.log('Interceptor: Token JWT añadido a la petición');
+    console.log('Interceptor: Token JWT añadido a la petición privada');
     return next(cloned);
   }
 
-  // 3. Si no hay token (ej. durante el login), la petición sigue su curso
+  // 5. Si no hay token y la ruta era privada, sigue su curso (Django dará el 401 luego)
   return next(req);
 };

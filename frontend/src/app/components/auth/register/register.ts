@@ -21,7 +21,7 @@ export class RegisterComponent {
 
   // OBJETO RECOLECTOR: Fuente única de verdad
   datosRegistro = {
-    rol: '',
+    rol: 'comprador',
     email: '',
     codigoVerificacion: '',
     nombre: '',

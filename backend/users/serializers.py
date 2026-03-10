@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import Usuario
+from rest_framework.validators import UniqueValidator
 
 class UsuarioSerializer(serializers.ModelSerializer):
+
     nombre = serializers.CharField(source='NOMBRE_USUARIO')
     apellido = serializers.CharField(source='APELLIDO_USUARIO')
     email = serializers.EmailField(source='CORREO_USUARIO')
@@ -13,10 +15,18 @@ class UsuarioSerializer(serializers.ModelSerializer):
     rol = serializers.CharField(write_only=True)
     rol_id = serializers.IntegerField(source='ROL_ID_ROL', read_only=True) 
 
+    # Añadimos un validador explícito al campo email
+    email = serializers.EmailField(
+        source='CORREO_USUARIO',
+        validators=[UniqueValidator(queryset=Usuario.objects.all(), message="Este correo ya está registrado.")]
+    )
+
     class Meta:
         model = Usuario
         # El campo 'telefono' NO está aquí, por lo tanto no se envía al frontend
         fields = ['nombre', 'apellido', 'email', 'password', 'rol', 'rol_id', 'nombre_empresa', 'telefono']
+
+
 
     def create(self, validated_data):
         raw_password = validated_data.pop('CONTRASENA')

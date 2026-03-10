@@ -1,0 +1,51 @@
+.grid-bento-internal {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100%;
+}
+
+@media (min-width: 1024px) {
+    .grid-bento-internal {
+        grid-template-columns: 1.7fr 1fr; /* Proporción imagen/form */
+    }
+}
+
+.image-box {
+    width: 100%;
+    height: 100%;
+    min-height: 450px;
+}
+
+.input-minimalist {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(34, 36, 39, 0.3);
+    padding: 10px 0;
+    width: 100%;
+    outline: none;
+    font-size: 0.9rem;
+    color: inherit;
+    transition: all 0.3s;
+}
+
+.input-minimalist:focus {
+    border-bottom-color: #8B0000;
+}
+
+.registrar-btn-modern {
+    background: #8B0000;
+    color: white;
+    padding: 14px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.registrar-btn-modern:hover:not(:disabled) {
+    background: #a30000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+}

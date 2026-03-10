@@ -1,70 +1,73 @@
-/* ===== FUENTES Y SCROLLBAR PERSONALIZADO ===== */
 :host {
     display: block;
-    --accent: #5C7589;
+    --border-fino: 1px solid rgba(139, 0, 0, 0.2); 
     --roar-red: #8B0000;
 }
 
-/* Scrollbar con el estilo que definiste para RoarMot */
-::-webkit-scrollbar {
-    width: 10px;
-    background-color: #0D1118;
+.dark :host {
+    --border-fino: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-::-webkit-scrollbar-thumb {
-    background-color: var(--accent);
-    border-radius: 5px;
-    border: 2px solid #0D1118;
+.bento-grid-layout {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-areas: 
+        "main-moto"
+        "tips"
+        "productos";
 }
 
-/* ===== ANIMACIÓN DE DESTELLO (SPARKLE) PARA BOTONES ===== */
-@keyframes sparkle {
-    0% { transform: translateX(-100%) skewX(-30deg); }
-    100% { transform: translateX(200%) skewX(-30deg); }
+@media (min-width: 992px) {
+    .bento-grid-layout {
+        grid-template-columns: 2.2fr 1fr; 
+        grid-template-areas: 
+            "main-moto tips"
+            "main-moto productos";
+    }
 }
 
-.sparkle-button {
-    position: relative;
-    overflow: hidden;
+.grid-box {
+    border-radius: 12px;
+    border: var(--border-fino);
+    transition: all 0.4s ease;
 }
 
-.sparkle-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(-100%) skewX(-30deg);
-    pointer-events: none;
+.box-main-moto { grid-area: main-moto; }
+.box-tips { grid-area: tips; }
+.box-productos { grid-area: productos; }
+
+/* --- ESTILO BOTONES SELECTORES --- */
+.btn-sidebar-selector {
+    width: 48px;
+    height: 42px;
+    background: rgba(31, 41, 55, 0.6);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.sparkle-button:hover::before {
-    animation: sparkle 0.8s ease-in-out forwards;
+.btn-sidebar-selector:hover {
+    border-color: var(--roar-red);
+    transform: translateX(4px);
+    background: rgba(139, 0, 0, 0.1);
 }
 
-/* ===== CLIPS Y GEOMETRÍA DE INGENIERÍA ===== */
-/* Aplicaremos estos a los contenedores para dar ese look de Dashboard de motos */
-.clip-angular-left {
-    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
-}
-
-.clip-angular-right {
-    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
-}
-
-/* Efecto de inclinación para los inputs que ya tenías */
-.skew-input-container {
-    transform: skewX(-15deg);
-}
-
-.skew-input-content {
-    transform: skewX(15deg);
-}
-
-/* Solución para que el texto no se vea borroso con el skew */
-input {
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+@media (max-width: 1023px) {
+    #moto-sidebar {
+        position: relative;
+        flex-direction: row;
+        left: 0 !important; 
+        top: 0;
+        margin-bottom: 20px;
+        width: 100%;
+        justify-content: center;
+    }
+    .bento-grid-layout { margin-left: 0 !important; }
 }

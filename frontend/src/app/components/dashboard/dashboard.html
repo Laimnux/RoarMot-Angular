@@ -1,84 +1,54 @@
-<div class="min-h-screen transition-colors duration-500 bg-gray-50 text-gray-900 dark:bg-roar-dark dark:text-white font-sans selection:bg-roar-red/30">
+<div class="min-h-screen bg-gray-50 dark:bg-roar-dark text-gray-900 dark:text-white font-sans overflow-x-hidden">
   
-  <main class="max-w-7xl mx-auto p-6 space-y-6">
-    
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 text-white">
-      
-      <div class="clip-angular-left md:col-span-8 relative overflow-hidden group border-l-4 border-roar-red bg-white dark:bg-roar-card h-[380px] shadow-lg dark:shadow-2xl transition-all duration-500">
-        
-        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent dark:from-roar-dark dark:via-roar-dark/40 z-10 transition-colors duration-500"></div>
-        
-        <div class="absolute bottom-10 left-10 z-20">
-          <span class="bg-roar-red text-[10px] px-2 py-1 font-bold tracking-ultra-wide uppercase mb-3 inline-block shadow-lg">
-            Estado del Sistema
-          </span>
-          <h2 class="font-oswald text-5xl font-bold tracking-ultra-wide uppercase drop-shadow-md text-gray-900 dark:text-white transition-colors">
-            Bienvenido, <span class="text-roar-red">Rider</span>
-          </h2>
-          <p class="text-gray-500 dark:text-roar-accent font-medium mt-2 tracking-widest uppercase text-xs flex items-center gap-2">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            Conexión con motocicleta: Estable
-          </p>
-        </div>
+  <section class="max-w-7xl mx-auto p-2 md:p-2 relative">
 
-        <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=1200" 
-             alt="Moto Background" 
-             class="absolute inset-0 w-full h-full object-cover opacity-20 dark:opacity-50 group-hover:scale-110 transition-transform duration-[2000ms] ease-out">
+    <div id="moto-sidebar" 
+         class="absolute left-[-15px] lg:left-[-20px] top-10 flex flex-col gap-4 z-40 items-center">
+      
+      <button type="button" (click)="motoComp.nuevaMoto()" 
+              class="w-12 h-12 bg-roar-red text-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(139,0,0,0.4)] hover:scale-110 active:scale-95 transition-all border border-white/20">
+        <span class="text-2xl font-bold">+</span>
+      </button>
+
+      <div class="w-8 h-[1px] bg-gray-700/50 my-1"></div>
+
+      <div class="flex flex-col gap-3">
+        <button type="button" class="btn-sidebar-selector">M 1</button>
+        <button type="button" class="btn-sidebar-selector">M 2</button>
+      </div>
+    </div>
+    
+    <div class="bento-grid-layout mt-6 lg:ml-12">
+      
+      <div class="grid-box box-main-moto bg-white dark:bg-roar-card border-1-fino overflow-hidden relative p-0">
+        <app-moto #motoComp></app-moto> 
       </div>
 
-      <div class="md:col-span-4 bg-white dark:bg-roar-card border border-gray-200 dark:border-roar-accent/10 rounded-sm p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 shadow-lg dark:shadow-2xl">
-          
-          <div class="absolute top-0 right-0 p-4 opacity-5 dark:opacity-10">
-            <svg class="w-24 h-24 text-gray-900 dark:text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.5h7c-.47 4.34-3.13 8.23-7 9.42V11.5H5V6.3l7-3.11v8.31z"/>
-            </svg>
-          </div>
+      <div class="grid-box box-tips bg-white dark:bg-roar-card border-1-fino p-6 flex flex-col justify-center">
+        <h4 class="texto-elegante-sutil text-xs mb-2">Tips Moteros</h4>
+        <p class="text-[10px] text-gray-500">Mantén tu cadena lubricada cada 500km.</p>
+      </div>
 
-          <div class="relative z-10">
-            <h3 class="font-oswald tracking-ultra-wide uppercase text-roar-red dark:text-roar-gold text-lg border-b border-gray-100 dark:border-roar-gold/20 pb-2 transition-colors">
-                Asistencia SOS
-            </h3>
-            <div class="mt-4 space-y-3">
-              <p class="text-xs text-gray-400 dark:text-roar-accent leading-relaxed italic">
-                "En la carretera, nunca estás solo."
-              </p>
-              <div class="bg-gray-50 dark:bg-roar-dark/50 p-3 rounded border border-gray-200 dark:border-roar-accent/5 transition-colors">
-                <p class="text-[10px] text-gray-400 dark:text-white/60 uppercase tracking-widest">Ubicación Actual</p>
-                <p class="text-xs font-mono text-roar-red dark:text-roar-accent">Sincronizando GPS...</p>
-              </div>
-            </div>
-          </div>
-
-          <button class="sparkle-button w-full bg-roar-red hover:bg-red-700 text-white font-oswald py-4 tracking-ultra-wide uppercase text-xs transition-all duration-300 shadow-xl shadow-roar-red/30 mt-6 group">
-            <span class="relative z-10 flex items-center justify-center gap-2">
-              <span class="w-2 h-2 bg-white rounded-full animate-ping"></span>
-              Activar Auxilio Carretera
-            </span>
-          </button>
+      <div class="grid-box box-productos bg-white dark:bg-roar-card border-1-fino p-6 flex flex-col justify-center">
+        <h4 class="texto-elegante-sutil text-xs mb-2">Destacados</h4>
+        <div class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded"></div>
       </div>
 
     </div>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <div class="bg-white dark:bg-roar-card border border-gray-200 dark:border-white/5 p-6 rounded-2xl shadow-md transition-all">
-            <div class="flex justify-between items-center mb-4">
-                <div class="p-2 bg-red-50 dark:bg-red-600/10 rounded-lg">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </div>
-                <span class="text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-600/20 px-2 py-1 rounded">VIGENTE</span>
-            </div>
-            <h4 class="font-oswald text-lg uppercase tracking-wider text-gray-900 dark:text-white">Seguro SOAT</h4>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Vencimiento: 15 Oct 2026</p>
-            
-            <div class="mt-4 h-1.5 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                <div class="h-full bg-roar-red w-3/4"></div>
-            </div>
+  </section>
+
+  <section class="max-w-5xl mx-auto p-4 md:px-8 pb-12">
+    <div class="grid-box box-alerta bg-white dark:bg-roar-card border-1-fino p-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <h4 class="font-oswald text-sm uppercase tracking-wider text-gray-500">Estado del SOAT</h4>
+          <p class="text-xl font-bold">Vence en 15 días</p>
         </div>
-
-        </section>
-
-  </main>
+        <button class="sparkle-button bg-roar-red px-6 py-2 text-white font-oswald text-[10px] tracking-widest uppercase rounded">
+          Renovar Ahora
+        </button>
+      </div>
+    </div>
+  </section>
 </div>

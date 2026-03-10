@@ -1,7 +1,9 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Importante para usar [(ngModel)]
 import { Router } from '@angular/router';
+import { AuthService } from '../../../../services/auth'; // Asegúrate de importar tu servicio
+import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
   selector: 'app-paso1',
@@ -10,14 +12,22 @@ import { Router } from '@angular/router';
   templateUrl: './paso1.html',
   styleUrl: './paso1.css'
 })
-export class Paso1Component {
+export class Paso1Component implements OnInit{
   rol: string = 'comprador'; // Por defecto ya tiene uno
   email: string = '';
   
   @Output() rolSeleccionado = new EventEmitter<string>();
   @Output() emailEnviado = new EventEmitter<string>(); // Nuevo emisor
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, 
+    private authService: AuthService,
+    private notify: NotificationService 
+  ) {} // Inyecta el servicio
+
+  // 2. Ahora sí, el método está respaldado por la interfaz
+  ngOnInit() {
+    this.rolSeleccionado.emit(this.rol);
+  }
 
   cambiarRol(nuevoRol: string) {
     this.rol = nuevoRol;
@@ -36,14 +46,26 @@ export class Paso1Component {
   }
 
   continuar() {
-    if (this.esFormularioValido()) {
-      // 1. Enviamos el email al Padre antes de irnos 
-      this.emailEnviado.emit(this.email);
-      console.log('Datos válidos, navegando al paso 2...');
-      // 2. Navegamos al paso 2
-      this.router.navigate(['/registro/paso2']);
-    } else {
-      alert('Por favor, ingresa un correo de Gmail válido.');
-    }
+  if (this.esFormularioValido()) {
+    // Verificamos en el backend antes de navegar
+    this.authService.verificarEmail(this.email).subscribe({
+      next: (res) => {
+        if (res.disponible) {
+          this.emailEnviado.emit(this.email);
+          this.router.navigate(['/registro/paso2']);
+        } else {
+          // Cambiado de alert a notify
+          this.notify.show('Este correo ya está registrado en Roarmot.', 'error');
+        }
+      },
+      error: () => {
+        // Cambiado de alert a notify
+        this.notify.show('Error de conexión. Inténtalo más tarde.', 'error');
+      }
+    });
+  } else {
+    // Cambiado de alert a notify
+    this.notify.show('Por favor, ingresa un correo de Gmail válido.', 'info');
+  }
   }
 }

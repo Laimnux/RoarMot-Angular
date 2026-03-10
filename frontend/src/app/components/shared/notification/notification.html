@@ -1,0 +1,8 @@
+<div class="notification-container">
+  @for (toast of toasts; track toast.id) {
+    <div class="toast" [ngClass]="toast.type">
+      {{ toast.message }}
+      <div class="progress"></div>
+    </div>
+  }
+</div>

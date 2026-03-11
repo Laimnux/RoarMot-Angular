@@ -1,41 +1,58 @@
 <div id="moto-manager" class="w-full h-full p-0">
-  
-  <div *ngIf="!motoSeleccionada" id="moto-manager__registro" 
-       class="grid-bento-internal w-full h-full">
 
+  <!-- ========== VISTA DE REGISTRO (cuando NO hay moto seleccionada) ========== -->
+  <div *ngIf="!motoSeleccionada" id="moto-manager__registro" class="grid-bento-internal w-full h-full">
+
+    <!-- === CUADRO DE SUBIDA DE IMAGEN === -->
     <div class="image-box relative overflow-hidden bg-gray-950 flex items-center justify-center">
-      <input type="file" (change)="onFileSelected($event)" accept="image/*" 
-             class="absolute inset-0 opacity-0 cursor-pointer z-20 w-full h-full" />
-      
+      <!-- Input file oculto para subir imagen -->
+      <input type="file" (change)="onFileSelected($event)" accept="image/*"
+        class="absolute inset-0 opacity-0 cursor-pointer z-20 w-full h-full" />
+
+      <!-- Estado sin imagen: muestra icono y texto -->
       <div *ngIf="!imagePreview" class="flex flex-col justify-center items-center p-4 z-10 text-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mb-2 text-roar-red">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.58-1.58L10.5 11.25H21a2.25 2.25 0 00-2.25-2.25H15a2.25 2.25 0 00-2.25 2.25v2.25m-1.5-3.52l2.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6.75A2.25 2.25 0 016 4.5h2.25" />
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-12 h-12 mb-2 text-roar-red">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.58-1.58L10.5 11.25H21a2.25 2.25 0 00-2.25-2.25H15a2.25 2.25 0 00-2.25 2.25v2.25m-1.5-3.52l2.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6.75A2.25 2.25 0 016 4.5h2.25" />
         </svg>
         <p class="text-[10px] font-bold uppercase tracking-widest text-white">Subir foto de tu moto</p>
         <p class="text-[8px] text-gray-400 uppercase mt-1">Click o arrastra</p>
       </div>
 
-      <img *ngIf="imagePreview" [src]="imagePreview" class="w-full h-full object-cover">
+      <!-- Vista previa de la imagen cuando ya se seleccionó una -->
+      <img *ngIf="imagePreview" [src]="imagePreview" class="w-full h-full object-cover" alt="Vista previa de la moto">
     </div>
 
+    <!-- === FORMULARIO DE REGISTRO DE MOTO === -->
     <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between">
-      <form [formGroup]="motoForm" (ngSubmit)="guardarMoto()" class="h-full flex flex-col justify-between" autocomplete="off">
-        
+      <form [formGroup]="motoForm" (ngSubmit)="guardarMoto()" class="h-full flex flex-col justify-between"
+        autocomplete="off">
+
         <div class="space-y-4">
-          <h3 class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase">
+          <!-- SECCIÓN: Datos básicos -->
+          <h3
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase">
             Datos básicos
           </h3>
           <div class="grid grid-cols-1 gap-3">
-            <input type="text" formControlName="placa_moto" placeholder="Placa (ABC-123)" class="input-minimalist uppercase">
+            <input type="text" formControlName="placa_moto" placeholder="Placa (ABC-123)"
+              class="input-minimalist uppercase">
             <input type="text" formControlName="marca_moto" placeholder="Marca" class="input-minimalist">
             <input type="text" formControlName="modelo_moto" placeholder="Modelo" class="input-minimalist">
+            <input type="text" formControlName="color_moto" placeholder="Color" class="input-minimalist">
           </div>
 
-          <h3 class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase mt-4">
-            Técnicos
+          <!-- SECCIÓN: Datos técnicos -->
+          <h3
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase mt-4">
+            Datos Técnicos
           </h3>
           <div class="grid grid-cols-1 gap-3">
-            <input type="number" formControlName="kilometraje" placeholder="Kilometraje actual" class="input-minimalist">
+            <input type="number" formControlName="kilometraje" placeholder="Kilometraje actual"
+              class="input-minimalist">
+
+            <!-- Contenedor de fechas (SOAT y TECNOMECÁNICA) -->
             <div class="flex gap-4">
               <div class="flex-1">
                 <label class="text-[8px] uppercase text-gray-500 font-bold mb-1 block">Vence SOAT</label>
@@ -49,11 +66,82 @@
           </div>
         </div>
 
+        <!-- Botón de envío del formulario -->
         <button type="submit" [disabled]="motoForm.invalid" class="registrar-btn-modern mt-6">
           <span class="font-oswald text-xs tracking-widest font-bold">REGISTRAR MOTO</span>
         </button>
       </form>
     </div>
+  </div>
+
+  <!-- ========== VISTA DE DETALLE (cuando HAY moto seleccionada) ========== -->
+  <div *ngIf="motoSeleccionada" id="moto-manager__detalle" class="grid-bento-internal w-full h-full animate-fade-in">
+
+    <!-- === IMAGEN DE LA MOTO CON PLACA SUPERPUESTA === -->
+    <div
+      class="image-box relative overflow-hidden bg-gray-900 flex items-center justify-center border-r border-white/5">
+
+      <img [src]="motoSeleccionada.imagen_moto" class="w-full h-full object-cover" alt="Foto de la moto">
+
+      <div class="absolute bottom-4 left-4 bg-rose-900/50 px-3 py-1 rounded shadow-lg">
+        <span class="font-oswald text-white font-medium tracking-tighter">{{ motoSeleccionada.placa_moto }}</span>
+      </div>
+    </div>
+
+    <!-- === INFORMACIÓN DETALLADA DE LA MOTO === -->
+    <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between">
+      <div class="space-y-6">
+
+        <!-- SECCIÓN: Identificación de la moto -->
+        <div>
+          <h3
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900/90 dark:text-gray-300 uppercase">
+            Identificación
+          </h3>
+          <div class="mt-4 space-y-2">
+            <p class="text-2xl font-bold uppercase font-oswald text-dark-bg dark:text-gray-500">{{ motoSeleccionada.marca_moto }}</p>
+            <p class="text-lg text-gray-700  dark:text-gray-500 uppercase tracking-widest">{{ motoSeleccionada.modelo_moto }}</p>
+            <p class="text-xs text-gray-600">Color: <span class=" text-gray-700 dark:text-gray-500">{{ motoSeleccionada.color_moto }}</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- SECCIÓN: Estado técnico (kilometraje, fechas de vencimiento) -->
+        <div>
+          <h3
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-gray-300 uppercase">
+            Estado Técnico
+          </h3>
+          <div class="grid grid-cols-2 gap-4 mt-4">
+
+            <!-- Tarjeta de kilometraje -->
+            <div class="bg-black/20 p-3 rounded border border-white/5">
+              <label class="text-[9px] uppercase text-gray-700 dark:text-gray-500 font-bold block mb-1">Kilometraje</label>
+              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.kilometraje | number }} KM</p>
+            </div>
+
+            <!-- Tarjeta de vencimiento SOAT -->
+            <div class="bg-black/20 p-3 rounded border border-white/5">
+              <label class="text-[9px] uppercase text-roar-red font-bold block mb-1">SOAT Vence</label>
+              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.soat_moto }}</p>
+            </div>
+
+            <!-- Tarjeta de vencimiento TECNOMECÁNICA (ocupa 2 columnas) -->
+            <div class="bg-black/20 p-3 rounded border border-white/5 col-span-2">
+              <label class="text-[9px] uppercase text-roar-red font-bold block mb-1">Tecnomecánica Vence</label>
+              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.tecnomecanica }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botón para actualizar datos de la moto -->
+      <button class="registrar-btn-modern mt-6 opacity-50 hover:opacity-100 transition-all">
+        <span class="font-oswald text-xs tracking-widest font-bold">ACTUALIZAR DATOS</span>
+      </button>
+    </div>
 
   </div>
+
 </div>

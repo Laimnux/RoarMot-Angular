@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MotoService } from '../../services/moto.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-moto',
@@ -12,6 +13,7 @@ import { MotoService } from '../../services/moto.service';
 })
 export class MotoComponent implements OnInit {
   // --- PROPIEDADES ---
+  baseUrl = environment.apiUrl;
   motoForm: FormGroup;
   selectedFile: File | null = null;
   imagePreview: string | null = null;
@@ -19,15 +21,18 @@ export class MotoComponent implements OnInit {
   // Controla si mostramos el formulario de registro (null) o el detalle de una moto
   motoSeleccionada: any = null; 
 
+  // Emitimos un evento al padre (Dashboard) cuando se registra una moto con éxito
+  @Output() motoRegistrada = new EventEmitter<string>();
+
   private fb = inject(FormBuilder);
   private motoService = inject(MotoService);
 
   constructor() {
-    // Inicialización del formulario reactivo
+    // Inicialización del formulario reactivo con COLOR_MOTO incluido
     this.motoForm = this.fb.group({
       marca_moto: ['', [Validators.required]],
       modelo_moto: ['', [Validators.required]],
-      color_moto: ['', [Validators.required]],
+      color_moto: ['', [Validators.required]], // Campo vital para tu DB
       placa_moto: ['', [Validators.required, Validators.maxLength(10)]],
       kilometraje: [0, [Validators.required, Validators.min(0)]],
       soat_moto: ['', [Validators.required]],
@@ -35,9 +40,7 @@ export class MotoComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    // Aquí podrías cargar la lista inicial de motos si fuera necesario
-  }
+  ngOnInit(): void {}
 
   // --- LÓGICA DE IMAGEN ---
   onFileSelected(event: any): void {
@@ -54,53 +57,64 @@ export class MotoComponent implements OnInit {
 
   // --- ACCIONES DEL SELECTOR ---
   
-  // Esta función se llama al presionar el botón "+" en tu selector lateral
   nuevaMoto() {
     this.motoSeleccionada = null;
-    this.motoForm.reset({
-      kilometraje: 0 // Valor por defecto al resetear
-    });
-    this.imagePreview = null;
-    this.selectedFile = null;
+    this.resetFormulario();
     console.log("Cambiando a modo registro...");
   }
 
-  // Esta función se llamaría cuando el usuario hace clic en una moto ya registrada
-  verDetalleMoto(moto: any) {
-    this.motoSeleccionada = moto;
-    // Aquí no reseteamos el form, simplemente mostramos la data en la vista de detalle
+  // Centralizamos el reset para usarlo en varios lugares
+  resetFormulario() {
+    this.motoForm.reset({
+      kilometraje: 0
+    });
+    this.imagePreview = null;
+    this.selectedFile = null;
   }
 
-  // --- PERSISTENCIA ---
+  verDetalleMoto(moto: any) {
+    this.motoSeleccionada = moto;
+  }
+
+  // --- PERSISTENCIA (GUARDADO CON IMAGEN) ---
   guardarMoto(): void {
     if (this.motoForm.invalid) {
       this.motoForm.markAllAsTouched();
       return;
     }
 
+    // Usamos FormData para enviar el archivo binario de la imagen
     const formData = new FormData();
     
     // Extraemos valores y aseguramos que la placa vaya en Mayúsculas
     const formValues = { ...this.motoForm.value };
     formValues.placa_moto = formValues.placa_moto.toUpperCase();
 
-    // Mapear campos al FormData
+    // Mapeamos los campos del formulario al FormData para Django
     Object.keys(formValues).forEach(key => {
       formData.append(key, formValues[key]);
     });
 
+    // Agregamos el archivo de la imagen con el nombre exacto del modelo: imagen_moto
     if (this.selectedFile) {
       formData.append('imagen_moto', this.selectedFile);
     }
 
+    // Llamamos al servicio (asegúrate de que en el servicio se llame guardarMoto o registrarMoto)
     this.motoService.guardarMoto(formData).subscribe({
       next: (res) => {
+        console.log('Moto guardada exitosamente:', res);
         alert('¡Moto registrada con éxito!');
-        this.nuevaMoto(); // Limpia y vuelve al estado inicial
+        
+        // Emitimos la placa al Dashboard para que actualice el botón lateral
+        this.motoRegistrada.emit(res.placa_moto);
+        
+        // Limpiamos el formulario para un nuevo registro
+        this.nuevaMoto(); 
       },
       error: (err) => {
         console.error('Error al guardar la moto', err);
-        alert('Hubo un error al guardar los datos.');
+        alert('Hubo un error al guardar los datos en el servidor.');
       }
     });
   }

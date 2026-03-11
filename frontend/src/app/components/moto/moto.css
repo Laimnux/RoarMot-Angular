@@ -19,7 +19,7 @@
 .input-minimalist {
     background: transparent;
     border: none;
-    border-bottom: 1px solid rgba(34, 36, 39, 0.3);
+    border-bottom: 1px solid rgba(156, 163, 175, 0.3);
     padding: 10px 0;
     width: 100%;
     outline: none;
@@ -33,7 +33,7 @@
 }
 
 .registrar-btn-modern {
-    background: #8B0000;
+    background: #ff0055;
     color: white;
     padding: 14px;
     border-radius: 8px;
@@ -45,7 +45,7 @@
 }
 
 .registrar-btn-modern:hover:not(:disabled) {
-    background: #a30000;
+    background: #a30029;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
 }

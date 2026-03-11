@@ -1,39 +1,47 @@
 <div class="min-h-screen bg-gray-50 dark:bg-roar-dark text-gray-900 dark:text-white font-sans overflow-x-hidden">
-  
+
   <section class="max-w-7xl mx-auto p-2 md:p-2 relative">
 
-    <div id="moto-sidebar" 
-         class="absolute left-[-15px] lg:left-[-20px] top-10 flex flex-col gap-4 z-40 items-center">
-      
-      <button type="button" (click)="motoComp.nuevaMoto()" 
-              class="w-12 h-12 bg-roar-red text-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(139,0,0,0.4)] hover:scale-110 active:scale-95 transition-all border border-white/20">
-        <span class="text-2xl font-bold">+</span>
+    <div id="moto-sidebar">
+
+      <button type="button" (click)="motoComp.nuevaMoto()" class="btn-sidebar-selector">
+        <div class="btn-content-wrapper">
+          <span class="text-agregar uppercase">Agregar Moto</span>
+          <span class="icon-mas">+</span>
+        </div>
       </button>
 
-      <div class="w-8 h-[1px] bg-gray-700/50 my-1"></div>
+      <div class="w-8 h-[1px] bg-gray-300 dark:bg-gray-700/50 my-1 self-center"></div>
 
       <div class="flex flex-col gap-3">
-        <button type="button" class="btn-sidebar-selector">M 1</button>
-        <button type="button" class="btn-sidebar-selector">M 2</button>
+        <button *ngFor="let moto of motos; let i = index" type="button" class="matriz-moto-btn"
+          (click)="seleccionarMoto(moto)">
+          <div class="btn-content-wrapper">
+            <span class="matriz-placa uppercase">{{ moto.placa_moto }}</span>
+            <span class="matriz-id">{{ i + 1 }}</span>
+          </div>
+        </button>
       </div>
+
     </div>
-    
-    <div class="bento-grid-layout mt-6 lg:ml-12">
-      
+
+    <div class="bento-grid-layout mt-6">
       <div class="grid-box box-main-moto bg-white dark:bg-roar-card border-1-fino overflow-hidden relative p-0">
-        <app-moto #motoComp></app-moto> 
+        <app-moto #motoComp></app-moto>
       </div>
 
-      <div class="grid-box box-tips bg-white dark:bg-roar-card border-1-fino p-6 flex flex-col justify-center">
-        <h4 class="texto-elegante-sutil text-xs mb-2">Tips Moteros</h4>
-        <p class="text-[10px] text-gray-500">Mantén tu cadena lubricada cada 500km.</p>
+      <div class="grid-box box-tips bg-white dark:bg-roar-card border-1-fino p-6">
+        <h4 class="text-xs mb-2 uppercase text-gray-400">Tips Moteros</h4>
+        <p class="text-[10px] text-gray-500 italic">"Mantén tu cadena lubricada cada 500km."</p>
       </div>
 
-      <div class="grid-box box-productos bg-white dark:bg-roar-card border-1-fino p-6 flex flex-col justify-center">
-        <h4 class="texto-elegante-sutil text-xs mb-2">Destacados</h4>
-        <div class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded"></div>
+      <div class="grid-box box-productos bg-white dark:bg-roar-card border-1-fino p-6">
+        <h4 class="text-xs mb-2 uppercase text-gray-400">Destacados</h4>
+        <div
+          class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded-lg border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center">
+          <span class="text-[8px] text-gray-400 uppercase">Próximamente</span>
+        </div>
       </div>
-
     </div>
 
   </section>
@@ -41,11 +49,12 @@
   <section class="max-w-5xl mx-auto p-4 md:px-8 pb-12">
     <div class="grid-box box-alerta bg-white dark:bg-roar-card border-1-fino p-6">
       <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-          <h4 class="font-oswald text-sm uppercase tracking-wider text-gray-500">Estado del SOAT</h4>
-          <p class="text-xl font-bold">Vence en 15 días</p>
+        <div class="text-center md:text-left">
+          <h4 class="font-oswald text-sm text-gray-500 uppercase">Estado del SOAT</h4>
+          <p class="text-xl font-bold text-roar-red dark:text-white">Vence en 15 días</p>
         </div>
-        <button class="sparkle-button bg-roar-red px-6 py-2 text-white font-oswald text-[10px] tracking-widest uppercase rounded">
+        <button
+          class="bg-roar-red px-8 py-3 text-white font-oswald text-[11px] uppercase rounded-md transition-all hover:scale-105 active:scale-95">
           Renovar Ahora
         </button>
       </div>

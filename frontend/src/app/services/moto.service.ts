@@ -11,7 +11,7 @@ export class MotoService {
 
   // Función privada para no repetir la lógica del token en cada método
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
@@ -30,5 +30,10 @@ export class MotoService {
     // Django REST Framework suele esperar PUT o PATCH para actualizar. 
     // Usamos el ID en la URL: http://127.0.0.1:8000/api/motos/5/
     return this.http.put(`${this.apiUrl}${id}/`, formData, { headers: this.getHeaders() });
+  }
+
+  // Eliminacion Moto
+  eliminarMoto(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}${id}/`, { headers: this.getHeaders() });
   }
 }

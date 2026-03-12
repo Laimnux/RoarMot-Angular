@@ -29,11 +29,11 @@
 }
 
 .input-minimalist:focus {
-    border-bottom-color: #8B0000;
+    border-bottom-color: #ec004f;
 }
 
 .registrar-btn-modern {
-    background: #ff0055;
+    background: #7e002a;
     color: white;
     padding: 14px;
     border-radius: 8px;
@@ -45,7 +45,7 @@
 }
 
 .registrar-btn-modern:hover:not(:disabled) {
-    background: #a30029;
+    background: #e60039;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
 }

@@ -14,53 +14,39 @@ import { MotoService } from '../../services/moto.service';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  // 1. Referencias y Propiedades
   @ViewChild(MotoComponent) motoComp!: MotoComponent;
-  
-  motos: any[] = []; // Array para almacenar las motos de la DB (incluida la RTZ-34F)
-
-  // 2. Inyección de dependencias (forma moderna con inject)
+  motos: any[] = [];
   private motoService = inject(MotoService);
 
-  // 3. Al iniciar el componente, cargamos las motos
   ngOnInit(): void {
-    this.cargarMotos();
+    this.obtenerMotos(); // Llamamos a la función única
   }
 
-  // 4. Función para traer motos desde el Backend (Django)
-  cargarMotos() {
+  // Única función para traer datos de la API
+  obtenerMotos() {
     this.motoService.getMotos().subscribe({
       next: (data) => {
         this.motos = data;
-        console.log('Motos cargadas en Dashboard:', this.motos);
+        console.log('Motos sincronizadas en Dashboard:', this.motos);
       },
-      error: (err) => {
-        console.error('Error al cargar motos desde el servidor', err);
-      }
+      error: (err) => console.error('Error en la comunicación con la API:', err)
     });
   }
 
-  // 5. Lógica del botón "+" (Modo Registro)
   onBtnMasClick() {
-    console.log('Botón "+" presionado: Limpiando formulario para nueva moto');
-    if (this.motoComp) {
-      this.motoComp.nuevaMoto();
-    } else {
-      console.warn('No se encontró la referencia a MotoComponent');
-    }
+    if (this.motoComp) this.motoComp.nuevaMoto();
   }
 
-  // 6. Recibir evento cuando se registre una moto con éxito
-  // (Para que el sidebar se actualice solo sin recargar la página)
-  onMotoRegistrada(placa: string) {
-    console.log('Nueva moto detectada:', placa);
-    this.cargarMotos(); // Volvemos a pedir la lista a Django para que aparezca el nuevo botón
-  }
-
-  // 7. Seleccionar una moto para ver su detalle
   seleccionarMoto(moto: any) {
     if (this.motoComp) {
+      this.motoComp.isEditing = false;
       this.motoComp.verDetalleMoto(moto);
     }
+  }
+
+  onMotoRegistrada(moto: any) {
+    console.log('Moto procesada exitosamente:', moto);
+    this.obtenerMotos(); // Refresca los botones de la izquierda
+    // El hijo (motoComp) ya se encarga de mostrar el detalle, así que aquí solo refrescamos.
   }
 }

@@ -4,7 +4,7 @@
 
     <div id="moto-sidebar">
 
-      <button type="button" (click)="motoComp.nuevaMoto()" class="btn-sidebar-selector">
+      <button type="button" (click)="onBtnMasClick()" class="btn-sidebar-selector">
         <div class="btn-content-wrapper">
           <span class="text-agregar uppercase">Agregar Moto</span>
           <span class="icon-mas">+</span>
@@ -26,8 +26,9 @@
     </div>
 
     <div class="bento-grid-layout mt-6">
+      
       <div class="grid-box box-main-moto bg-white dark:bg-roar-card border-1-fino overflow-hidden relative p-0">
-        <app-moto #motoComp></app-moto>
+        <app-moto #motoComp (motoRegistrada)="onMotoRegistrada($event)"></app-moto>
       </div>
 
       <div class="grid-box box-tips bg-white dark:bg-roar-card border-1-fino p-6">

@@ -26,7 +26,7 @@
     </div>
 
     <div class="bento-grid-layout mt-6">
-      
+
       <div class="grid-box box-main-moto bg-white dark:bg-roar-card border-1-fino overflow-hidden relative p-0">
         <app-moto #motoComp (motoRegistrada)="onMotoRegistrada($event)"></app-moto>
       </div>
@@ -47,18 +47,98 @@
 
   </section>
 
-  <section class="max-w-5xl mx-auto p-4 md:px-8 pb-12">
-    <div class="grid-box box-alerta bg-white dark:bg-roar-card border-1-fino p-6">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-center md:text-left">
-          <h4 class="font-oswald text-sm text-gray-500 uppercase">Estado del SOAT</h4>
-          <p class="text-xl font-bold text-roar-red dark:text-white">Vence en 15 días</p>
+  <section class="max-w-5xl mx-auto p-4 md:p-6 pb-12">
+    <div class="flex items-center gap-4 mb-8">
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+      <h3 class="font-bebas text-2xl text-gray-500 tracking-[0.3em] uppercase italic">Diagnóstico Mecánico</h3>
+      <div class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div (click)="irAMantenimientos()"
+        class="md:col-span-2 bg-white/5 backdrop-blur-xl py-4 px-8 rounded-[2.5rem] border border-gray-300/10 shadow-2xl relative overflow-hidden group cursor-pointer">
+
+        <div class="relative z-10">
+          <p class="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-500 mb-2">Diagnóstico del Sistema</p>
+
+          <h2
+            class="font-bebas text-5xl text-gray-700 dark:text-white tracking-tighter shader-text uppercase leading-none mb-2">
+            {{ getTituloEstado() }}
+          </h2>
+
+          <div class="flex items-center gap-3 mb-4 py-3 px-4 bg-black/20 rounded-2xl border-l-4" [ngClass]="{
+           'border-red-600': tieneAlertasCriticas(),
+           'border-yellow-500': tieneAlertasPendientes() && !tieneAlertasCriticas(),
+           'border-emerald-500': alertas.length === 0
+         }">
+            <p class="text-xs md:text-sm text-gray-300 font-medium leading-relaxed">
+              <span class="text-white opacity-90">{{ getMensajePreventivo() }}</span>
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between items-end">
+              <span class="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold italic opacity-70">Integridad
+                Total</span>
+
+              <span class="text-xl font-bebas tracking-widest transition-all duration-500" 
+                [ngClass]="{
+                  'text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]': porcentajeSalud < 40,
+                  'text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.7)]': porcentajeSalud >= 40 && porcentajeSalud < 80,
+                  'text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.7)]': porcentajeSalud >= 80
+                }">
+                {{ porcentajeSalud }}%
+              </span>
+            </div>
+
+            <div class="w-full h-1.5 bg-black/40 rounded-full overflow-hidden border border-white/10">
+              <div class="h-full rounded-full transition-all duration-[1500ms] ease-out"
+                [style.width.%]="porcentajeSalud" 
+                [ngClass]="{
+                  'bg-rose-600 shadow-[0_0_12px_rgba(225,29,72,0.8)]': porcentajeSalud < 40,
+                  'bg-yellow-500 shadow-[0_0_12px_rgba(234,179,8,0.8)]': porcentajeSalud >= 40 && porcentajeSalud < 80,
+                  'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]': porcentajeSalud >= 80
+                }">
+              </div>
+            </div>
+          </div>
         </div>
-        <button
-          class="bg-roar-red px-8 py-3 text-white font-oswald text-[11px] uppercase rounded-md transition-all hover:scale-105 active:scale-95">
-          Renovar Ahora
+
+        <div class="absolute -bottom-10 -right-10 w-48 h-48 blur-[80px] opacity-30"
+          [ngClass]="{'bg-red-600': tieneAlertasCriticas(), 'bg-yellow-500': tieneAlertasPendientes(), 'bg-emerald-500': alertas.length === 0}">
+        </div>
+      </div>
+
+      <div
+        class="bg-gray-950 dark:bg-black/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between">
+        <div class="space-y-4">
+          <p
+            class="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 dark:text-gray-500 border-b border-white/5 pb-2">
+            Notificaciones</p>
+
+          <div *ngIf="alertas.length === 0" class="py-4 text-center">
+            <p class="text-[10px] text-emerald-500/50 uppercase italic tracking-widest">Sistemas sin novedad</p>
+          </div>
+
+          <div *ngFor="let alerta of alertas.slice(0, 2)" class="flex gap-3 items-start group">
+            <div class="mt-1 w-1.5 h-1.5 rounded-full"
+              [ngClass]="alerta.nivel_prioridad === 'critico' ? 'bg-red-600 shadow-[0_0_8px_red]' : 'bg-yellow-500 shadow-[0_0_8px_yellow]'">
+            </div>
+            <div>
+              <h4 class="text-[11px] text-white font-bold uppercase tracking-tight leading-none mb-1">{{ alerta.titulo
+                }}</h4>
+              <p class="text-[12px] text-gray-500 leading-tight">{{ alerta.descripcion }}</p>
+            </div>
+          </div>
+        </div>
+
+        <button (click)="irAMantenimientos()"
+          class="w-full mt-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] text-gray-300 font-bold uppercase tracking-[0.2em] transition-all active:scale-95">
+          Ver historial
         </button>
       </div>
+
     </div>
   </section>
 </div>

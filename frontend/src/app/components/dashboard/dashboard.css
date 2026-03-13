@@ -129,3 +129,48 @@
 @media (max-width: 1023px) {
     #moto-sidebar { position: relative; left: 0; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 20px; }
 }
+
+/* ===== ESTADO TÉCNICO (SEMÁFORO) ===== */
+
+.font-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Efecto de cristal esmerilado profundo */
+.backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+
+/* Animación de entrada para la barra de salud */
+.transition-all.duration-1000 {
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Clase para el texto con sombreado de fuerza (Estilo ROARMOT) */
+.shader-text {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* Efecto Hover para que la tarjeta destaque */
+.group:hover .shader-text {
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.445);
+    transition: text-shadow 0.3s ease;
+}
+
+/* Pulso para alertas críticas */
+.animate-pulse {
+    animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% { opacity: 1; filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.8)); }
+    50% { opacity: .7; filter: drop-shadow(0 0 15px rgba(220, 38, 38, 1)); }
+}
+
+/* Media Query para ajustar el padding en móviles */
+@media (max-width: 768px) {
+    .rounded-\[2\.5rem\] {
+        border-radius: 1.5rem; /* Menos redondeado en móviles para ganar espacio */
+    }
+}

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'motos',
+    'mantenimientos',
 ]
 
 # --- MIDDLEWARE ---

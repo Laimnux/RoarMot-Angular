@@ -7,13 +7,14 @@ import { Paso2Component } from './components/auth/register/paso2/paso2';
 import { Paso3Component } from './components/auth/register/paso3/paso3';
 import { authGuard } from './guards/auth-guard'; 
 import { Dashboard } from './components/dashboard/dashboard'; 
+import { Mantenimientos } from './components/mantenimientos/mantenimientos';
 
 // Layouts Profesionales
 import { UserLayoutComponent } from './layouts/user-layout/user-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 
 export const routes: Routes = [
-    // --- GRUPO 1: PÚBLICO (Home con Header/Footer estándar) ---
+    // --- GRUPO 1: PÚBLICO ---
     {
       path: '',
       component: PublicLayoutComponent,
@@ -22,7 +23,7 @@ export const routes: Routes = [
       ]
     },
 
-    // --- GRUPO 2: AUTH (Sin distractores visuales) ---
+    // --- GRUPO 2: AUTH ---
     { path: 'login', component: LoginComponent },
     { 
       path: 'registro', 
@@ -37,18 +38,18 @@ export const routes: Routes = [
 
     // --- GRUPO 3: PRIVADO (Layout de Ingeniería Roarmot) ---
     { 
-      path: 'dashboard', 
+      path: 'app', // Usamos un prefijo para agrupar las rutas privadas
       component: UserLayoutComponent, 
-      canActivate: [authGuard],        // Protección activa sincronizada con Django
+      canActivate: [authGuard], 
       children: [
-        { 
-          path: '', 
-          component: Dashboard         // Vista principal del Rider
-        },
-        // En el futuro, rutas como 'motos' o 'cda' irán aquí
+        { path: 'dashboard', component: Dashboard },
+        { path: 'mantenimientos', component: Mantenimientos },
+        { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
       ]
     },
 
-    // COMODÍN: Redirección de seguridad
+    // Redirecciones globales
+    { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
+    { path: 'mantenimientos', redirectTo: 'app/mantenimientos', pathMatch: 'full' },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

@@ -1,0 +1,90 @@
+/* --- Estructura y Layout --- */
+.max-w-\[1400px\] {
+    margin-top: 2vh;
+}
+
+/* Redondeado Industrial Consistente */
+.rounded-2xl {
+    border-radius: 1.2rem;
+}
+
+/* --- Corrección de Renderizado de Imagen --- */
+img {
+    display: block;
+    border: 0 !important;
+    outline: none !important;
+    /* Elimina el borde blanco/fantasma en bordes redondeados */
+    mask-image: -webkit-radial-gradient(white, black);
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+/* --- Tipografías --- */
+.font-bebas { font-family: 'Bebas Neue', sans-serif; }
+.font-vt323 { font-family: 'VT323', monospace; }
+
+/* --- Interactividad (Hover) --- */
+.group {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.3s ease, 
+                box-shadow 0.3s ease;
+}
+
+.group:hover {
+    transform: translateY(-4px);
+}
+
+/* --- Scrollbar Técnica Minimalista --- */
+div::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+div::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+div::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.2);
+    border-radius: 10px;
+}
+
+div:hover::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.4);
+}
+
+/* --- Estados de Alerta (Badges y Documentos) --- */
+
+.tracking-tighter {
+    letter-spacing: -0.05em;
+}
+
+/* Brillo y Parpadeo para Documentos Vencidos */
+.bg-rose-500\/20 {
+    animation: blink-status 2s infinite ease-in-out;
+    border-width: 1px;
+}
+
+/* Mejora del brillo sutil en el texto de alerta */
+.text-rose-600.border-rose-500\/30 {
+    box-shadow: 0 0 12px rgba(225, 29, 72, 0.15);
+    background-color: rgba(225, 29, 72, 0.08);
+    text-shadow: 0 0 8px rgba(225, 29, 72, 0.2);
+}
+
+@keyframes blink-status {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(0.98);
+        box-shadow: 0 0 15px rgba(225, 29, 72, 0.3);
+    }
+}
+
+/* Ajuste para las barras de progreso en modo oscuro */
+.dark .bg-emerald-500 {
+    box-shadow: 0 0 10px rgb(16, 185, 129);
+}
+

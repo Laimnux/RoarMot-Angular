@@ -1,11 +1,10 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. Extraemos el token usando la clave 'auth_token' (la que definiste en AuthService)
-  const token = localStorage.getItem('auth_token');
+  // 1. Extraemos el token de sessionStorage (Clave para el aislamiento por pestaña)
+  const token = sessionStorage.getItem('auth_token');
 
-  // 2. Definimos las rutas que son estrictamente públicas
-  // Agregamos 'verificar-email' que es nueva en tu AuthService
+  // 2. Definimos las rutas que NO necesitan Token (Públicas)
   const publicUrls = [
     '/api/users/login/', 
     '/api/users/register/', 
@@ -13,24 +12,24 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     '/api/index/'
   ];
 
-  // 3. Verificamos si la URL de la petición actual coincide con alguna pública
+  // 3. Verificamos si la petición actual es a una ruta pública
   const isPublic = publicUrls.some(url => req.url.includes(url));
-  
+
   // 4. LÓGICA DE DECISIÓN
+  // Solo inyectamos el token si existe Y la ruta NO es pública
   if (token && !isPublic) {
-    // Si hay token y la ruta es PRIVADA (como /api/motos/), lo inyectamos
     const cloned = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log('Interceptor: Token JWT añadido a la petición privada:', req.url);
+    console.log(`[Interceptor] Token inyectado para: ${req.url}`);
     return next(cloned);
   }
 
-  // 5. Si es pública o no hay token, la petición sigue su curso normal
+  // 5. Si es pública o no hay token, la petición sigue normal
   if (isPublic) {
-    console.log('Interceptor: Ruta pública detectada, enviando sin token:', req.url);
+    console.log(`[Interceptor] Ruta pública detectada: ${req.url}`);
   }
   
   return next(req);

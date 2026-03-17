@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +11,7 @@ export class AuthService {
   // Centralizamos la URL para no repetir "api/users" en cada método
   private baseUrl = 'http://localhost:8000/api/users';
 
-  private usuarioSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('user_session') || 'null'));
+  private usuarioSubject = new BehaviorSubject<any>(JSON.parse(sessionStorage.getItem('user_session') || 'null'));
   usuarioActual$ = this.usuarioSubject.asObservable();
 
   constructor() { }
@@ -35,16 +36,22 @@ export class AuthService {
   }
 
   private guardarSesion(usuario: any, token: string) {
-    localStorage.setItem('user_session', JSON.stringify(usuario));
-    localStorage.setItem('auth_token', token); 
-    localStorage.setItem('isLoggedIn', 'true');
+    // CAMBIO: Todo a sessionStorage
+    sessionStorage.setItem('user_session', JSON.stringify(usuario));
+    sessionStorage.setItem('auth_token', token); 
+    sessionStorage.setItem('isLoggedIn', 'true');
     this.usuarioSubject.next(usuario); 
   }
 
   logout() {
-    localStorage.removeItem('user_session');
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('isLoggedIn');
+    // CAMBIO: Limpiar sessionStorage
+    sessionStorage.removeItem('user_session');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('isLoggedIn');
     this.usuarioSubject.next(null);
+    
+    // Tip: Si quieres ser radical para evitar rastros:
+    // sessionStorage.clear();
+    window.location.href = '/login'; 
   }
 }

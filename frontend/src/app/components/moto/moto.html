@@ -2,7 +2,8 @@
 
   <div *ngIf="!motoSeleccionada || isEditing" id="moto-manager__registro" class="grid-bento-internal w-full h-full">
 
-    <div class="image-box relative overflow-hidden bg-gray-950 flex items-center justify-center">
+    <div
+      class="image-box relative overflow-hidden bg-gray-950 flex items-center justify-center h-[400px] md:h-full min-h-[400px]">
       <input type="file" (change)="onFileSelected($event)" accept="image/*"
         class="absolute inset-0 opacity-0 cursor-pointer z-20 w-full h-full" />
 
@@ -13,45 +14,94 @@
             d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.58-1.58L10.5 11.25H21a2.25 2.25 0 00-2.25-2.25H15a2.25 2.25 0 00-2.25 2.25v2.25m-1.5-3.52l2.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6.75A2.25 2.25 0 016 4.5h2.25" />
         </svg>
         <p class="text-[10px] font-bold uppercase tracking-widest text-white">Subir foto de tu moto</p>
-        <p class="text-[8px] text-gray-400 uppercase mt-1">Click o arrastra</p>
       </div>
 
-      <img *ngIf="imagePreview" [src]="imagePreview" class="w-full h-full object-cover" alt="Vista previa de la moto">
+      <img *ngIf="imagePreview" [src]="imagePreview" class="absolute inset-0 w-full h-full object-cover object-center"
+        alt="Vista previa">
     </div>
 
-    <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between">
+    <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between overflow-y-auto">
       <form [formGroup]="motoForm" (ngSubmit)="guardarMoto()" class="h-full flex flex-col justify-between"
         autocomplete="off">
 
         <div class="space-y-4">
           <h3
-            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase">
-            Datos básicos
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase flex items-center justify-between">
+            <span>Datos básicos</span>
+            <i class="fas fa-question-circle text-gray-500  dark:text-gray-700 cursor-help text-[14px] ml-2"
+              data-tooltip="Los datos básicos de tu moto son clave para un diagnóstico preciso. Nos permiten identificar posibles fallos y ofrecerte una asistencia más efectiva, garantizando tu seguridad en cada viaje."></i>
           </h3>
-          <div class="grid grid-cols-1 gap-3">
+
+          <div class="grid grid-cols-2 gap-3">
             <input type="text" formControlName="placa_moto" placeholder="Placa (ABC-123)"
-              class="input-minimalist uppercase">
+              class="input-minimalist uppercase col-span-2">
             <input type="text" formControlName="marca_moto" placeholder="Marca" class="input-minimalist">
             <input type="text" formControlName="modelo_moto" placeholder="Modelo" class="input-minimalist">
-            <input type="text" formControlName="color_moto" placeholder="Color" class="input-minimalist">
+            <input type="text" formControlName="color_moto" placeholder="Color" class="input-minimalist col-span-2">
           </div>
 
           <h3
-            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase mt-4">
-            Datos Técnicos
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase mt-4 flex items-center justify-between">
+            <span>Parámetros Técnicos</span>
+            <i class="fas fa-question-circle text-gray-500  dark:text-gray-700 cursor-help text-[14px] ml-2"
+              data-tooltip="Estos datos son fundamentales para la salud de tu moto. Nos permiten generar alertas de mantenimiento personalizadas y ofrecerte lecturas de kilometraje más precisas, optimizando su rendimiento y durabilidad."></i>
           </h3>
+
           <div class="grid grid-cols-1 gap-3">
-            <input type="number" formControlName="kilometraje" placeholder="Kilometraje actual"
-              class="input-minimalist">
-            <div class="flex gap-4">
+            <div class="flex gap-3">
               <div class="flex-1">
-                <label class="text-[8px] uppercase text-gray-500 font-bold mb-1 block">Vence SOAT</label>
-                <input type="date" formControlName="soat_moto" class="input-minimalist text-[11px]">
+                <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 block">KM Actual</label>
+                <input type="number" formControlName="kilometraje" class="input-minimalist w-full">
               </div>
               <div class="flex-1">
-                <label class="text-[8px] uppercase text-gray-500 font-bold mb-1 block">Vence TECNO</label>
-                <input type="date" formControlName="tecnomecanica" class="input-minimalist text-[11px]">
+                <div class="flex-1">
+                  <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 flex items-center gap-1">
+                    KM Último Mante.
+                    <i class="fas fa-question-circle border-gray-700 dark:border-white/10 cursor-help text-[12px]"
+                      data-tooltip="Ingresa el kilometraje exacto de tu último cambio de aceite o mantenimiento técnico para calcular tus próximas alertas.">
+                    </i>
+                  </label>
+                  <input type="number" formControlName="km_ultimo_mantenimiento"
+                    class="input-minimalist w-full border-rose-900/20">
+                </div>
               </div>
+            </div>
+
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 block">Cilindraje (CC)</label>
+                <input type="number" formControlName="cilindraje" class="input-minimalist w-full">
+              </div>
+              <div class="flex-1">
+                <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 block">Fecha Último Mante.</label>
+                <input type="date" formControlName="fecha_ultimo_mantenimiento"
+                  class="input-minimalist text-[11px] w-full">
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 block">Vence SOAT</label>
+                <input type="date" formControlName="soat_moto" class="input-minimalist text-[11px] w-full">
+              </div>
+              <div class="flex-1">
+                <label class="text-[10px] uppercase text-gray-500 font-bold mb-1 block">Vence TECNO</label>
+                <input type="date" formControlName="tecnomecanica" class="input-minimalist text-[11px] w-full">
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <select formControlName="tipo_uso" class="input-minimalist text-[10px] uppercase flex-1 bg-transparent">
+                <option value="MIXTO">Uso Mixto</option>
+                <option value="URBANO">Uso Urbano</option>
+                <option value="TURISMO">Turismo/Viaje</option>
+              </select>
+              <select formControlName="tipo_aceite"
+                class="input-minimalist text-[10px] uppercase flex-1 bg-transparent">
+                <option value="SEMISINTETICO">Semisintético</option>
+                <option value="MINERAL">Mineral</option>
+                <option value="SINTETICO">Sintético</option>
+              </select>
             </div>
           </div>
         </div>
@@ -69,66 +119,82 @@
     class="grid-bento-internal w-full h-full animate-fade-in">
 
     <div
-      class="image-box relative overflow-hidden bg-gray-900 flex items-center justify-center border-r border-white/5">
-      <img [src]="motoSeleccionada.imagen_moto" class="w-full h-full object-cover" alt="Foto de la moto">
-      <div class="absolute bottom-4 left-4 bg-rose-900/50 px-3 py-1 rounded shadow-lg">
+      class="image-box relative overflow-hidden bg-gray-900 flex items-center justify-center border-r border-white/5 h-[400px] md:h-full min-h-[400px]">
+      <img [src]="motoSeleccionada.imagen_moto"
+        class="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
+        alt="Foto de la moto">
+
+      <div
+        class="absolute bottom-4 left-4 bg-rose-900/70 backdrop-blur-md px-3 py-1 rounded shadow-lg z-10 border border-white/10">
         <span class="font-oswald text-white font-medium tracking-tighter">{{ motoSeleccionada.placa_moto }}</span>
       </div>
     </div>
 
-    <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between">
+    <div class="form-box bg-white dark:bg-roar-card p-6 flex flex-col justify-between overflow-y-auto">
       <div class="space-y-6">
         <div>
           <h3
-            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900/90 dark:text-gray-300 uppercase">
-            Identificación
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-white uppercase flex items-center justify-between">
+            <span>Ficha de Identidad</span>
+            <i class="fas fa-question-circle text-gray-500  dark:text-gray-700 cursor-help text-[14px] ml-2"
+              data-tooltip="Esta es la información oficial registrada para tu vehículo."></i>
           </h3>
-          <div class="mt-4 space-y-2">
-            <p class="text-2xl font-bold uppercase font-oswald text-dark-bg dark:text-gray-500">{{
+          <div class="mt-4 space-y-1">
+            <p class="text-2xl font-bold uppercase font-oswald text-gray-700 dark:text-gray-300">{{
               motoSeleccionada.marca_moto }}</p>
-            <p class="text-lg text-gray-700 dark:text-gray-500 uppercase tracking-widest">{{
-              motoSeleccionada.modelo_moto }}</p>
-            <p class="text-xs text-gray-600">Color: <span class="text-gray-700 dark:text-gray-500">{{
-                motoSeleccionada.color_moto }}</span></p>
+            <p class="text-lg text-gray-500 uppercase tracking-widest">{{ motoSeleccionada.modelo_moto }}</p>
           </div>
         </div>
 
         <div>
           <h3
-            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-700 dark:border-white/10 pb-2 text-gray-900 dark:text-gray-300 uppercase">
-            Estado Técnico
+            class="font-oswald text-xs tracking-[0.2em] border-b border-gray-400 dark:border-white/30 pb-2 text-gray-600 dark:text-gray-400 uppercase flex items-center justify-between">
+            <span>Configuración Mecánica</span>
+            <i class="fas fa-question-circle text-gray-500  dark:text-gray-700 cursor-help text-[14px] ml-2"
+              data-tooltip="Datos técnicos calculados para el plan de mantenimiento."></i>
           </h3>
-          <div class="grid grid-cols-2 gap-4 mt-4">
-            <div class="bg-black/20 p-3 rounded border border-white/5">
-              <label
-                class="text-[9px] uppercase text-gray-700 dark:text-gray-500 font-bold block mb-1">Kilometraje</label>
-              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.kilometraje | number }}
-                KM</p>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="bg-black/20 p-2 rounded border border-white/5">
+              <label class="text-[12px] uppercase text-gray-500 font-bold block mb-1">Cilindraje</label>
+              <p class="text-[12px] font-mono text-gray-500">{{ motoSeleccionada.cilindraje }} CC</p>
             </div>
-            <div class="bg-black/20 p-3 rounded border border-white/5">
-              <label class="text-[9px] uppercase text-roar-red font-bold block mb-1">SOAT Vence</label>
-              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.soat_moto }}</p>
+            <div class="bg-black/20 p-2 rounded border border-white/5">
+              <label class="text-[12px] uppercase text-gray-500 font-bold block mb-1">Lubricante</label>
+              <p class="text-[12px] uppercase font-bold text-rose-600">{{ motoSeleccionada.tipo_aceite }}</p>
             </div>
-            <div class="bg-black/20 p-3 rounded border border-white/5 col-span-2">
-              <label class="text-[9px] uppercase text-roar-red font-bold block mb-1">Tecnomecánica Vence</label>
-              <p class="text-sm font-mono text-gray-700 dark:text-gray-300">{{ motoSeleccionada.tecnomecanica }}</p>
+
+            <div class="bg-black/20 p-2 rounded border border-white/5 col-span-2">
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] uppercase text-gray-500 font-bold block">Historial de Servicio</label>
+                <span class="text-[11px] text-gray-500 font-mono">{{ motoSeleccionada.fecha_ultimo_mantenimiento
+                  }}</span>
+              </div>
+              <div class="flex justify-between">
+                <p class="text-[11px] uppercase text-gray-500 font-bold">{{ motoSeleccionada.tipo_uso }}</p>
+                <p class="text-[11px] text-rose-500 font-bold">Cambio a los: {{ motoSeleccionada.km_ultimo_mantenimiento
+                  | number }} KM</p>
+              </div>
+            </div>
+
+            <div class="bg-black/20 p-2 rounded border border-white/5">
+              <label class="text-[11px] uppercase text-gray-500 font-bold block mb-1">Odómetro Actual</label>
+              <p class="text-sm font-mono text-gray-500">{{ motoSeleccionada.kilometraje | number }} KM</p>
+            </div>
+            <div class="bg-black/20 p-2 rounded border border-white/5">
+              <label class="text-[12px] uppercase text-roar-red font-bold block mb-1">SOAT</label>
+              <p class="text-[12px] font-mono text-gray-500">{{ motoSeleccionada.soat_moto }}</p>
             </div>
           </div>
         </div>
       </div>
 
-
-      <div class="flex items-stretch gap-3 mt-4">
-
+      <div class="flex items-stretch gap-3 mt-6">
         <button type="button" (click)="solicitarEdicion()" class="registrar-btn-modern flex-1">
-          <span class="font-oswald text-xs tracking-widest font-bold uppercase">
-            Actualizar datos
-          </span>
+          <span class="font-oswald text-xs tracking-widest font-bold uppercase">Actualizar ficha</span>
         </button>
 
         <button type="button" (click)="eliminarMotoActual()"
-          class="bg-gray-600/20 hover:bg-zinc-950 box-shadow-bd-ne dark:hover:bg-neutral-950 text-gray-500 dark:text-gray-500 hover:text-whit dark:border-gray-900 w-auto px-4 rounded transition-all flex items-center justify-center h-full">
-
+          class="bg-rose-600/10 hover:bg-rose-600 text-rose-600 hover:text-white w-auto px-4 rounded transition-all border border-rose-600/20 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -136,7 +202,6 @@
           </svg>
         </button>
       </div>
-
     </div>
   </div>
 </div>

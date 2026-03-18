@@ -54,4 +54,8 @@ export class AuthService {
     // sessionStorage.clear();
     window.location.href = '/login'; 
   }
+  // Dentro de tu AuthService
+  get usuarioActualValue() {
+    return this.usuarioSubject.value;
+  }
 }

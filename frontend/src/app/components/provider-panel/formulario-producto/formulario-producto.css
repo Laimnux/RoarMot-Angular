@@ -1,0 +1,34 @@
+/* Soporte para Modo Claro / Oscuro hereda del padre */
+:host {
+    display: block;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo para los inputs en modo claro */
+input, textarea, select {
+    color: inherit;
+}
+
+/* Efecto Glassmorphism más profundo en modo oscuro */
+.dark .bg-roar-card {
+    background: rgba(13, 17, 24, 0.8);
+    backdrop-filter: blur(12px);
+}
+
+/* Sombra roja para el botón principal */
+.dark .shadow-rose-glow {
+    box-shadow: 0 0 20px rgba(225, 29, 72, 0.2);
+}
+
+/* Ajustes de tipografía para mantener la jerarquía de RoarMot */
+.font-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+}

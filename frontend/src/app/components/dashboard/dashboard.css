@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Oswald:wght@400;700&family=Bebas+Neue&display=swap');
 
 :host {
     display: block;
-    --border-fino: 1px solid rgb(172, 172, 172); 
+    --border-fino: 1px solid rgba(255, 255, 255, 0); 
     --roar-red: #ff0055;
     --led-bg: #ffffff7e;
     --led-text: #222222;
 }
 
 .dark :host {
-    --border-fino: 1px solid rgb(82, 82, 82);
+    --border-fino: 1px solid rgba(0, 31, 71, 0);
     --led-bg: #7e7e7e28;
-    --led-text: #ffffff6c;
+    --led-text: #9191916c;
 }
 
-/* ===== SIDEBAR: Anclaje Fijo ===== */
+/* ===== SIDEBAR: Anclaje Fijo (Tal cual Imagen 1) ===== */
 #moto-sidebar {
     position: absolute;
     left: -52px; 
@@ -26,24 +26,24 @@
     align-items: flex-start; 
 }
 
-/* ===== BOTONES BASE (Siempre 42px) ===== */
+/* ===== BOTONES BASE (Siempre 42px para evitar saltos) ===== */
 .btn-sidebar-selector, .matriz-moto-btn {
     height: 42px;
-    width: 42px; /* NO CAMBIA, esto evita que el botón se mueva */
+    width: 42px;
     border-radius: 8px;
     cursor: pointer;
     position: relative;
     border: none;
-    background: transparent; /* El color lo da el wrapper */
-    overflow: visible; /* Permite que el contenido salga hacia la izquierda */
+    background: transparent;
+    overflow: visible;
 }
 
-/* ===== CONTENEDOR INTERNO (El que se estira) ===== */
+/* ===== CONTENEDOR INTERNO (Efecto Expansión) ===== */
 .btn-content-wrapper {
     position: absolute;
-    right: 0; /* Anclado a la derecha */
+    right: 0;
     height: 100%;
-    width: 42px; /* Ancho inicial */
+    width: 42px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -55,62 +55,47 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Colores Rojo (+) */
 .btn-sidebar-selector .btn-content-wrapper {
     background: var(--roar-red);
     color: white;
     font-family: 'Oswald', sans-serif;
 }
 
-/* Colores LED (Motos) */
 .matriz-moto-btn .btn-content-wrapper { 
     background-color: var(--led-bg); 
     color: rgb(141, 141, 141);
     font-family: 'VT323', monospace;
 }
 
-/* ===== HOVER: Expansión hacia la IZQUIERDA ===== */
+/* ===== HOVER: Expansión lateral ===== */
 .btn-sidebar-selector:hover .btn-content-wrapper {
-    width: 190px; /* Se estira hacia la izquierda */
+    width: 190px;
     box-shadow: 0 0 20px rgba(255, 0, 64, 0.507);
 }
 
 .matriz-moto-btn:hover .btn-content-wrapper {
-    width: 140px; /* Se estira hacia la izquierda */
+    width: 140px;
     background-color: var(--led-text);
     color: var(--led-bg);
     box-shadow: 0 0 20px rgba(114, 114, 114, 0.753);
 }
 
-/* ===== TEXTOS Y SÍMBOLOS ===== */
+/* ===== TEXTOS TIPOGRAFÍA OSWALD (Imagen 1) ===== */
 .text-agregar, .matriz-placa {
     opacity: 0;
     transition: opacity 0.2s ease;
     margin-right: 12px;
-
     font-family: 'Oswald', sans-serif;
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.4em;
     font-weight: bold;
     color: #ffffff;
-    
 }
 
 .btn-sidebar-selector:hover .text-agregar,
 .matriz-moto-btn:hover .matriz-placa {
     opacity: 1;
-    transition: opacity 0.2s ease;
-    margin-right: 12px;
-
-    /* ----- AJUSTES NUEVOS ----- */
-    font-size: 10px;           /* text-[10px] */
-    text-transform: uppercase; /* uppercase */
-    letter-spacing: 0.4em;     /* tracking-[0.4em] */
-    font-weight: medium;         /* font-bold */
-    /* Nota: Aquí puedes omitir el color gray-500 si prefieres 
-       que herede el color verde/gris de la matriz LED */
-    /* -------------------------- */
 }
 
 .icon-mas, .matriz-id {
@@ -120,46 +105,60 @@
     flex-shrink: 0;
 }
 
-/* Resto del layout igual... */
-.bento-grid-layout { display: grid; gap: 1.25rem; grid-template-areas: "main-moto" "tips" "productos"; }
-@media (min-width: 992px) { .bento-grid-layout { grid-template-columns: 2.2fr 1fr; grid-template-areas: "main-moto tips" "main-moto productos"; } }
+/* ===== LAYOUT BENTO GRID ===== */
+.bento-grid-layout { 
+    display: grid; 
+    gap: 1.25rem; 
+    grid-template-areas: "main-moto" "tips" "productos"; 
+}
+
+@media (min-width: 992px) { 
+    .bento-grid-layout { 
+        grid-template-columns: 2.2fr 1fr; 
+        grid-template-areas: "main-moto tips" "main-moto productos"; 
+    } 
+}
+
 .grid-box { border-radius: 12px; border: var(--border-fino); }
 .box-main-moto { grid-area: main-moto; }
 
-@media (max-width: 1023px) {
-    #moto-sidebar { position: relative; left: 0; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 20px; }
+/* ===== SECCIÓN TIPS (Nuevo Enfoque) ===== */
+.box-tips {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* ===== ESTADO TÉCNICO (SEMÁFORO) ===== */
-
-.font-bebas {
-    font-family: 'Bebas Neue', sans-serif;
+.tip-category-tag {
+    border-left: 2px solid var(--roar-red);
+    padding-left: 8px;
+    font-family: 'Oswald', sans-serif; /* Mantenemos consistencia con Imagen 1 */
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
 }
 
-/* Efecto de cristal esmerilado profundo */
+/* Barra de telemetría (Progreso) */
+.tips-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgb(228, 58, 28);
+    box-shadow: 0 0 10px var(--roar-red);
+}
+
+/* ===== ESTADO TÉCNICO (DIAGNÓSTICO) ===== */
+.font-bebas { font-family: 'Bebas Neue', sans-serif; }
+
 .backdrop-blur-xl {
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
 }
 
-/* Animación de entrada para la barra de salud */
-.transition-all.duration-1000 {
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.shader-text { text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
 
-/* Clase para el texto con sombreado de fuerza (Estilo ROARMOT) */
-.shader-text {
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-}
-
-/* Efecto Hover para que la tarjeta destaque */
-.group:hover .shader-text {
-    text-shadow: 0 0 25px rgba(255, 255, 255, 0.445);
-    transition: text-shadow 0.3s ease;
-}
-
-/* Pulso para alertas críticas */
-.animate-pulse {
+.animate-pulse-custom {
     animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -168,9 +167,6 @@
     50% { opacity: .7; filter: drop-shadow(0 0 15px rgba(220, 38, 38, 1)); }
 }
 
-/* Media Query para ajustar el padding en móviles */
-@media (max-width: 768px) {
-    .rounded-\[2\.5rem\] {
-        border-radius: 1.5rem; /* Menos redondeado en móviles para ganar espacio */
-    }
+@media (max-width: 1023px) {
+    #moto-sidebar { position: relative; left: 0; top: 0; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 20px; }
 }

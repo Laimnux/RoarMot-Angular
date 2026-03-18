@@ -1,0 +1,10 @@
+.roar-input {
+    @apply bg-transparent border border-gray-700 rounded px-3 py-2 text-sm focus:border-roar-red outline-none text-white transition-all;
+}
+
+.grid-box {
+    border-radius: 12px;
+    border: 1px solid rgb(82, 82, 82);
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(10px);
+}

@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'users',
     'motos',
     'mantenimientos',
+    'vendedor',
 ]
 
 # --- MIDDLEWARE ---

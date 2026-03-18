@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/motos/', include('motos.urls')), 
     # 3. AGREGAMOS LAS RUTAS DEL ROUTER (Aquí se crea /api/alertas/)
     path('api/', include(router.urls)), 
+    path('api/vendedor/', include('vendedor.urls')),
 ]
 
 if settings.DEBUG:

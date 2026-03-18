@@ -1,12 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // 1. Importar aquí
+import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router'; // 1. Importar aquí
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'app-header-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RouterModule],
   templateUrl: './header-dashboard.html',
   styleUrls: ['./header-dashboard.css']
 })

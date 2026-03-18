@@ -13,6 +13,12 @@ import { Mantenimientos } from './components/mantenimientos/mantenimientos';
 import { UserLayoutComponent } from './layouts/user-layout/user-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 
+// Componentes del Proveedor (Asegúrate de que las rutas de importación sean correctas)
+import { ProviderPanelComponent } from './components/provider-panel/provider-panel';
+import { Dashboard as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
+import { Inventario } from './components/provider-panel/inventario/inventario';
+import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
+
 export const routes: Routes = [
     // --- GRUPO 1: PÚBLICO ---
     {
@@ -36,9 +42,9 @@ export const routes: Routes = [
       ]
     },
 
-    // --- GRUPO 3: PRIVADO (Layout de Ingeniería Roarmot) ---
+    // --- GRUPO 3: PRIVADO MOTERO (Layout de Ingeniería Roarmot) ---
     { 
-      path: 'app', // Usamos un prefijo para agrupar las rutas privadas
+      path: 'app', 
       component: UserLayoutComponent, 
       canActivate: [authGuard], 
       children: [
@@ -48,8 +54,23 @@ export const routes: Routes = [
       ]
     },
 
+    // --- GRUPO 4: PANEL PROVEEDOR (Gestión de Inventario) ---
+    {
+      path: 'vendedor',
+      component: ProviderPanelComponent, // Este actúa como su propio Layout
+      canActivate: [authGuard], 
+      children: [
+        { path: 'dashboard', component: ProviderDashboard },
+        { path: 'inventario', component: Inventario },
+        { path: 'nuevo-producto', component: FormularioProductoComponent },
+        { path: 'editar-producto/:id', component: FormularioProductoComponent },
+        { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      ]
+    },
+
     // Redirecciones globales
     { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
     { path: 'mantenimientos', redirectTo: 'app/mantenimientos', pathMatch: 'full' },
+    { path: 'inventario', redirectTo: 'vendedor/inventario', pathMatch: 'full' },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

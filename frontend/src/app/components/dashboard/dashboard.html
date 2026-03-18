@@ -26,15 +26,50 @@
       <div class="grid-box box-main-moto bg-white dark:bg-roar-card border-1-fino overflow-hidden relative p-0">
         <app-moto #motoComp (motoRegistrada)="onMotoRegistrada($event)"></app-moto>
       </div>
+      
+      <!-- Tips para moteros-->
+      <div
+        class="grid-box box-tips p-4 relative flex flex-col justify-between bg-gray-950 dark:bg-black/40 overflow-hidden">
 
-      <div class="grid-box box-tips bg-white dark:bg-roar-card border-1-fino p-6">
-        <h4 class="text-xs mb-2 uppercase text-gray-400">Tips Moteros</h4>
-        <p class="text-[10px] text-gray-500 italic">"Mantén tu cadena lubricada cada 500km."</p>
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex flex-col">
+            <div class="flex items-center gap-4 mb-1">
+              <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+              <h4 class="text-[13px] font-bold uppercase tracking-[0.3em] text-yellow-400">Sistema de Tips</h4>
+            </div>
+            <span class="tip-category-tag text-rose-500/70">
+              // {{ tips[tipActualIndex].categoria }}
+            </span>
+          </div>
+
+          <span class="font-mono text-[10px] text-gray-500">
+            DAT_LOG [{{ tipActualIndex + 1 }}/{{ tips.length }}]
+          </span>
+        </div>
+
+        <div class="flex-1 flex items-center transition-all duration-500"
+          [ngClass]="{'opacity-100 translate-x-0': animarTip, 'opacity-0 -translate-x-8': !animarTip}">
+          <p class="text-[16px] leading-relaxed text-gray-300 dark:text-gray-400 italic font-medium">
+            "{{ tips[tipActualIndex].texto }}"
+          </p>
+        </div>
+
+        <div class="mt-4 flex justify-end">
+          <span class="text-[8px] uppercase tracking-widest text-gray-500 font-bold">
+            RoarMot Engine v2.1
+          </span>
+        </div>
+
+        <div class="tips-progress-bar transition-all duration-[8000ms] ease-linear"
+          [style.width.%]="animarTip ? 100 : 0">
+        </div>
       </div>
+      <!-- FInal Tips para moteros-->
 
       <div class="grid-box box-productos bg-white dark:bg-roar-card border-1-fino p-6">
         <h4 class="text-xs mb-2 uppercase text-gray-400">Destacados</h4>
-        <div class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded-lg border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center">
+        <div
+          class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded-lg border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center">
           <span class="text-[8px] text-gray-400 uppercase">Próximamente</span>
         </div>
       </div>
@@ -49,15 +84,16 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
+
       <div (click)="irAMantenimientos()"
         class="md:col-span-2 bg-white/5 backdrop-blur-xl py-4 px-8 rounded-[2.5rem] border border-gray-300/10 shadow-2xl relative overflow-hidden group cursor-pointer">
         <div class="relative z-10">
           <p class="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-500 mb-2">Diagnóstico del Sistema</p>
-          <h2 class="font-bebas text-5xl text-gray-700 dark:text-white tracking-tighter shader-text uppercase leading-none mb-2">
+          <h2
+            class="font-bebas text-5xl text-gray-700 dark:text-white tracking-tighter shader-text uppercase leading-none mb-2">
             {{ getTituloEstado() }}
           </h2>
-          
+
           <div class="flex items-center gap-3 mb-4 py-3 px-4 bg-black/20 rounded-2xl border-l-4" [ngClass]="{
             'border-red-600': tieneAlertasCriticas(),
             'border-yellow-500': tieneAlertasPendientes() && !tieneAlertasCriticas(),
@@ -70,7 +106,8 @@
 
           <div class="space-y-2">
             <div class="flex justify-between items-end">
-              <span class="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold italic opacity-70">Integridad Total</span>
+              <span class="text-[9px] uppercase tracking-[0.2em] text-gray-400 font-bold italic opacity-70">Integridad
+                Total</span>
               <span class="text-xl font-bebas tracking-widest transition-all duration-500" [ngClass]="{
                 'text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]': porcentajeSalud < 40,
                 'text-yellow-500 drop-shadow-[0_0_8_px_rgba(234,179,8,0.7)]': porcentajeSalud >= 40 && porcentajeSalud < 80,
@@ -92,22 +129,26 @@
         </div>
       </div>
 
-      <div class="bg-gray-950 dark:bg-black/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between">
+      <div
+        class="bg-gray-950 dark:bg-black/40 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/5 flex flex-col justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 border-b border-white/5 pb-2">Notificaciones</p>
+          <p class="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 border-b border-white/5 pb-2">
+            Notificaciones</p>
 
           <div *ngIf="alertas.length === 0" class="py-4 text-center">
             <p class="text-[10px] text-emerald-500/50 uppercase italic tracking-widest">Sistemas sin novedad</p>
           </div>
 
-          <div *ngFor="let alerta of alertas.slice(0, 2)" class="flex gap-3 items-start group border-b border-white/5 pb-3 last:border-0">
+          <div *ngFor="let alerta of alertas.slice(0, 2)"
+            class="flex gap-3 items-start group border-b border-white/5 pb-3 last:border-0">
             <div class="mt-1.5 w-2 h-2 rounded-full shrink-0" [ngClass]="{
                 'bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.8)] animate-pulse': alerta.nivel_prioridad === 'critico',
                 'bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.8)]': alerta.nivel_prioridad !== 'critico'
               }">
             </div>
             <div class="flex-1">
-              <h4 class="text-[11px] text-white font-bold uppercase tracking-wider leading-none mb-1 group-hover:text-yellow-500 transition-colors">
+              <h4
+                class="text-[11px] text-white font-bold uppercase tracking-wider leading-none mb-1 group-hover:text-yellow-500 transition-colors">
                 {{ alerta.titulo }}
               </h4>
               <p class="text-[12px] text-gray-500 leading-snug">

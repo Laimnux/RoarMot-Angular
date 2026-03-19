@@ -16,7 +16,7 @@ import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 // Componentes del Proveedor (Asegúrate de que las rutas de importación sean correctas)
 import { ProviderPanelComponent } from './components/provider-panel/provider-panel';
 import { Dashboard as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
-import { Inventario } from './components/provider-panel/inventario/inventario';
+import { InventarioComponent } from './components/provider-panel/inventario/inventario';
 import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
 
 export const routes: Routes = [
@@ -61,7 +61,7 @@ export const routes: Routes = [
       canActivate: [authGuard], 
       children: [
         { path: 'dashboard', component: ProviderDashboard },
-        { path: 'inventario', component: Inventario },
+        { path: 'inventario', component: InventarioComponent },
         { path: 'nuevo-producto', component: FormularioProductoComponent },
         { path: 'editar-producto/:id', component: FormularioProductoComponent },
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' }

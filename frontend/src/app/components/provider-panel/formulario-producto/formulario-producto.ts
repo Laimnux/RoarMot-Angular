@@ -18,6 +18,7 @@ export class FormularioProductoComponent implements OnInit {
   productoForm!: FormGroup;
   selectedFile: File | null = null;
   imagePreview: string | null = null;
+  usuarioLogueado: any = null; //Para guardar el ID real
 
   constructor(
     private fb: FormBuilder,
@@ -29,6 +30,13 @@ export class FormularioProductoComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    // 1. SUSCRIPCIÓN IGUAL QUE EN EL HEADER
+    this.authService.usuarioActual$.subscribe(u => {
+      if (u) {
+        this.usuarioLogueado = u;
+        console.log('ID real detectado:', u.id);
+      }
+    });
   }
 
   private initForm(): void {
@@ -59,51 +67,51 @@ export class FormularioProductoComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // 1. Validación preventiva
+    // 1. Validación del formulario
     if (this.productoForm.invalid) {
-      this.notification.show('POR FAVOR, COMPLETA TODOS LOS CAMPOS TÉCNICOS', 'info');
-      Object.values(this.productoForm.controls).forEach(control => {
-        control.markAsTouched();
-      });
+      this.notification.show('POR FAVOR, COMPLETA TODOS LOS CAMPOS', 'info');
       return;
     }
 
-    // 2. Preparación del paquete de datos (FormData)
     const formData = new FormData();
+    
+    // 2. OBTENCIÓN DEL ID (Ahora es directo gracias al Serializer)
+    const idVendedor = this.usuarioLogueado?.id;
 
-    // Agregamos los valores del formulario
+    if (idVendedor) {
+      formData.append('vendedor', idVendedor.toString());
+      console.log('ID de Vendedor detectado:', idVendedor);
+    } else {
+      // Si sale este error, recuerda: Cierra sesión y vuelve a entrar
+      this.notification.show('ERROR: No se detectó tu ID. Reingresa al sistema.', 'error');
+      return;
+    }
+
+    // 3. Mapeo de campos del formulario
+    // Esto enviará nombre, marca, sku, precio, cantidad, etc.
     Object.keys(this.productoForm.value).forEach(key => {
-      formData.append(key, this.productoForm.value[key]);
+      const value = this.productoForm.value[key];
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
     });
 
-    // 3. Inyección de identidad del vendedor
-    const usuarioActual = this.authService.usuarioActualValue;
-    if (usuarioActual && usuarioActual.id) {
-      formData.append('vendedor', usuarioActual.id.toString());
-    } else {
-      this.notification.show('ERROR: SESIÓN NO DETECTADA', 'error');
-      return;
-    }
-
-    // 4. Adjuntar imagen binaria
+    // 4. Imagen
     if (this.selectedFile) {
       formData.append('imagen', this.selectedFile);
     }
 
-    // 5. Envío al servidor (Sincronización)
+    // 5. Envío al servicio
     this.productoService.guardarProducto(formData).subscribe({
       next: (res) => {
-        // Notificación de éxito técnica
-        this.notification.show('SISTEMA: PRODUCTO SINCRONIZADO CON ÉXITO', 'success');
-        
-        // Redirección al inventario
+        this.notification.show('¡PRODUCTO SINCRONIZADO CON ÉXITO!', 'success');
         setTimeout(() => {
           this.router.navigate(['/vendedor/inventario']); 
-        }, 1500); // Un pequeño delay para que vean la notificación
+        }, 1500);
       },
       error: (err) => {
-        console.error('Error en la sincronización:', err);
-        this.notification.show('FALLO CRÍTICO: NO SE PUDO CONECTAR CON EL SERVIDOR', 'error');
+        console.error('Error detallado de Django:', err.error);
+        this.notification.show('FALLO EN EL SERVIDOR: Revisa los datos', 'error');
       }
     });
   }

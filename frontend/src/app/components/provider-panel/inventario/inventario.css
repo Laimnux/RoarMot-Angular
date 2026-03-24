@@ -29,3 +29,20 @@
   background: #1e293b;
   border-radius: 10px;
 }
+
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* El 'snap-x' hace que las tarjetas se "ajusten" solas al terminar de mover el scroll */
+.snap-x {
+  scroll-snap-type: x mandatory;
+}
+.snap-center {
+  scroll-snap-align: center;
+}

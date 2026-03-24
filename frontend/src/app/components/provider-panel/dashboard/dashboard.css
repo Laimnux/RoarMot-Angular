@@ -1,10 +1,69 @@
+/* 1. Variables Globales */
+:root {
+  --roar-red: #e11d48;
+  --roar-bg-alt: rgba(20, 20, 20, 0.4);
+}
+
+/* 2. Componentes de Formulario */
 .roar-input {
     @apply bg-transparent border border-gray-700 rounded px-3 py-2 text-sm focus:border-roar-red outline-none text-white transition-all;
 }
 
+/* 3. Contenedores Glassmorphism */
 .grid-box {
-    border-radius: 12px;
-    border: 1px solid rgb(82, 82, 82);
-    background: rgba(20, 20, 20, 0.4);
-    backdrop-filter: blur(10px);
+    border-radius: 2rem; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--roar-bg-alt);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-box:hover {
+    border-color: rgba(225, 29, 72, 0.4); 
+    box-shadow: 0 0 20px rgba(225, 29, 72, 0.05); /* Resplandor sutil al hover */
+}
+
+/* 4. Animaciones de Entrada */
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. Alertas y Estados Críticos */
+.shadow-glow-rose {
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
+  border-color: var(--roar-red) !important;
+}
+
+/* 6. Estilo Visual de Imágenes (CCTV Effect) */
+.img-terminal {
+  filter: grayscale(0.8) contrast(1.2) brightness(0.8);
+  transition: all 0.5s ease;
+  border-radius: 0.75rem;
+}
+
+.img-terminal:hover {
+  filter: grayscale(0) contrast(1) brightness(1);
+  transform: scale(1.05); /* Efecto zoom suave */
+}
+
+/* 7. Gráficos (Chart.js) - UNIFICADO */
+.chart-container {
+    position: relative;
+    height: 280px; /* Altura fija para evitar que la dona se estire */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 auto;
 }

@@ -15,7 +15,7 @@ import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 
 // Componentes del Proveedor (Asegúrate de que las rutas de importación sean correctas)
 import { ProviderPanelComponent } from './components/provider-panel/provider-panel';
-import { Dashboard as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
+import { DashboardComponent as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
 import { InventarioComponent } from './components/provider-panel/inventario/inventario';
 import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
 

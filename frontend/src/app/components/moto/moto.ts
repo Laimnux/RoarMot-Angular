@@ -1,11 +1,12 @@
-import { Component, OnInit, inject, Output, EventEmitter, HostListener  } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MotoService } from '../../services/moto.service';
 import { environment } from '../../../environments/environment';
 import { NotificationService } from '../../services/notification.service';
 
-
+// Importación de Cropper.js
+import Cropper from 'cropperjs';
 
 @Component({
   selector: 'app-moto',
@@ -14,7 +15,7 @@ import { NotificationService } from '../../services/notification.service';
   templateUrl: './moto.html',
   styleUrls: ['./moto.css']
 })
-export class MotoComponent implements OnInit {
+export class MotoComponent implements OnInit, OnDestroy {
 
   baseUrl = environment.apiUrl;
   motoForm: FormGroup;
@@ -24,6 +25,12 @@ export class MotoComponent implements OnInit {
   isEditing: boolean = false;
   currentMotoId: number | null = null; 
   motoSeleccionada: any = null;
+
+  // Propiedades para el ajustador de imagen (Roarmot Engine)
+  @ViewChild('imageToCrop') imageToCrop!: ElementRef<HTMLImageElement>;
+  cropper: Cropper | null = null;
+  isAdjustingImage: boolean = false;
+  isCropperInitializing: boolean = false;
 
   @Output() motoRegistrada = new EventEmitter<any>();
 
@@ -40,7 +47,6 @@ export class MotoComponent implements OnInit {
       kilometraje: [0, [Validators.required, Validators.min(0)]],
       soat_moto: ['', [Validators.required]],
       tecnomecanica: ['', [Validators.required]],
-      // --- CAMPOS TÉCNICOS ---
       km_ultimo_mantenimiento: [0, [Validators.required, Validators.min(0)]],
       cilindraje: [150, [Validators.required, Validators.min(50)]],
       fecha_ultimo_mantenimiento: [new Date().toISOString().split('T')[0], [Validators.required]],
@@ -49,33 +55,200 @@ export class MotoComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    window.addEventListener('keydown', this.handleEscKey.bind(this));
+  }
+
+  ngOnDestroy(): void {
+    this.destroyCropper();
+    window.removeEventListener('keydown', this.handleEscKey.bind(this));
+    document.body.classList.remove('modal-open');
+  }
+
+  // --- MÉTODOS DE UTILIDAD ---
+  getImagenUrlAbsoluta(imagenPath: string): string {
+    if (!imagenPath) return '';
+    if (imagenPath.startsWith('http') || imagenPath.startsWith('data:')) return imagenPath;
+    return `${this.baseUrl}/${imagenPath}`;
+  }
+
+  handleEscKey(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.isAdjustingImage) {
+      this.cancelarAjuste();
+    }
+  }
+
+  // --- LÓGICA DEL AJUSTADOR DE IMAGEN ---
+
+  activarAjustador() {
+    if (!this.motoSeleccionada && !this.imagePreview) {
+      this.notificationService.show('No hay una imagen cargada para ajustar', 'error');
+      return;
+    }
+    
+    this.isAdjustingImage = true;
+    this.isCropperInitializing = true;
+    document.body.classList.add('modal-open');
+
+    // Timeout para asegurar que el DOM del modal esté listo
+    setTimeout(() => {
+      this.initCropper();
+    }, 150);
+  }
+
+  private initCropper() {
+    const imageElement = this.imageToCrop?.nativeElement;
+    if (!imageElement) {
+      console.error('Error: No se encontró el elemento #imageToCrop');
+      return;
+    }
+
+    this.destroyCropper();
+
+    this.cropper = new Cropper(imageElement, {
+      aspectRatio: 16 / 9,
+      viewMode: 1,
+      dragMode: 'move',
+      autoCropArea: 0.8,
+      responsive: true,
+      checkCrossOrigin: true, // Vital para imágenes servidas desde Flask
+      guides: true,
+      center: true,
+      highlight: false,
+      ready: () => {
+        this.isCropperInitializing = false;
+        console.log('Cropper Roarmot: Inicializado');
+      }
+    });
+  }
+
+  guardarImagenAjustada() {
+    if (!this.cropper) return;
+
+    this.notificationService.show('Procesando encuadre...', 'info');
+
+    const canvas = this.cropper.getCroppedCanvas({
+      width: 1280,
+      height: 720,
+      imageSmoothingQuality: 'high'
+    });
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        this.notificationService.show('Error al generar la imagen', 'error');
+        return;
+      }
+
+      const fileName = `moto_crop_${Date.now()}.jpg`;
+      const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+
+      // Si estamos editando una moto existente, la subimos de una vez
+      if (this.motoSeleccionada?.id_datosmoto) {
+        const formData = new FormData();
+        formData.append('imagen_moto', croppedFile);
+
+        this.motoService.actualizarMoto(this.motoSeleccionada.id_datosmoto, formData).subscribe({
+          next: (res) => {
+            this.notificationService.show('Imagen actualizada correctamente', 'success');
+            this.motoSeleccionada = res;
+            this.imagePreview = this.getImagenUrlAbsoluta(res.imagen_moto);
+            this.cancelarAjuste();
+          },
+          error: () => this.notificationService.show('Error al guardar en el servidor', 'error')
+        });
+      } else {
+        // Si es una moto nueva aún no registrada, solo actualizamos la vista previa
+        this.selectedFile = croppedFile;
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result as string;
+          this.cancelarAjuste();
+        };
+        reader.readAsDataURL(croppedFile);
+      }
+    }, 'image/jpeg', 0.9);
+  }
+
+  cancelarAjuste() {
+    this.isAdjustingImage = false;
+    this.isCropperInitializing = false;
+    document.body.classList.remove('modal-open');
+    this.destroyCropper();
+  }
+
+  private destroyCropper(): void {
+    if (this.cropper) {
+      this.cropper.destroy();
+      this.cropper = null;
+    }
+  }
+
+  // --- GESTIÓN DE FORMULARIO Y DATOS ---
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        this.notificationService.show('El archivo debe ser una imagen', 'error');
+        return;
+      }
       this.selectedFile = file;
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result as string;
+        // Abrir el ajustador automáticamente al seleccionar foto
+        this.activarAjustador();
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  guardarMoto(): void {
+    if (this.motoForm.invalid) {
+      this.motoForm.markAllAsTouched();
+      return;
+    }
+
+    const formData = new FormData();
+    const values = { ...this.motoForm.value };
+    values.placa_moto = values.placa_moto.toUpperCase();
+
+    Object.keys(values).forEach(key => {
+      formData.append(key, values[key]);
+    });
+
+    if (this.selectedFile) {
+      formData.append('imagen_moto', this.selectedFile);
+    }
+
+    const request = (this.isEditing && this.currentMotoId)
+      ? this.motoService.actualizarMoto(this.currentMotoId, formData)
+      : this.motoService.guardarMoto(formData);
+
+    request.subscribe({
+      next: (res) => {
+        this.notificationService.show('Datos guardados correctamente', 'success');
+        this.motoRegistrada.emit(res);
+        this.verDetalleMoto(res);
+      },
+      error: () => this.notificationService.show('Error al procesar la solicitud', 'error')
+    });
+  }
+
+  verDetalleMoto(moto: any) {
+    this.isEditing = false;
+    this.motoSeleccionada = moto;
+    this.imagePreview = this.getImagenUrlAbsoluta(moto.imagen_moto);
   }
 
   nuevaMoto() {
     this.isEditing = false;
     this.currentMotoId = null;
     this.motoSeleccionada = null;
-    this.resetFormulario();
-  }
-
-  resetFormulario() {
-    this.motoForm.reset({ 
+    this.motoForm.reset({
       kilometraje: 0,
-      km_ultimo_mantenimiento: 0, // Resetear también este
-      cilindraje: 150, 
-      tipo_uso: 'MIXTO', 
+      cilindraje: 150,
+      tipo_uso: 'MIXTO',
       tipo_aceite: 'SEMISINTETICO',
       fecha_ultimo_mantenimiento: new Date().toISOString().split('T')[0]
     });
@@ -83,118 +256,24 @@ export class MotoComponent implements OnInit {
     this.selectedFile = null;
   }
 
-  verDetalleMoto(moto: any) {
-    this.isEditing = false;
-    this.motoSeleccionada = moto;
-  }
-
-  guardarMoto(): void {
-    if (this.motoForm.invalid) {
-      this.motoForm.markAllAsTouched();
-      this.notificationService.show('Completa los campos técnicos correctamente', 'error');
-      return;
-    }
-
-    const formData = new FormData();
-    const formValues = { ...this.motoForm.value };
-    
-    if (formValues.placa_moto) {
-      formValues.placa_moto = formValues.placa_moto.toUpperCase();
-    }
-
-    Object.keys(formValues).forEach(key => {
-      if (formValues[key] !== null && formValues[key] !== undefined) {
-        formData.append(key, formValues[key]);
-      }
-    });
-
-    if (this.selectedFile) {
-      formData.append('imagen_moto', this.selectedFile);
-    }
-
-    if (this.isEditing && this.currentMotoId) {
-      this.motoService.actualizarMoto(this.currentMotoId, formData).subscribe({
-        next: (res) => {
-          this.notificationService.show('Configuración mecánica actualizada', 'success');
-          this.isEditing = false;
-          this.motoRegistrada.emit(res); 
-          this.verDetalleMoto(res);
-        },
-        error: (err) => {
-          this.notificationService.show('Error al actualizar datos técnicos', 'error');
-        }
-      });
-    } else {
-      this.motoService.guardarMoto(formData).subscribe({
-        next: (res) => {
-          this.notificationService.show('¡Moto registrada con éxito!', 'success');
-          this.resetFormulario();
-          this.motoRegistrada.emit(res); 
-          this.verDetalleMoto(res);
-        },
-        error: (err) => {
-          this.notificationService.show('Error al registrar nueva moto', 'error');
-        }
-      });
-    }
-  }
-
   solicitarEdicion() {
     if (this.motoSeleccionada) {
-      this.currentMotoId = this.motoSeleccionada.id_datosmoto; 
-      const motoAEditar = { ...this.motoSeleccionada };
       this.isEditing = true;
-      // Quitamos motoSeleccionada para que el *ngIf muestre el formulario
-      this.motoSeleccionada = null; 
-
-      setTimeout(() => {
-        this.cargarDatosParaEditar(motoAEditar);
-      }, 50);
-    }
-  }
-
-  cargarDatosParaEditar(moto: any) {
-    this.motoForm.patchValue({
-      marca_moto: moto.marca_moto,
-      modelo_moto: moto.modelo_moto,
-      color_moto: moto.color_moto,
-      placa_moto: moto.placa_moto,
-      kilometraje: moto.kilometraje,
-      soat_moto: moto.soat_moto,
-      tecnomecanica: moto.tecnomecanica,
-      cilindraje: moto.cilindraje,
-      fecha_ultimo_mantenimiento: moto.fecha_ultimo_mantenimiento,
-      tipo_uso: moto.tipo_uso,
-      tipo_aceite: moto.tipo_aceite,
-      // --- CORRECCIÓN: AGREGAR EL CAMPO FALTANTE AQUÍ ---
-      km_ultimo_mantenimiento: moto.km_ultimo_mantenimiento || 0
-    });
-
-    if (moto.imagen_moto) {
-      // Si la imagen viene de la DB, la mostramos en la previsualización
-      this.imagePreview = moto.imagen_moto.startsWith('http') 
-        ? moto.imagen_moto 
-        : `${this.baseUrl}/${moto.imagen_moto}`;
+      this.currentMotoId = this.motoSeleccionada.id_datosmoto;
+      this.motoForm.patchValue(this.motoSeleccionada);
+      this.motoSeleccionada = null;
     }
   }
 
   eliminarMotoActual() {
-    if (!this.motoSeleccionada) return;
-    const confirmacion = confirm(`¿Eliminar moto ${this.motoSeleccionada.placa_moto}?`);
-    
-    if (confirmacion) {
-      this.motoService.eliminarMoto(this.motoSeleccionada.id_datosmoto).subscribe({
-        next: () => {
-          this.notificationService.show('Moto eliminada', 'success');
-          this.motoSeleccionada = null;
-          this.motoRegistrada.emit('eliminada');
-        },
-        error: (err) => {
-          this.notificationService.show('Error al eliminar', 'error');
-        }
-      });
-    }
+    if (!this.motoSeleccionada || !confirm('¿Eliminar esta moto de Roarmot?')) return;
+
+    this.motoService.eliminarMoto(this.motoSeleccionada.id_datosmoto).subscribe({
+      next: () => {
+        this.notificationService.show('Moto eliminada', 'success');
+        this.nuevaMoto();
+        this.motoRegistrada.emit('eliminada');
+      }
+    });
   }
-
 }
-

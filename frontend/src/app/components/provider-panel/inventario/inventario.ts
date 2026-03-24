@@ -164,4 +164,6 @@ export class InventarioComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.authSub) this.authSub.unsubscribe();
   }
+
+  
 }

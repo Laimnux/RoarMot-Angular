@@ -1,1 +1,110 @@
-<p>dashboard works!</p>
+<div class="space-y-10 animate-fade-in pb-20">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+            <div class="relative z-10">
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Valor_Total_Stock</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white">
+                    {{ valorTotalInventario | currency:'USD':'symbol':'1.0-0' }}
+                </h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">+ DATA_LIVE</span>
+                </div>
+            </div>
+            <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-600/5 blur-3xl group-hover:bg-rose-600/10 transition-all"></div>
+        </div>
+
+        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all"
+            [class.border-rose-600/50]="productosEnAlerta > 0">
+            <div class="relative z-10">
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Alertas_Suministro</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white" [class.text-rose-600]="productosEnAlerta > 0">
+                    {{ productosEnAlerta }} <span class="text-sm font-sans text-gray-400 dark:text-gray-500 uppercase">Items</span>
+                </h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span *ngIf="productosEnAlerta > 0" class="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
+                    <span class="text-[10px] font-bold uppercase tracking-tighter" [class.text-rose-600]="productosEnAlerta > 0" [class.text-gray-500]="productosEnAlerta === 0">
+                        {{ productosEnAlerta > 0 ? 'Reabastecimiento' : 'Stock Optimizado' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+            <div class="relative z-10">
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Unidades_Físicas</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white">{{ totalUnidadesFisicas }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <i class="fas fa-boxes-stacked text-gray-400 dark:text-gray-600 text-[10px]"></i>
+                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Total_Bodega</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+            <div class="relative z-10">
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Dominio_Mercado</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-rose-600 uppercase">{{ categoriaMasValiosa }}</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Categoría_Principal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl flex flex-col items-center min-h-[400px]">
+            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase self-start">Distribución por Categoría</h4>
+            <div class="relative w-full max-w-[280px] flex-1 flex items-center">
+                <canvas #donutCanvas></canvas>
+                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4">
+                    <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase font-black tracking-widest">Total</span>
+                    <span class="text-3xl font-bebas text-gray-900 dark:text-white">{{ totalUnidadesFisicas }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl min-h-[400px]">
+            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Monitor de Stock Crítico</h4>
+            <div class="space-y-6">
+                <div *ngFor="let p of productos.slice(0,6)" class="space-y-2">
+                    <div class="flex justify-between text-[10px] uppercase font-black tracking-widest">
+                        <span class="text-gray-500 dark:text-gray-400">{{ p.nombre }}</span>
+                        <span [class.text-rose-600]="p.cantidad < p.stock_minimo" class="text-gray-600 dark:text-gray-300">
+                            {{ p.cantidad }} / {{ p.stock_minimo }}
+                        </span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div class="h-full transition-all duration-1000 ease-out"
+                            [style.width.%]="(p.cantidad / (p.stock_minimo * 1.5)) * 100 > 100 ? 100 : (p.cantidad / (p.stock_minimo * 1.5)) * 100"
+                            [ngClass]="p.cantidad < p.stock_minimo ? 'bg-rose-600 shadow-[0_0_10px_#e11d48]' : 'bg-emerald-500'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl overflow-hidden">
+        <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Registro de Operaciones Recientes</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let p of productos.slice(0,4)"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-rose-600/20 transition-all">
+                <div class="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-200 dark:bg-black flex-shrink-0">
+                    <img [src]="p.imagen" class="w-full h-full object-cover opacity-80 dark:opacity-60">
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-[11px] font-bold text-gray-900 dark:text-white uppercase truncate">{{ p.nombre }}</p>
+                    <p class="text-[9px] text-gray-500 font-mono tracking-tighter">SKU: {{ p.sku || 'N/A' }}</p>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-500">ACTIVO</span>
+                    <span class="text-[9px] text-gray-400 dark:text-gray-600">SISTEMA_OK</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

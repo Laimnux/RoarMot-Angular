@@ -1,0 +1,56 @@
+<div
+  class="min-h-[600px] h-[calc(100vh-80px)] w-full flex flex-col bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden shadow-sm relative">
+  <!-- Header / Título -->
+  <div
+    class="p-4 bg-white dark:bg-gray-800 shadow-md z-10 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+        <span class="text-red-500">🚨</span> Lugares de Emergencia🚨
+      </h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Encuentra ayuda en un radio de 10km</p>
+    </div>
+
+    <!-- Filtros Inteligentes (Selección Única) -->
+    <div class="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+      <button (click)="setFilter('car_repair')"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200"
+        [ngClass]="activeFilter === 'car_repair' ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-800'">
+        🛠️ Talleres
+      </button>
+      <button (click)="setFilter('hospital')"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200"
+        [ngClass]="activeFilter === 'hospital' ? 'bg-white dark:bg-gray-600 shadow-sm text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-800'">
+        🩺 Hospitales
+      </button>
+      <button (click)="setFilter('gas_station')"
+        class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200"
+        [ngClass]="activeFilter === 'gas_station' ? 'bg-white dark:bg-gray-600 shadow-sm text-yellow-600 dark:text-yellow-400' : 'text-gray-600 dark:text-gray-300 hover:text-gray-800'">
+        ⛽ Gasolineras
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex-1 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
+    <p class="text-gray-500 dark:text-gray-400 animate-pulse">Buscando tu ubicación actual...</p>
+  </div>
+
+  <!-- Contenedor del Mapa -->
+  <div class="flex-1 relative" *ngIf="!isLoading">
+    <google-map height="100%" width="100%" [center]="center" [zoom]="zoom" [options]="mapOptions"
+      (mapInitialized)="onMapInitialized($event)">
+
+      <!-- Mi Ubicación (Punto Azul Fijo) -->
+      <map-marker *ngIf="userLocationMarker" [position]="userLocationMarker" title="Estás aquí"
+        icon="https://maps.google.com/mapfiles/ms/icons/blue-dot.png">
+      </map-marker>
+
+      <!-- Resutados de Búsqueda -->
+      <map-marker *ngFor="let marker of markers" [position]="marker.position" [title]="marker.title"
+        [icon]="marker.icon" (mapClick)="openInfo(marker)">
+      </map-marker>
+    </google-map>
+  </div>
+
+</div>

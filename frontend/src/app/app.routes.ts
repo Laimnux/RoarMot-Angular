@@ -8,12 +8,14 @@ import { Paso3Component } from './components/auth/register/paso3/paso3';
 import { authGuard } from './guards/auth-guard'; 
 import { Dashboard } from './components/dashboard/dashboard'; 
 import { Mantenimientos } from './components/mantenimientos/mantenimientos';
+// --- NUEVA IMPORTACIÓN ---
+import { Sos } from './components/sos/sos/sos'; 
 
 // Layouts Profesionales
 import { UserLayoutComponent } from './layouts/user-layout/user-layout';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 
-// Componentes del Proveedor (Asegúrate de que las rutas de importación sean correctas)
+// Componentes del Proveedor
 import { ProviderPanelComponent } from './components/provider-panel/provider-panel';
 import { DashboardComponent as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
 import { InventarioComponent } from './components/provider-panel/inventario/inventario';
@@ -50,14 +52,16 @@ export const routes: Routes = [
       children: [
         { path: 'dashboard', component: Dashboard },
         { path: 'mantenimientos', component: Mantenimientos },
+        // --- RUTA SOS AGREGADA AQUÍ ---
+        { path: 'sos', component: Sos }, 
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
       ]
     },
 
-    // --- GRUPO 4: PANEL PROVEEDOR (Gestión de Inventario) ---
+    // --- GRUPO 4: PANEL PROVEEDOR ---
     {
       path: 'vendedor',
-      component: ProviderPanelComponent, // Este actúa como su propio Layout
+      component: ProviderPanelComponent,
       canActivate: [authGuard], 
       children: [
         { path: 'dashboard', component: ProviderDashboard },
@@ -68,7 +72,8 @@ export const routes: Routes = [
       ]
     },
 
-    // Redirecciones globales
+    // Redirecciones globales y de compatibilidad
+    { path: 'sos', redirectTo: 'app/sos', pathMatch: 'full' }, // Redirección directa
     { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
     { path: 'mantenimientos', redirectTo: 'app/mantenimientos', pathMatch: 'full' },
     { path: 'inventario', redirectTo: 'vendedor/inventario', pathMatch: 'full' },

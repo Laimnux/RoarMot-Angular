@@ -2,36 +2,34 @@
 
   <!-- NUEVO BLOQUE: AJUSTADOR DE IMAGEN -->
   <div *ngIf="isAdjustingImage" class="modal-overlay animate-fade-in" (click)="cancelarAjuste()">
-  <div class="modal-container bg-roar-editor shadow-2xl border border-white/10" (click)="$event.stopPropagation()">
-    
-    <div class="modal-header border-b border-white/5 p-4 flex justify-between items-center">
-      <h3 class="font-oswald text-sm tracking-widest text-white uppercase">AJUSTAR ENCUADRE</h3>
-      <button class="text-gray-500 hover:text-rose-600 transition-colors" (click)="cancelarAjuste()">
-        <i class="fas fa-times text-xl"></i>
-      </button>
-    </div>
+    <div class="modal-container bg-roar-editor shadow-2xl border border-white/10" (click)="$event.stopPropagation()">
 
-    <div class="modal-body p-0 bg-black flex items-center justify-center overflow-hidden" style="min-height: 400px;">
-      <div class="cropper-wrapper w-full h-full flex items-center justify-center">
-        <img #imageToCrop 
-             [src]="getImagenUrlAbsoluta(motoSeleccionada?.imagen_moto)" 
-             class="max-w-full block"
-             alt="Imagen a ajustar">
+      <div class="modal-header border-b border-white/5 p-4 flex justify-between items-center">
+        <h3 class="font-oswald text-sm tracking-widest text-white uppercase">AJUSTAR ENCUADRE</h3>
+        <button class="text-gray-500 hover:text-rose-600 transition-colors" (click)="cancelarAjuste()">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="modal-body p-0 bg-black flex items-center justify-center overflow-hidden" style="min-height: 400px;">
+        <div class="cropper-wrapper w-full h-full flex items-center justify-center">
+          <img #imageToCrop [src]="getImagenUrlAbsoluta(motoSeleccionada?.imagen_moto)" class="max-w-full block"
+            alt="Imagen a ajustar">
+        </div>
+      </div>
+
+      <div class="modal-footer p-4 grid grid-cols-2 gap-4 border-t border-white/5">
+        <button
+          class="py-3 px-6 rounded border border-white/10 text-gray-400 hover:bg-white/5 transition-all font-oswald text-xs tracking-widest"
+          (click)="cancelarAjuste()">
+          CANCELAR
+        </button>
+        <button class="registrar-btn-modern !py-3" (click)="guardarImagenAjustada()">
+          <span class="font-oswald text-xs tracking-widest">GUARDAR ENCUADRE</span>
+        </button>
       </div>
     </div>
-
-    <div class="modal-footer p-4 grid grid-cols-2 gap-4 border-t border-white/5">
-      <button class="py-3 px-6 rounded border border-white/10 text-gray-400 hover:bg-white/5 transition-all font-oswald text-xs tracking-widest" 
-              (click)="cancelarAjuste()">
-        CANCELAR
-      </button>
-      <button class="registrar-btn-modern !py-3" 
-              (click)="guardarImagenAjustada()">
-        <span class="font-oswald text-xs tracking-widest">GUARDAR ENCUADRE</span>
-      </button>
-    </div>
   </div>
-</div>
 
   <div *ngIf="!motoSeleccionada || isEditing" id="moto-manager__registro" class="grid-bento-internal w-full h-full">
 

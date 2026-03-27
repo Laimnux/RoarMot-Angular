@@ -46,12 +46,12 @@
     transform: scaleX(1) !important;
     opacity: 1 !important;
     display: block !important;
-    box-shadow: 0 0 10px rgba(225, 29, 72, 0.5) !important;
+    box-shadow: 0 0 10px rgba(225, 29, 71, 0.493) !important;
 }
 
 /* Efecto en el Icono cuando está activo */
 .active-link svg {
-    filter: drop-shadow(0 0 5px rgba(225, 29, 72, 0.6));
+    filter: drop-shadow(0 0 5px rgba(225, 29, 71, 0.144));
     @apply scale-110;
 }
 

@@ -1,0 +1,23 @@
+.font-bebas {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.font-vt323 {
+  font-family: 'VT323', monospace;
+}
+
+/* Efecto de cristal para las tarjetas en modo oscuro */
+.dark .roar-card {
+  background: rgb(17, 17, 17);
+  backdrop-filter: blur(10px);
+}
+
+/* Animación de entrada suave */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -5,10 +5,10 @@ from django.conf.urls.static import static
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from rest_framework.routers import DefaultRouter # Importa esto
-from mantenimientos.views import AlertaViewSet # Ya lo tienes
+from rest_framework.routers import DefaultRouter
+from mantenimientos.views import AlertaViewSet
 
-# Creamos el router y registramos la ruta de alertas
+# Configuración del Router para Alertas
 router = DefaultRouter()
 router.register(r'alertas', AlertaViewSet, basename='alertas')
 
@@ -22,10 +22,11 @@ urlpatterns = [
     path('api/index/', index_api), 
     path('api/users/', include('users.urls')),
     path('api/motos/', include('motos.urls')), 
-    # 3. AGREGAMOS LAS RUTAS DEL ROUTER (Aquí se crea /api/alertas/)
-    path('api/', include(router.urls)), 
+    # Esta línea ahora buscará el archivo que acabamos de crear:
+    path('api/mantenimientos/', include('mantenimientos.urls')), 
     path('api/vendedor/', include('vendedor.urls')),
 ]
 
+# Servir archivos multimedia (fotos de productos) en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

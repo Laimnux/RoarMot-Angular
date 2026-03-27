@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GoogleMapsModule } from '@angular/google-maps'; // Ya no importamos MapInfoWindow
+import { GoogleMapsModule } from '@angular/google-maps';
 import { AuthService } from '../../../services/auth';
+import { GoogleMapsLoaderService } from '../../../services/google-maps-loader'; // Nuevo import
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,19 +14,26 @@ import { Subscription } from 'rxjs';
 })
 export class Sos implements OnInit, OnDestroy {
   private authService = inject(AuthService);
+  private mapsLoader = inject(GoogleMapsLoaderService); // Inyectamos el cargador seguro
   private userSub!: Subscription;
 
-  // Almacena el marcador seleccionado para la tarjeta de abajo
+  // --- HERRAMIENTAS DE RUTA (Inicializadas después de cargar la API) ---
+  private directionsRenderer!: google.maps.DirectionsRenderer;
+  private directionsService!: google.maps.DirectionsService;
+
+  // --- ESTADO DEL ASISTENTE ---
   selectedMarker: any = null;
-
-  // Datos del usuario
   usuario = this.authService.usuarioActualValue;
+  saludoContextual: string = "";
+  alertaMision: string = "Protocolo S.O.S. en espera...";
+  destinoConfirmado: string = "Esperando coordenadas...";
 
-  // Bogotá por defecto hasta que cargue GPS
+  // --- CONFIGURACIÓN MAPA ---
   center: google.maps.LatLngLiteral = { lat: 4.6097, lng: -74.0817 };
   zoom = 15;
-
-  // Estilos de Mapa (Dark Mode)
+  isLoading = true;
+  apiCargada = false; // Nueva bandera para el *ngIf del mapa
+  
   private darkStyles: google.maps.MapTypeStyle[] = [
     { elementType: "geometry", stylers: [{ color: "#161b22" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#161b22" }] },
@@ -50,13 +58,31 @@ export class Sos implements OnInit, OnDestroy {
   userLocationMarker: google.maps.LatLngLiteral | null = null;
   activeFilter: string | null = null;
   mapInstance: google.maps.Map | null = null;
-  isLoading = true;
 
-  ngOnInit(): void {
-    this.mapOptions.styles = this.getInitialStyles();
-    this.getUserLocation();
+  async ngOnInit() {
+    this.generarSaludo();
+    
+    try {
+      // PASO CLAVE: Carga segura de la API antes de usar cualquier objeto 'google'
+      await this.mapsLoader.load();
+      this.apiCargada = true;
+      
+      // Inicializamos herramientas de ruta una vez cargada la API
+      this.directionsService = new google.maps.DirectionsService();
+      this.directionsRenderer = new google.maps.DirectionsRenderer({
+        polylineOptions: { strokeColor: '#E11D48', strokeWeight: 5 }
+      });
+
+      this.mapOptions.styles = this.getInitialStyles();
+      this.getUserLocation();
+    } catch (error) {
+      console.error("Fallo crítico en Protocolo S.O.S:", error);
+      this.alertaMision = "ERROR_SISTEMA: No se pudo enlazar con el satélite GPS.";
+    }
+
     this.userSub = this.authService.usuarioActual$.subscribe(user => {
       this.usuario = user;
+      this.generarSaludo();
     });
     this.observeThemeChange();
   }
@@ -65,10 +91,107 @@ export class Sos implements OnInit, OnDestroy {
     if (this.userSub) this.userSub.unsubscribe();
   }
 
+  // --- MÉTODOS DE RUTA ---
+  trazarRuta(event: any) {
+    const destino = event.target.value;
+    if (!destino || !this.apiCargada) return;
+
+    const request: google.maps.DirectionsRequest = {
+      origin: this.center,
+      destination: destino,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+
+    this.directionsService.route(request, (result, status) => {
+      if (status === google.maps.DirectionsStatus.OK && result) {
+        this.directionsRenderer.setDirections(result);
+        const infoRuta = result.routes[0].legs[0];
+        this.destinoConfirmado = infoRuta.end_address;
+        this.alertaMision = `Ruta trazada. Tiempo: ${infoRuta.duration?.text}.`;
+      }
+    });
+  }
+
+  onMapInitialized(map: google.maps.Map) {
+    this.mapInstance = map;
+    this.directionsRenderer.setMap(map); // Conectamos el dibujante al mapa
+  }
+
+  // --- LÓGICA DE INTERFAZ ---
+  generarSaludo() {
+    const hora = new Date().getHours();
+    const momento = hora < 12 ? 'Buen camino' : hora < 18 ? 'Buenas tardes' : 'Operación nocturna';
+    const nombre = this.usuario?.nombre?.split(' ')[0] || 'Agente';
+    this.saludoContextual = `${momento}, ${nombre}.`;
+  }
+
+  getUserLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (p) => {
+          this.center = { lat: p.coords.latitude, lng: p.coords.longitude };
+          this.userLocationMarker = { ...this.center };
+          this.isLoading = false;
+        },
+        () => { this.isLoading = false; },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  async seleccionarIntencion(tipo: string) {
+    if (!this.apiCargada) return;
+    this.activeFilter = tipo;
+    this.isLoading = true;
+    this.selectedMarker = null;
+
+    try {
+      const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary;
+      
+      const request = {
+        fields: ["displayName", "location", "formattedAddress"],
+        locationRestriction: { center: this.center, radius: 5000 },
+        includedPrimaryTypes: [tipo], 
+        maxResultCount: 12,
+        rankPreference: SearchNearbyRankPreference.DISTANCE,
+      };
+
+      // @ts-ignore
+      const { places } = await Place.searchNearby(request);
+
+      if (places) {
+        this.markers = places.map(p => ({
+          position: p.location, 
+          title: (p as any).displayName?.text || (p as any).displayName || "Unidad de Servicio",
+          info: p.formattedAddress,
+          icon: this.getIconForType(tipo) 
+        }));
+      }
+    } catch (e) {
+      console.error("Fallo en escaneo:", e);
+    } finally {
+      setTimeout(() => { this.isLoading = false; }, 800);
+    }
+  }
+
+  getIconForType(type: string): google.maps.Icon {
+    const colors: any = { car_repair: '%23FF3131', hospital: '%23FF3131', gas_station: '%23F7DF1E' };
+    const color = colors[type] || '%23FF3131';
+    return {
+      url: `data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`,
+      scaledSize: new google.maps.Size(35, 35),
+      anchor: new google.maps.Point(17, 35)
+    };
+  }
+
+  openInfo(marker: any) {
+    this.selectedMarker = marker;
+  }
+
   private getInitialStyles() {
-    return document.documentElement.classList.contains('dark') 
-      ? this.darkStyles 
-      : this.lightStyles;
+    return document.documentElement.classList.contains('dark') ? this.darkStyles : this.lightStyles;
   }
 
   private observeThemeChange() {
@@ -77,87 +200,6 @@ export class Sos implements OnInit, OnDestroy {
       this.mapInstance?.setOptions({ styles: isDark ? this.darkStyles : this.lightStyles });
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  }
-
-  onMapInitialized(map: google.maps.Map) {
-    this.mapInstance = map;
-  }
-
-  getUserLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.center = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          this.userLocationMarker = { ...this.center };
-          this.isLoading = false;
-        },
-        () => {
-          console.warn('GPS desactivado. Usando Bogotá por defecto.');
-          this.isLoading = false;
-        },
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
-    } else {
-      this.isLoading = false;
-    }
-  }
-
-  async setFilter(type: string) {
-    this.activeFilter = type;
-    this.isLoading = true;
-    this.selectedMarker = null; // Limpiamos la tarjeta al cambiar de filtro
-
-    try {
-      const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary;
-      
-      const request = {
-        fields: ["displayName", "location", "formattedAddress"],
-        locationRestriction: { center: this.center, radius: 5000 },
-        includedPrimaryTypes: [type], 
-        maxResultCount: 15,
-        rankPreference: SearchNearbyRankPreference.DISTANCE,
-      };
-
-      // @ts-ignore
-      const { places } = await Place.searchNearby(request);
-
-      if (places && places.length > 0) {
-        this.markers = places.map(p => ({
-          position: p.location, 
-          title: p.displayName,
-          info: p.formattedAddress,
-          icon: this.getIconForType(type) 
-        }));
-      } else {
-        this.markers = [];
-      }
-    } catch (error) {
-      console.error("Error S.O.S:", error);
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  getIconForType(type: string): google.maps.Icon {
-    const icons: any = {
-      car_repair: `data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FF3131" width="40px" height="40px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.3 4.3C.2 6.7.6 9.7 2.6 11.7c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.7-2.7c.4-.4.4-1.1 0-1.6z"/></svg>`,
-      hospital: `data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FF4B4B" width="40px" height="40px"><path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>`,
-      gas_station: `data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23F7DF1E" width="40px" height="40px"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-1.1-.9-2-2-2zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>`
-    };
-
-    return {
-      url: icons[type] || '',
-      scaledSize: new google.maps.Size(40, 40),
-      anchor: new google.maps.Point(20, 20)
-    };
-  }
-
-  // Ahora openInfo solo guarda el marcador seleccionado
-  openInfo(marker: any) {
-    this.selectedMarker = marker;
   }
 
   irAGoogleMaps(position: google.maps.LatLngLiteral | undefined) {

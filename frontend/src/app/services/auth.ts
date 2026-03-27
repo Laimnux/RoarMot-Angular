@@ -54,8 +54,15 @@ export class AuthService {
     // sessionStorage.clear();
     window.location.href = '/login'; 
   }
+
+  // --- MÉTODO A AGREGAR ---
+  isLoggedIn(): boolean {
+    // Retorna true si existe el token o la bandera de login en sessionStorage
+    return !!sessionStorage.getItem('auth_token') || sessionStorage.getItem('isLoggedIn') === 'true';
+  }
   // Dentro de tu AuthService
   get usuarioActualValue() {
     return this.usuarioSubject.value;
   }
+
 }

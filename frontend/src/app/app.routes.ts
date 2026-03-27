@@ -8,8 +8,10 @@ import { Paso3Component } from './components/auth/register/paso3/paso3';
 import { authGuard } from './guards/auth-guard'; 
 import { Dashboard } from './components/dashboard/dashboard'; 
 import { Mantenimientos } from './components/mantenimientos/mantenimientos';
-// --- NUEVA IMPORTACIÓN ---
 import { Sos } from './components/sos/sos/sos'; 
+
+// --- NUEVA IMPORTACIÓN DE LA STORE ---
+import { StoreComponent } from './components/store/store'; 
 
 // Layouts Profesionales
 import { UserLayoutComponent } from './layouts/user-layout/user-layout';
@@ -22,12 +24,13 @@ import { InventarioComponent } from './components/provider-panel/inventario/inve
 import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
 
 export const routes: Routes = [
-    // --- GRUPO 1: PÚBLICO ---
+    // --- GRUPO 1: PÚBLICO (Aquí agregamos la Store) ---
     {
       path: '',
       component: PublicLayoutComponent,
       children: [
-        { path: '', component: Home } 
+        { path: '', component: Home },
+        { path: 'tienda', component: StoreComponent } // <-- RUTA AGREGADA
       ]
     },
 
@@ -44,7 +47,7 @@ export const routes: Routes = [
       ]
     },
 
-    // --- GRUPO 3: PRIVADO MOTERO (Layout de Ingeniería Roarmot) ---
+    // --- GRUPO 3: PRIVADO MOTERO ---
     { 
       path: 'app', 
       component: UserLayoutComponent, 
@@ -52,11 +55,15 @@ export const routes: Routes = [
       children: [
         { path: 'dashboard', component: Dashboard },
         { path: 'mantenimientos', component: Mantenimientos },
-        // --- RUTA SOS AGREGADA AQUÍ ---
         { path: 'sos', component: Sos }, 
+        { path: 'store', component: StoreComponent },
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
       ]
     },
+
+    // --- REDIRECCIÓN INTELIGENTE ---
+    // Si alguien escribe /store a secas, lo mandamos a la versión pública
+    { path: 'store', redirectTo: 'tienda', pathMatch: 'full' },
 
     // --- GRUPO 4: PANEL PROVEEDOR ---
     {
@@ -72,8 +79,9 @@ export const routes: Routes = [
       ]
     },
 
-    // Redirecciones globales y de compatibilidad
-    { path: 'sos', redirectTo: 'app/sos', pathMatch: 'full' }, // Redirección directa
+    // Redirecciones globales
+    { path: 'store', redirectTo: 'store', pathMatch: 'full' }, 
+    { path: 'sos', redirectTo: 'app/sos', pathMatch: 'full' },
     { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
     { path: 'mantenimientos', redirectTo: 'app/mantenimientos', pathMatch: 'full' },
     { path: 'inventario', redirectTo: 'vendedor/inventario', pathMatch: 'full' },

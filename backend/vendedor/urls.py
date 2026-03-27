@@ -1,10 +1,22 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductoViewSet
+from .views import ProductoViewSet, StoreListViewSet
 
-router = DefaultRouter()
-router.register(r'productos', ProductoViewSet, basename='productos-vendedor')
+# 1. Configuramos el Router específico para el módulo vendedor
+# Usamos un nombre de variable claro para evitar conflictos
+router_vendedor = DefaultRouter()
 
+# 2. Registro de rutas especializadas
+# Esta ruta mantiene el CRUD (Crear, Leer, Actualizar, Borrar) para el dueño del producto
+# Acceso: http://127.0.0.1:8000/api/vendedor/mis-productos/
+router_vendedor.register(r'mis-productos', ProductoViewSet, basename='mis-productos')
+
+# Esta ruta es nueva y permite el catálogo global (Solo lectura)
+# Acceso: http://127.0.0.1:8000/api/vendedor/store/
+router_vendedor.register(r'store', StoreListViewSet, basename='store-global')
+
+# 3. Esquema de URLs de la aplicación
 urlpatterns = [
-    path('', include(router.urls)),
+    # Incluye todas las rutas generadas automáticamente por el router_vendedor
+    path('', include(router_vendedor.urls)),
 ]

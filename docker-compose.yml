@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    image: mysql:8.0
+    volumes:
+      - ./data/db:/var/lib/mysql  # Guarda la base de datos en tu carpeta local
+    container_name: roarmot_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: roarmot_db
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+
+  backend:
+    command: python manage.py runserver 0.0.0.0:8000
+    build: ./backend
+    container_name: roarmot_backend
+    restart: on-failure 
+    volumes:
+      - ./backend:/app
+      - ./media:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=roarmot_db
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_HOST=db
+    depends_on:
+      db: # <--- Aquí indicas el servicio
+        condition: service_healthy # <--- Y aquí la condición (solo una vez)
+
+  frontend:
+    build: 
+    context: ./frontend
+    dockerfile: Dockerfile.dev
+    container_name: roarmot_frontend
+    ports:
+      - "4200:4200"
+    # --- AGREGA ESTAS LÍNEAS AQUÍ ---
+    volumes:
+      - ./frontend:/app           # Sincroniza tu carpeta local con el contenedor
+      - /app/node_modules         # Protege las librerías internas del contenedor
+    # -------------------------------
+    depends_on:
+      - backend

@@ -40,7 +40,7 @@ export class ProductoService {
    * 4. ACTUALIZACIÓN TOTAL O CON IMAGEN (PUT)
    * Se usa cuando necesitas cambiar la foto del producto o editar muchos campos a la vez.
    */
-  actualizarProducto(id: number, data: any, imagen?: File): Observable<any> {
+  actualizarProducto(id: number, data: any, nuevasImagenes?: File []): Observable<any> {
     const formData = new FormData();
     
     // Agregamos los campos de texto al FormData
@@ -51,10 +51,12 @@ export class ProductoService {
     });
 
     // Si hay una nueva imagen, la adjuntamos
-    if (imagen) {
-      formData.append('imagen', imagen, imagen.name);
+    if (nuevasImagenes && nuevasImagenes.length > 0) {
+      nuevasImagenes.forEach(file => {
+        formData.append('imagenes', file, file.name);
+      });
+      
     }
-
     return this.http.put(`${this.apiUrl}${id}/`, formData);
   }
 
@@ -63,5 +65,24 @@ export class ProductoService {
    */
   eliminarProducto(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}${id}/`);
+  }
+
+  // --- NUEVOS MÉTODOS PARA GESTIÓN DE GALERÍA ---
+
+  /** * 5. ELIMINAR IMAGEN ESPECÍFICA 
+   * Asumiendo que crearás un endpoint en Django para borrar de la tabla ProductoImagen
+   */
+  eliminarImagen(imgId: number): Observable<any> {
+    // Apuntamos a un endpoint específico de imágenes, por ejemplo:
+    // http://localhost:8000/api/vendedor/productos/eliminar-imagen/ID/
+    return this.http.delete(`${this.apiUrl}eliminar-imagen/${imgId}/`);
+  }
+
+  /** * 6. ESTABLECER COMO PORTADA
+   * Envía la instrucción para que esta imagen sea 'es_principal'
+   */
+  setPortada(productoId: number, imgId: number): Observable<any> {
+    // Enviamos un PATCH al producto para decirle qué ID de imagen es la nueva portada
+    return this.http.patch(`${this.apiUrl}${productoId}/set_portada/`, { imagen_id: imgId });
   }
 }

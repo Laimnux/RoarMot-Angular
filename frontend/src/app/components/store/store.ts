@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // Importación necesaria para redirección
+import { ActivatedRoute, Router } from '@angular/router'; // Importación necesaria para redirección
 import { AuthService } from '../../services/auth'; // Asegúrate que esta ruta sea correcta
 import { StoreService } from '../../services/store';
 import { Producto } from '../../models/producto.model';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-store',
@@ -22,6 +23,7 @@ export class StoreComponent implements OnInit {
   constructor(
     private _storeService: StoreService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private authService: AuthService
   ) {
     // Lógica de redirección inteligente:
@@ -61,5 +63,13 @@ export class StoreComponent implements OnInit {
   onSearch(event: any) {
     const term = event.target.value;
     this.buscador.next(term);
+  }
+
+  // Dentro de la clase StoreComponent
+  verDetalle(id: number) {
+    // Si el usuario está en /app/store, navegará a /app/store/producto/ID
+    this.router.navigate(['producto', id], { relativeTo: this.activatedRoute });
+    // Navegamos a la ruta de detalle pasando el ID del producto
+    this.router.navigate(['/app/store/producto', id]);
   }
 }

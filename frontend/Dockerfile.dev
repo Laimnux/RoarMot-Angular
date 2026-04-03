@@ -1,0 +1,12 @@
+FROM node:20
+WORKDIR /app
+
+# Instalamos dependencias
+COPY package*.json ./
+RUN npm install
+
+# Copiamos el resto del código
+COPY . .
+
+# Comando para desarrollo con detección de cambios en red (poll)
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]

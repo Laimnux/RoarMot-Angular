@@ -28,6 +28,11 @@ export class LoginComponent {
     });
   }
 
+  //  Volvemos a home page
+  irAHome() {
+    this.router.navigate(['/']); // Navega a la página inicial
+  }
+  
   onSubmit() {
     if (this.loginForm.valid) {
       console.log('Intentando login en Roarmot...', this.loginForm.value);
@@ -53,4 +58,5 @@ export class LoginComponent {
       this.notify.show('Por favor, rellena todos los campos correctamente.', 'info');
     }
   }
+
 }

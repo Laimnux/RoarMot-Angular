@@ -68,4 +68,8 @@ export class Paso1Component implements OnInit{
     this.notify.show('Por favor, ingresa un correo de Gmail válido.', 'info');
   }
   }
+
+  irAHome() {
+    this.router.navigate(['/']); // o la ruta que corresponda a tu home
+  }
 }

@@ -25,33 +25,31 @@
       <div
         class="relative h-60 w-full mb-6 overflow-hidden rounded-[2rem] bg-gray-100 dark:bg-[#0D1118] border border-transparent group-hover:border-rose-600/20 transition-colors">
 
-        <img [src]="prod.imagen || 'assets/img/no-product.png'"
+        <img [src]="(prod.imagenes && prod.imagenes.length > 0) ? prod.imagenes[0].imagen : 'assets/img/no-product.png'"
           class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale-[20%] group-hover:grayscale-0">
 
-        <div class="absolute top-4 left-4">
+        <div class="absolute top-4 left-4 z-20">
           <button (click)="fileInput.click()" type="button"
             class="bg-black/60 hover:bg-rose-600 text-white p-2.5 rounded-xl backdrop-blur-md border border-white/10 transition-all shadow-lg group/img-edit">
             <i class="fas fa-camera text-xs"></i>
             <span
               class="max-w-0 overflow-hidden group-hover/img-edit:max-w-xs transition-all duration-300 text-[12px] font-black uppercase tracking-tighter ml-0 group-hover/img-edit:ml-2">
-              Cambiar
+              Añadir foto
             </span>
           </button>
-
           <input #fileInput type="file" (change)="onImageChange($event, prod)" accept="image/*" style="display: none;">
         </div>
 
-        <div class="absolute top-4 right-4 flex flex-col items-end gap-2">
-
+        <div class="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
           <div
             class="group/edit-sku cursor-pointer bg-black/80 text-white text-[11px] px-3 py-1.5 rounded-xl backdrop-blur-xl border border-white/10 font-black tracking-widest flex items-center gap-2">
             <span *ngIf="editingId !== prod.id || editingField !== 'sku'">SKU_{{prod.sku}}</span>
             <input *ngIf="editingId === prod.id && editingField === 'sku'" [(ngModel)]="tempValue"
               (keyup.enter)="actualizarCampo(prod, 'sku', tempValue)" (keyup.esc)="cancelarEdicion()"
               (blur)="cancelarEdicion()"
-              class="bg-transparent border-b border-rose-600 outline-none w-16 text-white text-center text-[11px] font-black">
+              class="bg-transparent border-b border-rose-600 outline-none w-16 text-white text-center text-[11px] font-black uppercase">
             <i (click)="comenzarEdicion(prod, 'sku')"
-              class="fas fa-pen text-[10px] text-rose-500 opacity-0 group-hover/edit-sku:opacity-100 transition-opacity"></i>
+              class="fas fa-pen text-[10px] text-rose-500 opacity-0 group-hover/edit-sku:opacity-100"></i>
           </div>
 
           <div
@@ -62,11 +60,11 @@
               (blur)="cancelarEdicion()"
               class="bg-transparent border-none outline-none w-16 text-white text-center text-[11px] font-black uppercase">
             <i (click)="comenzarEdicion(prod, 'marca')"
-              class="fas fa-pen text-[10px] text-white opacity-50 group-hover/edit-brand:opacity-100 transition-opacity"></i>
+              class="fas fa-pen text-[10px] text-white opacity-50 group-hover/edit-brand:opacity-100"></i>
           </div>
 
           <div
-            class="group/edit-talla cursor-pointer bg-gray-800 dark:bg-white/10 text-white dark:text-gray-300 text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1 uppercase border border-white/5">
+            class="group/edit-talla cursor-pointer bg-gray-800 dark:bg-white/10 text-white text-[10px] font-black px-2 py-1 rounded-md flex items-center gap-1 uppercase border border-white/5">
             <span *ngIf="editingId !== prod.id || editingField !== 'talla'">Talla: {{prod.talla || 'NA'}}</span>
             <select *ngIf="editingId === prod.id && editingField === 'talla'" [(ngModel)]="tempValue"
               (change)="actualizarCampo(prod, 'talla', tempValue)" (blur)="cancelarEdicion()"
@@ -79,10 +77,56 @@
               <option value="XXL">XXL</option>
               <option value="NA">NA</option>
             </select>
-            <i (click)="comenzarEdicion(prod, 'talla')"
-              class="fas fa-tag text-[8px] opacity-60 hover:opacity-100 transition-opacity"></i>
+            <i (click)="comenzarEdicion(prod, 'talla')" class="fas fa-tag text-[8px] opacity-60"></i>
+          </div>
+        </div>
+
+        <div *ngIf="prod.imagenes?.length > 1" class="absolute bottom-4 right-4 group/galeria_hover z-30">
+
+          <div
+            class="bg-black/60 hover:bg-rose-600 backdrop-blur-md text-[9px] font-black text-white px-3 py-1.5 rounded-lg border border-white/10 uppercase tracking-widest cursor-pointer transition-colors flex items-center gap-1.5 shadow-lg relative">
+            <i class="fas fa-images text-[10px]"></i>
+            <span>+{{prod.imagenes.length - 1}} FOTOS</span>
+
+            <div class="absolute bottom-full right-0 w-full h-4 bg-transparent"></div>
           </div>
 
+          <div
+            class="absolute bottom-full right-0 mb-3 w-80 bg-[#090C10]/95 backdrop-blur-lg border border-white/10 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none group-hover/galeria_hover:opacity-100 group-hover/galeria_hover:pointer-events-auto transition-all duration-300 transform translate-y-2 group-hover/galeria_hover:translate-y-0 scale-95 group-hover/galeria_hover:scale-100 origin-bottom-right overflow-hidden">
+
+            <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/5">
+              <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Gestión Rápida</span>
+              <span class="text-[9px] font-black text-rose-500 uppercase">{{prod.imagenes.length}} Total</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+              <div *ngFor="let img of prod.imagenes"
+                class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all group/thumb"
+                [ngClass]="img.es_principal ? 'border-rose-600' : 'border-white/5 hover:border-white/20'">
+
+                <img [src]="img.imagen" class="w-full h-full object-cover">
+
+                <div
+                  class="absolute inset-0 bg-black/80 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex flex-col justify-center items-center gap-1.5 p-1">
+                  <button *ngIf="!img.es_principal"
+                    (click)="establecerPortada(prod.id, img.id); $event.stopPropagation()"
+                    class="text-gray-400 hover:text-amber-400 transition-colors" title="Hacer Portada">
+                    <i class="fas fa-star text-[10px]"></i>
+                  </button>
+                  <i *ngIf="img.es_principal" class="fas fa-star text-amber-400 text-[10px]"></i>
+                  <button (click)="eliminarImagen(prod, img.id); $event.stopPropagation()"
+                    class="text-gray-400 hover:text-rose-600 transition-colors" title="Eliminar Foto">
+                    <i class="fas fa-times-circle text-[11px]"></i>
+                  </button>
+                </div>
+                <div *ngIf="img.es_principal"
+                  class="absolute top-0 left-0 bg-rose-600 text-white text-[7px] px-1 font-bold rounded-br-sm">P</div>
+              </div>
+            </div>
+            <div
+              class="absolute top-full right-5 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-[#090C10]/95">
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,7 +144,6 @@
             <i (click)="comenzarEdicion(prod, 'nombre')"
               class="fas fa-pen ml-2 text-[12px] text-rose-600 opacity-0 group-hover/edit-name:opacity-100 transition-all"></i>
           </div>
-
           <button (click)="borrarProducto(prod.id, prod.nombre)"
             class="text-gray-400 hover:text-rose-600 transition-colors ml-4 p-1">
             <i class="fas fa-trash-alt text-xs"></i>
@@ -109,23 +152,36 @@
 
         <div
           class="group/edit-desc cursor-pointer border-l-2 border-transparent hover:border-rose-600/30 pl-2 transition-all">
-          <p *ngIf="editingId !== prod.id || editingField !== 'descripcion'"
-            class="text-[14px] text-gray-500 dark:text-gray-400 line-clamp-2 italic leading-relaxed">
-            {{prod.descripcion || 'Sin descripción...'}}
-            <i (click)="comenzarEdicion(prod, 'descripcion')"
-              class="fas fa-pen ml-1 text-[12px] text-rose-600 opacity-0 group-hover/edit-desc:opacity-100"></i>
-          </p>
-          <textarea *ngIf="editingId === prod.id && editingField === 'descripcion'" [(ngModel)]="tempValue"
-            (keyup.enter)="actualizarCampo(prod, 'descripcion', tempValue)" (keyup.esc)="cancelarEdicion()"
-            (blur)="cancelarEdicion()"
-            class="bg-transparent border border-rose-600/30 rounded-lg p-2 text-[14px] text-rose-600 outline-none w-full h-16 italic resize-none"></textarea>
+
+          <div class="flex items-start justify-between gap-2">
+
+            <div class="flex-1">
+              <p *ngIf="editingId !== prod.id || editingField !== 'descripcion'"
+                class="text-[14px] text-gray-500 dark:text-gray-400 line-clamp-2 italic leading-relaxed">
+                {{prod.descripcion || 'Sin descripción...'}}
+              </p>
+
+              <textarea *ngIf="editingId === prod.id && editingField === 'descripcion'" [(ngModel)]="tempValue"
+                (keyup.enter)="actualizarCampo(prod, 'descripcion', tempValue)" (keyup.esc)="cancelarEdicion()"
+                (blur)="cancelarEdicion()"
+                class="bg-transparent border border-rose-600/30 rounded-lg p-2 text-[14px] text-rose-600 outline-none w-full h-20 italic resize-none">
+              </textarea>
+            </div>
+
+            <button *ngIf="editingId !== prod.id || editingField !== 'descripcion'"
+              (click)="comenzarEdicion(prod, 'descripcion')"
+              class="text-rose-600 opacity-0 group-hover/edit-desc:opacity-100 transition-all pt-1">
+              <i class="fas fa-pen text-[12px]"></i>
+            </button>
+          </div>
+
         </div>
 
         <div class="flex justify-between items-end border-t border-gray-100 dark:border-white/5 pt-5 mt-2">
           <div class="group/edit-price cursor-pointer">
             <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-2">
               VALOR_MARKET <i (click)="comenzarEdicion(prod, 'precio')"
-                class="fas fa-pen text-[12px] text-rose-600 opacity-0 group-hover/edit-price:opacity-100 transition-opacity"></i>
+                class="fas fa-pen text-[12px] text-rose-600 opacity-0 group-hover/edit-price:opacity-100"></i>
             </p>
             <span *ngIf="editingId !== prod.id || editingField !== 'precio'"
               class="text-3xl font-bebas text-rose-600 tracking-wider">
@@ -155,7 +211,7 @@
               <i (click)="comenzarEdicion(prod, 'cantidad')"
                 class="fas fa-pen text-[12px] text-rose-600 opacity-0 group-hover/edit-stock:opacity-100 transition-opacity"></i>
               <div class="text-right">
-                <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">STOCK_LEVEL
+                <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1 leading-none">STOCK_LEVEL
                 </p>
                 <span *ngIf="editingId !== prod.id || editingField !== 'cantidad'"
                   [class]="prod.cantidad < prod.stock_minimo ? 'text-rose-500 animate-pulse' : 'text-emerald-500'"

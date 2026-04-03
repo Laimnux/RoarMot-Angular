@@ -1,5 +1,8 @@
 <div class="text-center mb-10">
-  <div class="flex items-center justify-center space-x-2 mb-4">
+  <!-- Convertimos el div en un botón navegable -->
+  <div (click)="irAHome()"
+    class="flex items-center justify-center space-x-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity active:scale-95"
+    role="button" tabindex="0" (keydown.enter)="irAHome()" (keydown.space)="irAHome()">
     <img src="assets/image/shared/LogoBlanco.png" alt="Logo" class="h-12 w-auto brightness-200">
     <h1 class="text-5xl font-bebas text-white tracking-tighter shader-text">ROARMOT</h1>
   </div>
@@ -26,7 +29,7 @@
       </div>
     </div>
 
-    <div class="relative group" >
+    <div class="relative group">
       <input type="email" id="reg-email" [(ngModel)]="email" required
         class="peer w-full bg-black/40 border border-gray-800 rounded-xl pt-6 pb-2 px-4 text-white text-sm focus:outline-none focus:border-red-600 transition-all duration-300 placeholder-transparent mb-8"
         placeholder="Correo">

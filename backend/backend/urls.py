@@ -8,25 +8,33 @@ from rest_framework.permissions import AllowAny
 from rest_framework.routers import DefaultRouter
 from mantenimientos.views import AlertaViewSet
 
-# Configuración del Router para Alertas
+# 1. Configuración del Router
+# Agrupamos los ViewSets aquí para mantener limpio el urlpatterns
 router = DefaultRouter()
 router.register(r'alertas', AlertaViewSet, basename='alertas')
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def index_api(request):
-    return Response({"mensaje": "¡Conexión exitosa desde Django!", "status": "OK"})
+    return Response({
+        "mensaje": "¡Conexión exitosa a Roarmot API!", 
+        "status": "OK",
+        "version": "v2.1"
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/index/', index_api), 
+    
+    # Endpoints de aplicaciones específicas
     path('api/users/', include('users.urls')),
     path('api/motos/', include('motos.urls')), 
-    # Esta línea ahora buscará el archivo que acabamos de crear:
-    path('api/mantenimientos/', include('mantenimientos.urls')), 
     path('api/vendedor/', include('vendedor.urls')),
+    
+    # Mantenimientos: Aquí incluimos tanto el router como las urls manuales
+    path('api/', include(router.urls)), # Genera: api/alertas/
+    path('api/mantenimientos/', include('mantenimientos.urls')), 
 ]
 
-# Servir archivos multimedia (fotos de productos) en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

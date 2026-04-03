@@ -16,9 +16,10 @@ import { NotificationService } from '../../../services/notification.service';
 })
 export class FormularioProductoComponent implements OnInit {
   productoForm!: FormGroup;
-  selectedFile: File | null = null;
-  imagePreview: string | null = null;
+  selectedFiles: File[] = [];
+  previews: string [] = [];
   usuarioLogueado: any = null; //Para guardar el ID real
+  erroresServidor: any = {}; // calculamos el fallo de Django, posteriormente mostrarlo formulario
 
   constructor(
     private fb: FormBuilder,
@@ -37,6 +38,13 @@ export class FormularioProductoComponent implements OnInit {
         console.log('ID real detectado:', u.id);
       }
     });
+    // Escuchar cambios específicamente en el SKU para limpiar el error
+    this.productoForm.get('sku')?.valueChanges.subscribe(() => {
+      if (this.erroresServidor?.sku) {
+        // Eliminamos solo el error del SKU para que el borde rojo desaparezca
+        delete this.erroresServidor.sku;
+      }
+    });
   }
 
   private initForm(): void {
@@ -53,21 +61,35 @@ export class FormularioProductoComponent implements OnInit {
     });
   }
 
-  // Captura de imagen con vista previa técnica
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+  
+  // --- NUEVA LÓGICA DE CAPTURA IMAGENES MÚLTIPLE ---
+  onFilesSelected(event: any): void {
+    const files: FileList = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      
+      newFiles.forEach(file => {
+        this.selectedFiles.push(file);
+
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.previews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
     }
   }
 
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.previews.splice(index, 1);
+  }
+  // ----------------------------------------
+
   onSubmit(): void {
-    // 1. Validación del formulario
+    // 1.Limpiamos errores anteriores
+    this.erroresServidor = {}; 
+    // 2. Validación del formulario
     if (this.productoForm.invalid) {
       this.notification.show('POR FAVOR, COMPLETA TODOS LOS CAMPOS', 'info');
       return;
@@ -80,7 +102,6 @@ export class FormularioProductoComponent implements OnInit {
 
     if (idVendedor) {
       formData.append('vendedor', idVendedor.toString());
-      console.log('ID de Vendedor detectado:', idVendedor);
     } else {
       // Si sale este error, recuerda: Cierra sesión y vuelve a entrar
       this.notification.show('ERROR: No se detectó tu ID. Reingresa al sistema.', 'error');
@@ -90,18 +111,15 @@ export class FormularioProductoComponent implements OnInit {
     // 3. Mapeo de campos del formulario
     // Esto enviará nombre, marca, sku, precio, cantidad, etc.
     Object.keys(this.productoForm.value).forEach(key => {
-      const value = this.productoForm.value[key];
-      if (value !== null && value !== undefined) {
-        formData.append(key, value);
-      }
+      formData.append(key, this.productoForm.value[key]);
     });
 
-    // 4. Imagen
-    if (this.selectedFile) {
-      formData.append('imagen', this.selectedFile);
-    }
+    // --- ENVÍO DE MÚLTIPLES IMÁGENES AL BACKEND ---
+    // Importante: Usamos la llave 'imagenes' que configuramos en el Serializer de Django
+    this.selectedFiles.forEach(file => {
+      formData.append('imagenes', file, file.name);
+    });
 
-    // 5. Envío al servicio
     this.productoService.guardarProducto(formData).subscribe({
       next: (res) => {
         this.notification.show('¡PRODUCTO SINCRONIZADO CON ÉXITO!', 'success');
@@ -110,8 +128,19 @@ export class FormularioProductoComponent implements OnInit {
         }, 1500);
       },
       error: (err) => {
-        console.error('Error detallado de Django:', err.error);
-        this.notification.show('FALLO EN EL SERVIDOR: Revisa los datos', 'error');
+        if (err.status === 400 && err.error) {
+          this.erroresServidor = err.error;
+
+          if (this.erroresServidor.non_field_errors) {
+            const mensajeGeneral = this.erroresServidor.non_field_errors[0];
+            if (mensajeGeneral.includes('sku')) {
+              this.erroresServidor.sku = ['Este SKU ya está registrado en tu inventario.'];
+            }
+          }
+          this.notification.show('FALLO_VALIDACIÓN: Revisa los campos marcados', 'error');
+        } else {
+          this.notification.show('ERROR_SISTEMA: Contacta a soporte', 'error');
+        }
       }
     });
   }

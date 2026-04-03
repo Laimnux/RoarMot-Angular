@@ -6,13 +6,32 @@
   font-family: 'VT323', monospace;
 }
 
-/* Efecto de cristal para las tarjetas en modo oscuro */
-.dark .roar-card {
-  background: rgb(17, 17, 17);
-  backdrop-filter: blur(10px);
+/* Efecto de cristal mejorado para las tarjetas */
+.dark .bg-roar-card {
+  background: rgba(17, 17, 17, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Borde casi invisible por defecto */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Transición suave */
 }
 
-/* Animación de entrada suave */
+/* Reacción interactiva de la tarjeta */
+.dark .bg-roar-card:hover {
+  background: rgba(26, 26, 26, 0.9); /* Cambio sutil de fondo */
+  border-color: rgba(225, 29, 72, 0.5); /* El borde de 1px en color rose-600 */
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    inset 0 0 15px rgba(225, 29, 72, 0.05); /* Brillo interno muy tenue */
+  transform: translateY(-4px); /* Elevación mínima para dar vida */
+}
+
+/* Reacción del título */
+.group:hover h3 {
+  color: #e11d48; /* Cambia a rose-600 al hacer hover en la tarjeta */
+  text-shadow: 0 0 12px rgba(225, 29, 72, 0.4);
+  transition: all 0.3s ease;
+}
+
+/* Animación de entrada */
 .animate-fade-in {
   animation: fadeIn 0.8s ease-out forwards;
 }

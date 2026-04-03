@@ -21,7 +21,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
   usuarioId: number | null = null;
   loading: boolean = true;
 
-  // Control de edición
+  // Control de edición inline
   editingId: number | null = null;
   editingField: string | null = null;
   tempValue: any = null;
@@ -78,7 +78,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
     );
   }
 
-  // --- LÓGICA DE EDICIÓN (UNIFICADA) ---
+  // --- LÓGICA DE EDICIÓN INLINE ---
 
   comenzarEdicion(prod: any, campo: string): void {
     this.editingId = prod.id;
@@ -93,16 +93,12 @@ export class InventarioComponent implements OnInit, OnDestroy {
   }
 
   actualizarCampo(prod: any, campo: string, nuevoValor: any): void {
-    // 1. Validación de cambio: Si el valor es el mismo, no hacemos nada
     if (prod[campo] === nuevoValor) {
       this.cancelarEdicion();
       return;
     }
 
-    // 2. Limpieza de datos según el modelo de Django
     let valorFinal = nuevoValor;
-    
-    // Convertir a número si el campo lo requiere en el modelo
     if (['precio', 'cantidad', 'stock_minimo'].includes(campo)) {
       valorFinal = Number(nuevoValor);
       if (isNaN(valorFinal)) {
@@ -116,14 +112,11 @@ export class InventarioComponent implements OnInit, OnDestroy {
 
     this.productoService.patchProducto(prod.id, dataPatch).subscribe({
       next: (res) => {
-        // Actualizamos la vista localmente
         prod[campo] = valorFinal;
         this.notification.show(`${campo.toUpperCase()} ACTUALIZADO`, 'success');
         this.cancelarEdicion();
       },
       error: (err) => {
-        console.error('Error Django:', err.error);
-        // Manejo de errores específicos (ej. SKU duplicado)
         const errorMsg = err.error?.sku ? 'EL SKU YA EXISTE' : 'ERROR AL ACTUALIZAR';
         this.notification.show(errorMsg, 'error');
         this.cancelarEdicion();
@@ -131,22 +124,62 @@ export class InventarioComponent implements OnInit, OnDestroy {
     });
   }
 
-  // --- MANEJO DE IMÁGENES ---
+  // --- GESTIÓN DE GALERÍA (SUBVENTANA FLOTANTE) ---
+
+  // Ahora recibimos el objeto 'prod' completo para actualizar su lista localmente
+  eliminarImagen(prod: any, imgId: number): void {
+    if (confirm('¿Deseas eliminar esta imagen de la galería?')) {
+      this.productoService.eliminarImagen(imgId).subscribe({
+        next: () => {
+          this.notification.show('IMAGEN ELIMINADA', 'success');
+          // Filtramos las imágenes del producto actual para que desaparezca de la vista de inmediato
+          prod.imagenes = prod.imagenes.filter((img: any) => img.id !== imgId);
+        },
+        error: () => this.notification.show('ERROR AL ELIMINAR', 'error')
+      });
+    }
+  }
+
+  // Recibimos el ID del producto y el ID de la imagen para la portada
+  establecerPortada(productoId: number, imgId: number): void {
+    this.productoService.setPortada(productoId, imgId).subscribe({
+      next: (res) => {
+        // Buscamos el producto en nuestra lista principal para actualizar sus imágenes
+        // (El backend suele devolver la lista con la nueva portada en la posición [0])
+        const productoLocal = this.productos.find(p => p.id === productoId);
+        if (productoLocal) {
+          productoLocal.imagenes = res.imagenes;
+        }
+        this.notification.show('PORTADA ACTUALIZADA', 'success');
+      },
+      error: () => this.notification.show('ERROR AL CAMBIAR PORTADA', 'error')
+    });
+  }
+
+  // --- MANEJO DE IMÁGENES (SISTEMA DE GALERÍA / SUBIDA) ---
+
   onImageChange(event: any, prod: any): void {
     const file = event.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('imagen', file);
+    formData.append('imagenes', file, file.name);
 
+    // Nota: Usamos patchProducto o guardarProducto según tengas definido en el servicio
+    // para que el backend cree el registro en ProductoImagen
     this.productoService.patchProducto(prod.id, formData).subscribe({
       next: (res) => {
-        prod.imagen = res.imagen; // URL devuelta por Django
-        this.notification.show('IMAGEN ACTUALIZADA', 'success');
+        prod.imagenes = res.imagenes; 
+        this.notification.show('IMAGEN AÑADIDA A LA GALERÍA', 'success');
+        event.target.value = ''; // Limpiar input
       },
-      error: () => this.notification.show('FALLO AL SUBIR IMAGEN', 'error')
+      error: () => {
+        this.notification.show('FALLO AL SUBIR IMAGEN', 'error');
+      }
     });
   }
+
+  // --- ELIMINAR PRODUCTO COMPLETO ---
 
   borrarProducto(id: number, nombre: string): void {
     if (confirm(`¿Estás seguro de eliminar "${nombre}"?`)) {
@@ -164,6 +197,4 @@ export class InventarioComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.authSub) this.authSub.unsubscribe();
   }
-
-  
 }

@@ -170,3 +170,50 @@
 @media (max-width: 1023px) {
     #moto-sidebar { position: relative; left: 0; top: 0; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 20px; }
 }
+
+/* ===== SECCIÓN NOTIFICACIONES (DINÁMICAS) ===== */
+
+/* Animación para el mensaje de "Vence Hoy" */
+.animate-bounce {
+    animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Estilo para el Badge de "RENOVAR AHORA" */
+.badge-hoy {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 8px;
+    background: rgba(225, 29, 72, 0.2); /* Rose-600 con opacidad */
+    border: 1px solid rgba(225, 29, 72, 0.5);
+    color: #fb7185; /* Rose-400 */
+    font-family: 'Oswald', sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(225, 29, 72, 0.2);
+}
+
+/* El punto (dot) crítico con sombra de emergencia */
+.dot.critico {
+    background-color: #e11d48; /* Rose-600 */
+    box-shadow: 0 0 12px #e11d48, 0 0 20px rgba(225, 29, 72, 0.4);
+}
+
+/* Contenedor de la notificación con hover suave */
+.notificacion-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+    transition: background 0.3s ease;
+}
+
+/* Tipografía para el texto de tiempo relativo */
+.text-tighter {
+    letter-spacing: -0.05em;
+    font-family: 'Oswald', sans-serif;
+}

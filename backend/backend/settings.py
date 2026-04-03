@@ -2,22 +2,20 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+# --- DETECCIÓN DE ENTORNO ---
+# Verificamos si estamos corriendo dentro de Docker
+IN_DOCKER = os.environ.get('DB_HOST') is not None
+
 # --- DIRECTORIOS BASE ---
-# Esto detecta automáticamente la raíz de tu proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
 SECRET_KEY = 'django-insecure-9&jmbm^uk7r7c3%*^9j9v7wr==f=93z48=zp^ri)7tdyj*#g8d'
 DEBUG = True
-# Permitir '*' facilita el trabajo entre diferentes PCs en la misma red
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '0.0.0.0']
 
 # --- MODELO DE USUARIO PERSONALIZADO ---
 AUTH_USER_MODEL = 'users.Usuario'
-
-# --- PARCHE PARA XAMPP / MARIADB ANTIGUO ---
-from django.db.backends.base.base import BaseDatabaseWrapper
-BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 
 # --- APLICACIONES ---
 INSTALLED_APPS = [
@@ -57,7 +55,7 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
-                'django.template.context_processors.media', # Agregado para imágenes
+                'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -67,25 +65,47 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# --- BASE DE DATOS (MySQL / XAMPP) ---
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mymoto',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+# --- BASE DE DATOS (Detección Dual: Docker / XAMPP) ---
+if IN_DOCKER:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('DB_NAME', 'roarmot_db'),
+            'USER': os.environ.get('DB_USER', 'root'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'root_password'),
+            'HOST': os.environ.get('DB_HOST', 'db'), 
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'mymoto', # Tu DB de XAMPP
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+        }
+    }
+
+# --- PARCHE PARA COMPATIBILIDAD DE VERSIONES (XAMPP/Docker) ---
+from django.db.backends.base.base import BaseDatabaseWrapper
+BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 
 # --- CORS CONFIGURATION ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://127.0.0.1:4200",
+    "http://localhost",
+    "http://localhost:80",
+    "http://127.0.0.1",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -109,16 +129,10 @@ SIMPLE_JWT = {
 }
 
 # --- ARCHIVOS ESTÁTICOS Y MULTIMEDIA ---
-# Estáticos (CSS, JS del admin)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Multimedia (Fotos de las motos)
-# URL que se usa en el navegador: http://127.0.0.1:8000/media/
 MEDIA_URL = '/media/'
-
-# Ruta física donde están tus carpetas: C:\...\backend\media
-# Usar el operador / es la forma más segura en Mac y Windows
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # --- OTROS ---
@@ -127,3 +141,29 @@ LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
+
+# Permitir que el navegador no se bloquee con el pre-vuelo de opciones
+CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo, esto elimina el error de tajo
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization", # <--- Vital para que pase tu token JWT
+    "content-type",  # <--- Vital para subir los archivos de imagen
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://localhost:8000",
+]

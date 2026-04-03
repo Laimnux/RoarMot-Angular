@@ -3,12 +3,12 @@
 
   <div class="max-w-[1400px] mx-auto relative">
 
-    <header class="flex justify-between items-end mb-6 border-b border-gray-200 dark:border-white/5 pb-4">
+    <header class="flex justify-between items-end mb-6 border-b border-gray-200 dark:border-white/5 pb-4 ">
       <div>
         <h1 class="font-bebas text-3xl tracking-[0.3em] text-gray-800 dark:text-white/90">
           MATRIZ <span class="text-rose-600">MECÁNICA</span>
         </h1>
-        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 italic">Inspección de sistemas</p>
+        <p class="text-[12px] uppercase tracking-[0.2em] text-gray-500 italic">Inspección de sistemas</p>
       </div>
       <div class="text-right">
         <span class="text-[10px] text-gray-400 dark:text-gray-600 uppercase font-bold">Protocolo: Activo</span>
@@ -27,7 +27,7 @@
       </div>
 
       <div
-        class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222] rounded-2xl p-0 overflow-hidden shadow-lg dark:shadow-none transition-all group">
+        class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222] hover:border-rose-500 dark:hover:border-rose-950 rounded-2xl p-0 overflow-hidden shadow-lg dark:shadow-none transition-all group">
         <div class="relative h-48">
           <img [src]="motoSeleccionada?.displayImage"
             class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 transition-all duration-700">
@@ -73,24 +73,120 @@
         </div>
       </div>
 
+      <!-- Contenerdor de resumen tecnico -->
       <div
-        class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222] rounded-2xl p-6 h-48 flex flex-col justify-between shadow-sm dark:shadow-none">
+        class="col-span-1 md:col-span-2 lg:col-span-2 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222]  rounded-2xl p-6 h-auto min-h-[14rem] flex flex-col justify-between shadow-sm dark:shadow-none transition-all duration-300 hover:border-rose-500 dark:hover:border-rose-950 hover:shadow-md group">
+
         <div class="flex justify-between items-start">
-          <h3 class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold">Resumen Técnico</h3>
-          <div
-            class="px-3 py-1 bg-emerald-100 dark:bg-emerald-600/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-500 text-[9px] uppercase font-bold rounded-full">
-            Sistemas OK
+          <div class="flex flex-col">
+            <h3 class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold">Resumen Técnico</h3>
+            <span *ngIf="alertasActuales.length > 1"
+              class="text-[10px] text-rose-500 font-bold uppercase mt-1 animate-pulse">
+              Alerta {{ indiceAlerta + 1 }} de {{ alertasActuales.length }}
+            </span>
+          </div>
+
+          <div [ngClass]="{
+        'bg-emerald-100 dark:bg-emerald-600/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-500': alertasActuales[indiceAlerta].estado === 'optimo',
+        'bg-amber-100 dark:bg-amber-600/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-500': alertasActuales[indiceAlerta].estado === 'preventivo',
+        'bg-rose-100 dark:bg-rose-600/10 border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-500': alertasActuales[indiceAlerta].estado === 'critico'
+      }" class="px-3 py-1 border text-[9px] uppercase font-bold rounded-full transition-colors">
+            {{ alertasActuales[indiceAlerta].estado === 'optimo' ? 'Sistemas OK' : 'Atención Requerida' }}
           </div>
         </div>
-        <p class="text-sm text-gray-600 dark:text-gray-500 leading-relaxed max-w-sm">
-          Inspección basada en el manual técnico. Próximo chequeo preventivo sugerido en <span
-            class="text-rose-600 dark:text-white font-bold">1,200 KM</span>.
-        </p>
-        <div class="w-20 h-1 bg-gray-200 dark:bg-white/10 rounded-full"></div>
+
+        <div class="mt-3 min-h-[80px]">
+          <p [ngClass]="{
+        'text-rose-600': alertasActuales[indiceAlerta].estado === 'critico',
+        'text-amber-500': alertasActuales[indiceAlerta].estado === 'preventivo',
+        'text-emerald-500': alertasActuales[indiceAlerta].estado === 'optimo'
+      }" class="text-[10px] font-bold uppercase tracking-widest mb-1 transition-colors duration-500">
+            {{ alertasActuales[indiceAlerta].titulo }}
+          </p>
+
+          <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-opacity duration-500">
+            {{ alertasActuales[indiceAlerta].mensaje }}
+          </p>
+
+          <p *ngIf="alertasActuales[indiceAlerta].recomendacion" class="text-[11px] text-gray-500 italic mt-2">
+            <span class="font-bold text-gray-700 dark:text-gray-300 uppercase">Sugerencia:</span>
+            {{ alertasActuales[indiceAlerta].recomendacion }}
+          </p>
+        </div>
+
+        <div
+          *ngIf="alertasActuales[indiceAlerta].costoEstimado !== '-' || alertasActuales[indiceAlerta].tiempoEstimado !== '-'"
+          class="mt-4 grid grid-cols-2 gap-4 border-t border-gray-100 dark:border-white/5 pt-3">
+
+          <div>
+            <p class="text-[9px] uppercase text-gray-400 font-bold tracking-tighter">Inversión Aprox.</p>
+            <p class="text-[12px] text-gray-700 dark:text-gray-300 font-mono font-bold">
+              {{ alertasActuales[indiceAlerta].costoEstimado }}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-[9px] uppercase text-gray-400 font-bold tracking-tighter">Tiempo en Taller</p>
+            <p class="text-[12px] text-gray-700 dark:text-gray-300 font-mono font-bold">
+              {{ alertasActuales[indiceAlerta].tiempoEstimado }}
+            </p>
+          </div>
+        </div>
+
+        <div class="w-full h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden mt-4">
+          <div [style.width.%]="porcentajeSaludGeneral"
+            [ngClass]="porcentajeSaludGeneral > 80 ? 'bg-emerald-500' : porcentajeSaludGeneral > 40 ? 'bg-amber-500' : 'bg-rose-600'"
+            class="h-full transition-all duration-1000 ease-out">
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222] rounded-2xl p-5 shadow-sm
+         group transition-all hover:border-rose-500 dark:hover:border-rose-950 hover:shadow-md">
+        <h3
+          class="text-[12px] uppercase tracking-widest text-gray-400 font-bold mb-4 border-b border-gray-100 dark:border-white/5 pb-2">
+          Estatus Legal</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-xs font-bold text-gray-700 dark:text-gray-300">SOAT</p>
+              <p class="text-[12px] text-gray-500">{{ motoSeleccionada?.soat_moto }}</p>
+            </div>
+            <span
+              [ngClass]="verificarVigencia(motoSeleccionada?.soat_moto).estado === 'ok' ? 'text-emerald-500' : 'text-rose-500'"
+              class="text-[12px] font-mono font-bold">
+              {{ verificarVigencia(motoSeleccionada?.soat_moto).dias }} DÍAS
+            </span>
+          </div>
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Técnico-Mecánica</p>
+              <p class="text-[12px] text-gray-500">{{ motoSeleccionada?.tecnomecanica }}</p>
+            </div>
+            <span
+              [ngClass]="verificarVigencia(motoSeleccionada?.tecnomecanica).estado === 'ok' ? 'text-emerald-500' : 'text-rose-500'"
+              class="text-[12px] font-mono font-bold">
+              {{ verificarVigencia(motoSeleccionada?.tecnomecanica).dias }} DÍAS
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-gray-950 p-5 rounded-2xl border border-white/5 flex flex-col justify-between
+         group transition-all hover:border-yellow-500 dark:hover:border-yellow-900 hover:shadow-[0_0_12px_rgba(225,29,72,0.3)]">
+        <div>
+          <h3 class="text-[12px] uppercase tracking-widest text-yellow-500 font-bold mb-2">Integridad Total</h3>
+          <p class="text-4xl font-bebas text-white tracking-widest transition-colors group-hover:text-yellow-400">{{
+            porcentajeSaludGeneral }}%</p>
+        </div>
+        <div class="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+          <div class="h-full bg-yellow-500 transition-all duration-1000" [style.width.%]="porcentajeSaludGeneral"></div>
+        </div>
+        <p class="text-[11px] text-gray-500 mt-3 italic uppercase">Cálculo basado en sensores y alertas activas.</p>
       </div>
 
       <div *ngFor="let item of itemsManual"
-        class="col-span-1 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222] rounded-2xl p-5 h-36 flex flex-col justify-between group transition-all hover:border-rose-500 dark:hover:border-[#333] hover:shadow-md dark:hover:shadow-none">
+        class="col-span-1 bg-white dark:bg-[#111] border border-gray-200 dark:border-[#222]  rounded-2xl p-5 h-36 flex flex-col justify-between group transition-all hover:border-rose-500 dark:hover:border-rose-950 hover:shadow-md dark:hover:shadow-none">
 
         <div class="flex justify-between items-start">
           <div>

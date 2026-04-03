@@ -9,22 +9,17 @@ import { TIPS_MOTEROS } from '../../data/tips.data';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    MotoComponent,
-  ],
+  imports: [CommonModule, MotoComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard implements OnInit, OnDestroy { // Se agrega OnDestroy aquí
+export class Dashboard implements OnInit, OnDestroy {
   @ViewChild(MotoComponent) motoComp!: MotoComponent;
   
-  // Datos de Motos
   motos: any[] = [];
   alertas: any[] = []; 
-  porcentajeSalud: number = 100; 
+  porcentajeSalud: number = 100; // El Dashboard solo muestra este valor
 
-  // --- Lógica de Tips Moteros ---
   tips = TIPS_MOTEROS;
   tipActualIndex: number = 0;
   animarTip: boolean = true;
@@ -39,18 +34,13 @@ export class Dashboard implements OnInit, OnDestroy { // Se agrega OnDestroy aqu
     this.iniciarCicloTips();
   }
 
-  // Se ejecuta al cerrar el componente para evitar que el timer siga corriendo
   ngOnDestroy(): void {
-    if (this.intervalTips) {
-      clearInterval(this.intervalTips);
-    }
+    if (this.intervalTips) clearInterval(this.intervalTips);
   }
 
-  // --- MÉTODOS DE TIPS ---
+  // --- MÉTODOS DE TIPS (Sin cambios) ---
   iniciarCicloTips() {
-    this.intervalTips = setInterval(() => {
-      this.siguienteTip();
-    }, 8000);
+    this.intervalTips = setInterval(() => this.siguienteTip(), 8000);
   }
 
   siguienteTip() {
@@ -61,7 +51,7 @@ export class Dashboard implements OnInit, OnDestroy { // Se agrega OnDestroy aqu
     }, 500); 
   }
 
-  // --- MÉTODOS DE MOTOS ---
+  // --- MÉTODOS DE MOTOS Y DIAGNÓSTICO ---
   obtenerMotos() {
     this.motoService.getMotos().subscribe({
       next: (data) => {
@@ -84,6 +74,10 @@ export class Dashboard implements OnInit, OnDestroy { // Se agrega OnDestroy aqu
     }
   }
 
+  /**
+   * RECTIFICACIÓN: El Dashboard ahora es un "Lector".
+   * Recibe las alertas ya procesadas y actualiza la salud visual.
+   */
   cargarAlertas(idMoto: number) {
     this.alertaService.getAlertasByMoto(idMoto).subscribe({
       next: (data) => {
@@ -95,65 +89,32 @@ export class Dashboard implements OnInit, OnDestroy { // Se agrega OnDestroy aqu
   }
 
   actualizarSalud() {
-    if (this.tieneAlertasCriticas()) {
+    // Lógica visual basada en la prioridad que viene del backend/mantenimiento
+    if (this.alertas.some(alerta => alerta.nivel_prioridad?.toLowerCase() === 'critico')) {
       this.porcentajeSalud = 30;
-    } else if (this.tieneAlertasPendientes()) {
+    } else if (this.alertas.length > 0) {
       this.porcentajeSalud = 70;
     } else {
       this.porcentajeSalud = 100;
     }
   }
 
-  tieneAlertasCriticas(): boolean {
-    return this.alertas.some(alerta => alerta.nivel_prioridad?.toLowerCase() === 'critico');
-  }
-
-  tieneAlertasPendientes(): boolean {
-    return this.alertas.length > 0 && !this.tieneAlertasCriticas();
-  }
-
   getTituloEstado(): string {
-    if (this.tieneAlertasCriticas()) return '¡Acción Requerida!';
-    if (this.tieneAlertasPendientes()) return 'Atención Próxima';
+    if (this.porcentajeSalud <= 30) return '¡Acción Requerida!';
+    if (this.porcentajeSalud < 100) return 'Atención Próxima';
     return 'Sistema al Día';
   }
 
   getMensajePreventivo(): string {
     if (this.alertas.length > 0) {
-      const principal = this.alertas[0]; 
-      if (principal.titulo?.toLowerCase().includes('soat')) {
-        return `Tu SOAT está en nivel ${principal.nivel_prioridad}. ${principal.descripcion || ''}`;
-      }
-      return principal.descripcion || 'Alerta pendiente'; 
+      // Simplemente mostramos la descripción que ya viene procesada
+      return this.alertas[0].descripcion || 'Revisión pendiente detectada.';
     }
-    return 'Todos tus documentos y sistemas están operando correctamente.';
+    return 'Todos tus sistemas están operando correctamente.';
   }
 
-  getDiasRestantes(fechaVencimiento: string): number {
-    if (!fechaVencimiento) return 0;
-    const hoy = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-    hoy.setHours(0, 0, 0, 0);
-    vencimiento.setHours(0, 0, 0, 0);
-    const diffTime = vencimiento.getTime() - hoy.getTime();
-    return Math.round(diffTime / (1000 * 60 * 60 * 24));
-  }
-
-  getInfoResiduo(alerta: any): string {
-    const dias = this.getDiasRestantes(alerta.fecha_vencimiento);
-    if (dias > 30) {
-      const meses = Math.floor(dias / 30);
-      return meses === 1 ? 'Vigente por 1 mes' : `Vigente por ${meses} meses`;
-    } else if (dias > 1) {
-      return `Faltan ${dias} días`;
-    } else if (dias === 1) {
-      return 'Vence mañana';
-    } else if (dias === 0) {
-      return 'Vence hoy';
-    } else {
-      return `Vencido hace ${Math.abs(dias)} días`;
-    }
-  }
+  // --- ELIMINADOS MÉTODOS DE CÁLCULO DE FECHAS (getDiasRestantes, getInfoResiduo) ---
+  // El Dashboard ya no calcula, solo muestra.
 
   @HostListener('document:mouseover', ['$event'])
   onMouseOver(event: MouseEvent) {

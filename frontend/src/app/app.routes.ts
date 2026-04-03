@@ -22,6 +22,7 @@ import { ProviderPanelComponent } from './components/provider-panel/provider-pan
 import { DashboardComponent as ProviderDashboard } from './components/provider-panel/dashboard/dashboard';
 import { InventarioComponent } from './components/provider-panel/inventario/inventario';
 import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
+import { ProductDetailComponent } from './components/store/product-detail/product-detail';
 
 export const routes: Routes = [
     // --- GRUPO 1: PÚBLICO (Aquí agregamos la Store) ---
@@ -30,7 +31,9 @@ export const routes: Routes = [
       component: PublicLayoutComponent,
       children: [
         { path: '', component: Home },
-        { path: 'tienda', component: StoreComponent } // <-- RUTA AGREGADA
+        { path: 'tienda', component: StoreComponent }, // <-- RUTA AGREGADA
+        // AGREGAR AQUÍ (Opcional si quieres detalle público):
+        { path: 'tienda/producto/:id', component: ProductDetailComponent }
       ]
     },
 
@@ -57,6 +60,7 @@ export const routes: Routes = [
         { path: 'mantenimientos', component: Mantenimientos },
         { path: 'sos', component: Sos }, 
         { path: 'store', component: StoreComponent },
+        { path: 'store/producto/:id', component: ProductDetailComponent },
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
       ]
     },

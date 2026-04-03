@@ -1,48 +1,63 @@
+/* --- ESTILO STEAM: SUBVENTANA DE GALERÍA --- */
+
+/* Scrollbar personalizada para la rejilla de miniaturas interna */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px; /* Muy delgada para no estorbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(225, 29, 72, 0.3); /* Rose-600 sutil */
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(225, 29, 72, 0.6); /* Más intenso al pasar el mouse */
+}
+
+/* Efecto de cristal esmerilado más profundo para la ventana flotante */
+.backdrop-blur-lg {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* --- OPTIMIZACIONES DE LA TARJETA --- */
+
 .card-roarmot {
   box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transición más fluida */
 }
 
 .card-roarmot:hover {
   transform: translateY(-10px);
-  border-color: rgba(225, 29, 72, 0.3); /* Rose-600 con opacidad */
-  box-shadow: 0 20px 40px -20px rgba(225, 29, 72, 0.15);
+  border-color: rgba(225, 29, 72, 0.3);
+  box-shadow: 0 20px 40px -20px rgba(225, 29, 72, 0.2);
 }
 
-/* Animación de entrada */
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
+/* Animación para que la subventana aparezca con un ligero "vuelo" */
+.group-hover\/galeria_hover\:opacity-100 {
+  animation: slideUpSubWindow 0.3s ease-out;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideUpSubWindow {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-/* Estilo para las barras de scroll en Dark Mode */
-.dark ::-webkit-scrollbar {
-  width: 5px;
-}
-.dark ::-webkit-scrollbar-track {
-  background: #0D1118;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 10px;
-}
-
-/* Ocultar scrollbar pero mantener funcionalidad */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* El 'snap-x' hace que las tarjetas se "ajusten" solas al terminar de mover el scroll */
-.snap-x {
-  scroll-snap-type: x mandatory;
-}
-.snap-center {
-  scroll-snap-align: center;
+/* Estilo para los inputs de edición inline para que no se vean toscos */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

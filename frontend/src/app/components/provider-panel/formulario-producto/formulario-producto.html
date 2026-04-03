@@ -15,7 +15,8 @@
       </p>
     </div>
 
-    <div class="flex items-center gap-2 px-4 py-2 bg-gray-200/50 dark:bg-white/5 backdrop-blur-md rounded-2xl border border-gray-300/50 dark:border-white/10">
+    <div
+      class="flex items-center gap-2 px-4 py-2 bg-gray-200/50 dark:bg-white/5 backdrop-blur-md rounded-2xl border border-gray-300/50 dark:border-white/10">
       <span class="text-[10px] font-mono text-gray-600 dark:text-gray-400 uppercase tracking-widest">
         Sys_ID: #NEW_ITEM
       </span>
@@ -25,57 +26,120 @@
   <form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     <div class="lg:col-span-1 space-y-6">
-      <div class="bg-white dark:bg-black/40 backdrop-blur-xl p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 shadow-xl flex flex-col items-center justify-center min-h-[400px] group transition-all hover:border-rose-600/30">
-        
-        <div class="relative w-full aspect-square rounded-[2rem] overflow-hidden border-2 border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center bg-gray-50 dark:bg-white/5 transition-colors group-hover:bg-rose-600/5">
-          <ng-container *ngIf="!imagePreview">
-            <div class="text-center p-6">
-              <div class="w-16 h-16 bg-gray-200 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <i class="fas fa-camera text-2xl text-gray-400"></i>
-              </div>
-              <p class="text-[10px] font-black uppercase tracking-widest text-gray-400">Subir fotografía</p>
-              <input type="file" (change)="onFileSelected($event)" accept="image/*"
-                class="absolute inset-0 opacity-0 cursor-pointer">
+      <div
+        class="bg-white dark:bg-black/40 backdrop-blur-xl p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 shadow-xl flex flex-col items-center justify-center min-h-[400px] group transition-all hover:border-rose-600/30">
+
+        <div class="space-y-4">
+          <div
+            class="relative w-full h-32 rounded-[1rem] border-2 border-dashed border-gray-300 dark:border-white/10 flex flex-col items-center justify-center bg-gray-50 dark:bg-white/5 transition-all group hover:border-rose-600/50">
+            <div class="text-center">
+              <i class="fas fa-images text-2xl text-gray-400 group-hover:scale-110 transition-transform mb-2"></i>
+              <p class="text-[9px] font-black uppercase tracking-widest text-gray-400">Añadir a la galería</p>
             </div>
-          </ng-container>
-          <img *ngIf="imagePreview" [src]="imagePreview" class="w-full h-full object-cover animate-fadeIn">
+            <input type="file" (change)="onFilesSelected($event)" accept="image/*" multiple
+              class="absolute inset-0 opacity-0 cursor-pointer">
+          </div>
+
+          <div *ngIf="previews.length > 0" class="grid grid-cols-3 gap-2 animate-fadeIn">
+            <div *ngFor="let img of previews; let i = index"
+              class="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group">
+              <img [src]="img" class="w-full h-full object-cover">
+
+              <div
+                class="absolute inset-0 bg-rose-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button type="button" (click)="removeImage(i)"
+                  class="bg-rose-800 text-white w-7 h-7 rounded-full text-[10px]">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="previews.length < 6"
+              class="aspect-square rounded-2xl border border-dashed border-white/5 flex items-center justify-center">
+              <i class="fas fa-plus text-[10px] text-gray-600"></i>
+            </div>
+          </div>
+
+          <p *ngIf="previews.length === 0" class="text-[9px] text-center text-gray-500 italic">
+            * No se han seleccionado imágenes aún
+          </p>
         </div>
 
         <div class="mt-6 w-full">
-          <label class="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-500 mb-2 block">Descripción Técnica</label>
-          <textarea formControlName="descripcion"
-            class="w-full bg-gray-100 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-2xl p-4 text-xs focus:ring-2 focus:ring-rose-600 outline-none min-h-[120px] transition-all"
+          <label class="text-[11px] uppercase font-bold tracking-[0.2em] text-gray-500 mb-2 block">Descripción
+            Técnica</label>
+          <textarea formControlName="descripcion" [class.border-rose-600]="erroresServidor.descripcion"
+            class="w-full bg-gray-100 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-2xl p-4 text-[13px] focus:ring-1 focus:ring-rose-600 outline-none min-h-[120px] transition-all"
             placeholder="Detalles de materiales, certificaciones, etc..."></textarea>
+          <span *ngIf="erroresServidor.descripcion" class="text-[10px] text-rose-500 font-mono mt-1 block">
+            > ERROR_DATA: {{ erroresServidor.descripcion[0] }}
+          </span>
         </div>
       </div>
     </div>
 
     <div class="lg:col-span-2">
-      <div class="bg-white dark:bg-[#0D1118]/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 shadow-xl h-full">
-        
+      <div
+        class="bg-white dark:bg-[#0D1118]/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-gray-200 dark:border-white/5 shadow-xl h-full">
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
           <div class="space-y-2">
-            <label class="text-[10px] uppercase font-black tracking-widest text-rose-600 ml-2">Nombre del Producto</label>
+            <label class="text-[10px] uppercase font-black tracking-widest text-emerald-500 ml-2">Nombre del
+              Producto</label>
             <input type="text" formControlName="nombre" placeholder="Ej: Casco Carbon"
+              [class.border-rose-600]="erroresServidor.nombre"
               class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all">
+            <span *ngIf="erroresServidor.nombre" class="text-[9px] text-rose-500 font-mono ml-2 block animate-pulse">
+              > NOM_INVALIDO: {{ erroresServidor.nombre[0] }}
+            </span>
           </div>
 
           <div class="space-y-2">
             <label class="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-2">Marca</label>
             <input type="text" formControlName="marca" placeholder="Ej: AGV"
+              [class.border-rose-600]="erroresServidor.marca"
               class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all">
+            <span *ngIf="erroresServidor.marca" class="text-[9px] text-rose-500 font-mono ml-2 block italic">
+              > BRAND_ERR: {{ erroresServidor.marca[0] }}
+            </span>
           </div>
 
           <div class="space-y-2">
             <label class="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-2">SKU / Referencia</label>
-            <input type="text" formControlName="sku" placeholder="REF-000"
-              class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all font-mono">
+
+            <div class="relative">
+              <input type="text" formControlName="sku" placeholder="REF-000"
+                [class.border-rose-600]="erroresServidor?.sku"
+                [class.border-emerald-500]="productoForm.get('sku')?.valid && productoForm.get('sku')?.dirty && !erroresServidor?.sku"
+                [class.border-gray-300]="!erroresServidor?.sku && !productoForm.get('sku')?.dirty"
+                class="w-full bg-gray-100 dark:bg-white/5 border rounded-xl px-5 py-3 text-sm outline-none transition-all font-mono focus:ring-1"
+                [class.focus:ring-rose-600]="erroresServidor?.sku"
+                [class.focus:ring-emerald-500]="!erroresServidor?.sku">
+
+              <div *ngIf="productoForm.get('sku')?.valid && productoForm.get('sku')?.dirty && !erroresServidor?.sku"
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500 animate-bounce">
+                <i class="fas fa-check-circle"></i>
+              </div>
+            </div>
+
+            <div *ngIf="erroresServidor?.sku" class="relative z-10">
+              <span class="text-[10px] text-rose-500 font-mono ml-2 block animate-pulse">
+                > ERROR_VALIDACIÓN: {{ erroresServidor.sku[0] }}
+              </span>
+            </div>
+
+            <div *ngIf="productoForm.get('sku')?.valid && productoForm.get('sku')?.dirty && !erroresServidor?.sku">
+              <span class="text-[9px] text-emerald-500 font-mono ml-2 block">
+                > SKU_DISPONIBLE: Formato correcto
+              </span>
+            </div>
           </div>
 
           <div class="space-y-2">
             <label class="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-2">Talla / Medida</label>
             <select formControlName="talla"
-              class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all appearance-none cursor-pointer">
+              class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all appearance-none cursor-pointer text-gray-800 dark:text-gray-600">
               <option value="XS">XS (Extra Small)</option>
               <option value="S">S (Small)</option>
               <option value="M">M (Medium)</option>
@@ -87,9 +151,10 @@
           </div>
 
           <div class="space-y-2">
-            <label class="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-2">Categoría de Producto</label>
+            <label class="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-2">Categoría de
+              Producto</label>
             <select formControlName="id_subcategoria"
-              class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all appearance-none cursor-pointer">
+              class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-rose-600 outline-none transition-all appearance-none cursor-pointer text-gray-800 dark:text-gray-600">
               <option value="" disabled>Seleccionar...</option>
               <option value="1">Cascos</option>
               <option value="2">Guantes</option>
@@ -99,32 +164,43 @@
           </div>
 
           <div class="space-y-2">
-            <label class="text-[10px] uppercase font-black tracking-widest text-emerald-500 ml-2">Precio Unitario ($)</label>
-            <input type="number" formControlName="precio"
+            <label class="text-[10px] uppercase font-black tracking-widest text-emerald-500 ml-2">Precio Unitario
+              ($)</label>
+            <input type="number" formControlName="precio" [class.border-rose-600]="erroresServidor.precio"
               class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-emerald-500 outline-none transition-all text-emerald-600 font-bold">
+            <span *ngIf="erroresServidor.precio" class="text-[9px] text-rose-500 font-mono ml-2 block">
+              > VALOR_INVALIDO: {{ erroresServidor.precio[0] }}
+            </span>
           </div>
 
           <div class="space-y-2">
-            <label class="text-[10px] uppercase font-black tracking-widest text-blue-500 ml-2">Stock Inicial (Cantidad)</label>
+            <label class="text-[10px] uppercase font-black tracking-widest text-blue-500 ml-2">Stock Inicial
+              (Cantidad)</label>
             <input type="number" formControlName="cantidad" placeholder="Ej: 20"
+              [class.border-rose-600]="erroresServidor.cantidad"
               class="w-full bg-gray-100 dark:bg-white/5 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-3 text-sm focus:border-blue-500 outline-none transition-all font-bold">
+            <span *ngIf="erroresServidor.cantidad" class="text-[9px] text-rose-500 font-mono ml-2 block">
+              > QTY_ERROR: {{ erroresServidor.cantidad[0] }}
+            </span>
           </div>
 
-          <div class="mt-4 p-6 bg-yellow-500/10 border-l-4 border-yellow-500 rounded-2xl">
+          <div class="mt-4 p-6 bg-yellow-500/10 border-l-4 border-yellow-500 rounded-2xl md:col-span-1">
             <div class="flex items-center gap-3 mb-2">
               <i class="fas fa-exclamation-triangle text-yellow-500 text-xs"></i>
-              <label class="text-[10px] uppercase font-black tracking-widest text-yellow-600">Alerta de Stock Mínimo</label>
+              <label class="text-[10px] uppercase font-black tracking-widest text-yellow-600">Alerta de Stock
+                Mínimo</label>
             </div>
             <input type="number" formControlName="stock_minimo"
-              class="w-32 bg-white/10 border border-yellow-500/20 rounded-lg px-3 py-2 text-xs outline-none focus:border-yellow-500 transition-all font-bold"
+              class="w-32 bg-white/10 border border-yellow-500/20 rounded-lg px-3 py-2 text-xs outline-none focus:border-yellow-500 transition-all font-bold dark:text-white"
               placeholder="5">
-            <p class="text-[9px] text-gray-500 mt-2 italic font-medium">El sistema te notificará cuando el stock sea menor a este número.</p>
+            <p class="text-[9px] text-gray-500 mt-2 italic font-medium">Notificación activa bajo este umbral.</p>
           </div>
+
         </div>
 
         <div class="mt-10">
           <button type="submit" [disabled]="productoForm.invalid"
-            class="w-full py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-500 disabled:scale-100 text-white font-bebas text-2xl tracking-[0.2em] rounded-2xl shadow-[0_10px_30px_rgba(225,29,72,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-4 group">
+            class="w-full py-4 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-500/50 text-white font-bebas text-2xl tracking-[0.2em] rounded-2xl shadow-[0_10px_30px_rgba(225,29,72,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-4 group">
             <i class="fas fa-sync-alt group-hover:rotate-180 transition-transform duration-500"></i>
             Sincronizar Producto
           </button>

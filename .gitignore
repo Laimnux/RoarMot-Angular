@@ -1,11 +1,23 @@
-# Entorno virtual (La carpeta verde)
+# Entorno virtual
 env/
+venv/
 
-# Frontend (Librerías pesadas)
+# Frontend (Librerías y caché)
 frontend/node_modules/
 frontend/.angular/
+frontend/dist/
 
-# Backend (Archivos temporales y DB local)
-backend/db.sqlite3
+# Backend y Python
 **/__pycache__/
 *.pyc
+backend/db.sqlite3
+
+# --- CRÍTICO No subir la base de datos ---
+# No subir la base de datos local de Docker
+data/db/
+
+# No subir las fotos locales (el servidor tendrá las suyas)
+media/
+
+# No subir archivos de configuración sensible (si creas uno)
+.env

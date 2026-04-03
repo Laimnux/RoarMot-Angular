@@ -15,7 +15,10 @@ class Producto(models.Model):
     # Identidad del Producto
     nombre = models.CharField(max_length=100)
     marca = models.CharField(max_length=50)
-    sku = models.CharField(max_length=20, unique=True, help_text="Referencia única de inventario")
+    sku = models.CharField(
+        max_length=20, 
+        help_text="Referencia única de inventario")
+    
     descripcion = models.TextField()
     
     # Logística e Inventario
@@ -24,7 +27,6 @@ class Producto(models.Model):
     stock_minimo = models.PositiveIntegerField(default=3, help_text="Alerta cuando el stock sea menor a este número")
     
     # Vitrina
-    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
     talla = models.CharField(max_length=5, choices=TALLAS_CHOICES, default='NA')
     
     # Categorización
@@ -48,5 +50,31 @@ class Producto(models.Model):
         verbose_name_plural = "Productos"
         ordering = ['-fecha_creacion']
 
+        unique_together = ('sku', 'vendedor')
+
     def __str__(self):
         return f"{self.nombre} ({self.marca}) - SKU: {self.sku}"
+    
+
+
+# NUEVO MODELO PARA LA GALERÍA
+class ProductoImagen(models.Model):
+    producto = models.ForeignKey(
+        Producto, 
+        related_name='imagenes', 
+        on_delete=models.CASCADE
+    )
+    imagen = models.ImageField(upload_to='productos/galeria/')
+    # --- Nuevo campo para la portada usuario selecciona portada ---
+    es_principal = models.BooleanField(
+        default=False,
+        help_text="Indica si esta imagen es la portada del producto"
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Ordenamos para que la principal siempre aprezca primero en las consulta
+        ordering = ['-es_principal', '-fecha_creacion']
+
+    def __str__(self):
+        return f"Imagen de {self.producto.nombre} {'(PORTADA)' if self.es_principal else ''}"

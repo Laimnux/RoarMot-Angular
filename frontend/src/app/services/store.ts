@@ -24,4 +24,9 @@ export class StoreService {
     }
     return this.http.get<Producto[]>(`${this.myAppUrl}${this.myApiUrl}`, { params });
   }
+
+  // AGREGA ESTO AQUÍ PARA QUITAR EL ERROR EN PRODUCT-DETAIL.TS
+  getProductoById(id: number): Observable<Producto> {
+    return this.http.get<Producto>(`${this.myAppUrl}${this.myApiUrl}${id}/`);
+  }
 }

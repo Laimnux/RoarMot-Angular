@@ -13,18 +13,20 @@ services:
     volumes:
       - ./data/db:/var/lib/mysql
     healthcheck:
+      # Este comando es el que le da permiso al backend de iniciar
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-      interval: 5s
+      interval: 10s # Un poco más de tiempo entre chequeos para no saturar
       timeout: 5s
-      retries: 5
+      retries: 10 # Más intentos por si MySQL demora en iniciar sus procesos internos
 
   backend:
     build: ./backend
     container_name: roarmot_backend
     restart: always
-    # Eliminamos 'command' de aquí porque ya está definido en el Dockerfile con Gunicorn
+    # AGREGAMOS ESTO: Sobrescribimos el comando para aumentar el tiempo de espera (Timeout)
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
     volumes:
-      - ./media:/app/media  # Importante para que las fotos de motos persistan
+      - ./media:/app/media
     ports:
       - "8000:8000"
     environment:
@@ -32,10 +34,16 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root_password
       - DB_HOST=db
-      - TZ=America/Bogota # Para que las alertas de mantenimiento sean precisas
+      - TZ=America/Bogota
     depends_on:
       db:
         condition: service_healthy
+    # Agregamos un healthcheck al backend para que el frontend espere
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/index/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build:
@@ -46,11 +54,11 @@ services:
     ports:
       - "80:80"
     volumes:
-      # AGREGA ESTA LÍNEA: Conecta las fotos del backend con el servidor Nginx
       - ./media:/usr/share/nginx/html/media:ro
-    # En producción NO usamos volumes para el frontend, el build ya está en la imagen de Nginx
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy # Ahora el frontend espera a que el backend responda
 
 volumes:
+  # Cambiamos esto para usar la ruta física que ya tiene permisos
   db_data:

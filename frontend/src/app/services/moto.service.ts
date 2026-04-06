@@ -13,7 +13,7 @@ export class MotoService {
 
   // Función privada para no repetir la lógica del token en cada método
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });

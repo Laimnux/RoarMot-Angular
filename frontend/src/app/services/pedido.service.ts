@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PedidoService {
   private http = inject(HttpClient); 
-  private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl = `${environment.apiUrl}/api/users`;
 
   /**
    * 1. ACTUALIZAR PERFIL CON FOTO (FormData)

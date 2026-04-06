@@ -25,7 +25,6 @@ export class AuthService {
     let urlImagen = u.url_imagen_perfil || actual?.url_imagen_perfil;
 
     // Si la URL viene del backend como "/media/..." (relativa)
-    // la convertimos en absoluta: "http://localhost:8000/media/..."
     if (urlImagen && !urlImagen.startsWith('http') && !urlImagen.startsWith('data:')) {
       urlImagen = `${this.serverUrl}${urlImagen}`;
     }

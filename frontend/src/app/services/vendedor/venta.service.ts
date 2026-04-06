@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 export class VentaService {
   private http = inject(HttpClient);
   // Asignamos la ruta que crearemos en Django
-  private apiUrl = `${environment.apiUrl}/vendedor/ventas/`;
+  private apiUrl = `${environment.apiUrl}/api/vendedor/ventas/`;
 
   /**
    * OBTENER DESPACHOS PENDIENTES

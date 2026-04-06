@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://127.0.0.1:8000/api', // O la IP de tu MacBook si están en la misma red
-  googleMapsApiKey: 'Agrega la clave aqui',
+  production: true,
+  apiUrl: 'http://138.197.85.149:8000', // api de produccion
+  googleMapsApiKey: 'AIzaSyCnd5XbgIUmbTT0ZXeTxx5RjElXaWJJj5c',
 };

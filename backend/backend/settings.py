@@ -11,10 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- 3. SEGURIDAD ---
 SECRET_KEY = 'django-insecure-9&jmbm^uk7r7c3%*^9j9v7wr==f=93z48=zp^ri)7tdyj*#g8d'
-DEBUG = True  # Cambiar a False en producción real con dominio propio
+DEBUG = False  # Cambiar a False en producción real con dominio propio
 
 # En Docker permitimos todas las conexiones para facilitar el tráfico del Proxy de Nginx
-ALLOWED_HOSTS = ['*'] if IN_DOCKER else ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*'] if IN_DOCKER else ['138.197.85.149','localhost', '127.0.0.1']
 
 # --- 4. CONFIGURACIÓN DE PROXY (CRÍTICO PARA DOCKER) ---
 if IN_DOCKER:
@@ -121,10 +121,16 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
+# Permite que el frontend de Angular acceda al API
+CORS_ALLOWED_ORIGINS = [
+    "http://138.197.85.149",
+]
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "http://localhost:8000",
+    "http://138.197.85.149",
 ]
 
 # --- 11. REST FRAMEWORK & JWT ---

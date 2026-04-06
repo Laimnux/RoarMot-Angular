@@ -2,22 +2,29 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-# --- DETECCIÓN DE ENTORNO ---
-# Verificamos si estamos corriendo dentro de Docker
+# --- 1. DETECCIÓN DE ENTORNO ---
+# Si DB_HOST existe en las variables de entorno, estamos en Docker
 IN_DOCKER = os.environ.get('DB_HOST') is not None
 
-# --- DIRECTORIOS BASE ---
+# --- 2. DIRECTORIOS BASE ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- SEGURIDAD ---
+# --- 3. SEGURIDAD ---
 SECRET_KEY = 'django-insecure-9&jmbm^uk7r7c3%*^9j9v7wr==f=93z48=zp^ri)7tdyj*#g8d'
-DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '0.0.0.0']
+DEBUG = True  # Cambiar a False en producción real con dominio propio
 
-# --- MODELO DE USUARIO PERSONALIZADO ---
+# En Docker permitimos todas las conexiones para facilitar el tráfico del Proxy de Nginx
+ALLOWED_HOSTS = ['*'] if IN_DOCKER else ['localhost', '127.0.0.1']
+
+# --- 4. CONFIGURACIÓN DE PROXY (CRÍTICO PARA DOCKER) ---
+if IN_DOCKER:
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# --- 5. MODELO DE USUARIO PERSONALIZADO ---
 AUTH_USER_MODEL = 'users.Usuario'
 
-# --- APLICACIONES ---
+# --- 6. APLICACIONES ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,7 +40,7 @@ INSTALLED_APPS = [
     'vendedor',
 ]
 
-# --- MIDDLEWARE ---
+# --- 7. MIDDLEWARE ---
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -65,7 +72,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# --- BASE DE DATOS (Detección Dual: Docker / XAMPP) ---
+# --- 8. BASE DE DATOS (Detección Dual: Docker / XAMPP) ---
 if IN_DOCKER:
     DATABASES = {
         'default': {
@@ -84,7 +91,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'mymoto', # Tu DB de XAMPP
+            'NAME': 'mymoto',  # Tu DB de XAMPP
             'USER': 'root',
             'PASSWORD': '',
             'HOST': '127.0.0.1',
@@ -95,68 +102,20 @@ else:
         }
     }
 
-# --- PARCHE PARA COMPATIBILIDAD DE VERSIONES (XAMPP/Docker) ---
+# --- 9. PARCHE DE COMPATIBILIDAD ---
 from django.db.backends.base.base import BaseDatabaseWrapper
 BaseDatabaseWrapper.check_database_version_supported = lambda self: None
 
-# --- CORS CONFIGURATION ---
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
-    "http://127.0.0.1:4200",
-    "http://localhost",
-    "http://localhost:80",
-    "http://127.0.0.1",
-]
+# --- 10. CORS & CSRF ---
+CORS_ALLOW_ALL_ORIGINS = True  # Facilita la comunicación entre contenedores
 CORS_ALLOW_CREDENTIALS = True
 
-# --- REST FRAMEWORK ---
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny', 
-    ),
-}
-
-# --- JWT CONFIGURATION ---
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'ID_USUARIO',
-}
-
-# --- ARCHIVOS ESTÁTICOS Y MULTIMEDIA ---
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# --- OTROS ---
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LANGUAGE_CODE = 'es-co'
-TIME_ZONE = 'America/Bogota'
-USE_I18N = True
-USE_TZ = True
-
-# Permitir que el navegador no se bloquee con el pre-vuelo de opciones
-CORS_ALLOW_ALL_ORIGINS = True  # Solo para desarrollo, esto elimina el error de tajo
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
+CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 
 CORS_ALLOW_HEADERS = [
     "accept",
-    "authorization", # <--- Vital para que pase tu token JWT
-    "content-type",  # <--- Vital para subir los archivos de imagen
+    "authorization",
+    "content-type",
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
@@ -167,3 +126,35 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://localhost:8000",
 ]
+
+# --- 11. REST FRAMEWORK & JWT ---
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny', 
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'ID_USUARIO',
+}
+
+# --- 12. ARCHIVOS ESTÁTICOS Y MULTIMEDIA ---
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# --- 13. INTERNACIONALIZACIÓN ---
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
+USE_I18N = True
+USE_TZ = True

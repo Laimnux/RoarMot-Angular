@@ -2,14 +2,7 @@ version: '3.8'
 
 services:
   db:
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     image: mysql:8.0
-    volumes:
-      - ./data/db:/var/lib/mysql  # Guarda la base de datos en tu carpeta local
     container_name: roarmot_db
     restart: always
     environment:
@@ -17,15 +10,21 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
     ports:
       - "3306:3306"
+    volumes:
+      - ./data/db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
-    command: python manage.py runserver 0.0.0.0:8000
     build: ./backend
     container_name: roarmot_backend
-    restart: on-failure 
+    restart: always
+    # Eliminamos 'command' de aquí porque ya está definido en el Dockerfile con Gunicorn
     volumes:
-      - ./backend:/app
-      - ./media:/app/media
+      - ./media:/app/media  # Importante para que las fotos de motos persistan
     ports:
       - "8000:8000"
     environment:
@@ -33,21 +32,25 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root_password
       - DB_HOST=db
+      - TZ=America/Bogota # Para que las alertas de mantenimiento sean precisas
     depends_on:
-      db: # <--- Aquí indicas el servicio
-        condition: service_healthy # <--- Y aquí la condición (solo una vez)
+      db:
+        condition: service_healthy
 
   frontend:
-    build: 
-    context: ./frontend
-    dockerfile: Dockerfile.dev
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: roarmot_frontend
+    restart: always
     ports:
-      - "4200:4200"
-    # --- AGREGA ESTAS LÍNEAS AQUÍ ---
+      - "80:80"
     volumes:
-      - ./frontend:/app           # Sincroniza tu carpeta local con el contenedor
-      - /app/node_modules         # Protege las librerías internas del contenedor
-    # -------------------------------
+      # AGREGA ESTA LÍNEA: Conecta las fotos del backend con el servidor Nginx
+      - ./media:/usr/share/nginx/html/media:ro
+    # En producción NO usamos volumes para el frontend, el build ya está en la imagen de Nginx
     depends_on:
       - backend
+
+volumes:
+  db_data:

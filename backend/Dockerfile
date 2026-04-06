@@ -1,11 +1,11 @@
-# Usa una imagen oficial de Python ligera
+# 1. Usa una imagen oficial de Python ligera
 FROM python:3.11-slim
 
-# Evita que Python genere archivos .pyc y permite ver logs en tiempo real
+# 2. Configuración de entorno para optimizar Python en Docker
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Instala dependencias del sistema necesarias para mysqlclient
+# 3. Instala dependencias del sistema necesarias para mysqlclient y compilación
 RUN apt-get update && apt-get install -y \
     python3-dev \
     default-libmysqlclient-dev \
@@ -13,18 +13,23 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Establece el directorio de trabajo dentro del contenedor
+# 4. Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia e instala las librerías de tu pip freeze
+# 5. Copia e instala las librerías (Copiamos solo requirements primero para usar caché)
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo el código de tu carpeta backend al contenedor
+# 6. Instalamos Gunicorn explícitamente para producción
+RUN pip install gunicorn
+
+# 7. Copia todo el código del backend al contenedor
 COPY . /app/
 
-# Expone el puerto donde corre Django
+# 8. Expone el puerto de Django
 EXPOSE 8000
 
-# Comando para arrancar el servidor
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# 9. Comando de producción
+# REEMPLAZA 'roarmot' por el nombre de la carpeta donde está tu archivo wsgi.py
+# El primer 'backend' es la carpeta que contiene el archivo wsgi.py
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi:application"]

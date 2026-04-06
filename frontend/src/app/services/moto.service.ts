@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MotoService {
-  private apiUrl = 'http://127.0.0.1:8000/api/motos/';
+  // 2. CORRECCIÓN: Usar la variable del environment
+  private apiUrl = `${environment.apiUrl}/api/motos/`;
   private http = inject(HttpClient);
 
   // Función privada para no repetir la lógica del token en cada método

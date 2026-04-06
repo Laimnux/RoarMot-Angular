@@ -1,13 +1,14 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService{
-  // Esta es la dirección de nuestro controlador en Django
-  private url = 'http://localhost:8000/api/index/';
+  // Reemplazamos el texto fijo por la variable del environment
+  private url = `${environment.apiUrl}/api/index/`;
 
   constructor(private http: HttpClient) { }
 

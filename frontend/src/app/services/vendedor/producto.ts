@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core'; // Usando inject para consistencia
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class ProductoService {
   private http = inject(HttpClient);
   
   // URL base para el catálogo y gestión
-  private apiUrl = 'http://localhost:8000/api/vendedor/productos/';
+  private apiUrl = `${environment.apiUrl}/api/vendedor/productos/`;
 
   constructor() { }
 

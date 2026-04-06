@@ -2,15 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Usuario } from '../models/usuario.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:8000/api/users';
-  // Definimos la base del servidor para las imágenes
-  private serverUrl = 'http://localhost:8000'; 
+  // 2. CORRECCIÓN: Usar la variable del environment para la API y las imágenes
+  private baseUrl = `${environment.apiUrl}/api/users`;
+  private serverUrl = environment.apiUrl;
 
   private usuarioSubject = new BehaviorSubject<Usuario | null>(this.obtenerSesionInicial());
   usuarioActual$ = this.usuarioSubject.asObservable();

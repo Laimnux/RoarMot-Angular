@@ -2,12 +2,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertaService {
-  private apiUrl = 'http://127.0.0.1:8000/api/alertas/';
+  // Reemplazamos la IP local por la variable del environment
+  private apiUrl = `${environment.apiUrl}/api/alertas/`;
 
   constructor(private http: HttpClient) { }
 

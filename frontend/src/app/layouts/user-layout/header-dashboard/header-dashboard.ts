@@ -2,6 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router'; // 1. Importar aquí
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth';
+import { Usuario } from '../../../models/usuario.model';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-header-dashboard',
@@ -14,31 +17,35 @@ export class HeaderDashboardComponent implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
 
-  usuario: any = null;
+  // Usamos el modelo Usuario para que coincida con el Profile
+  usuario: Usuario | null = null;
   isDarkMode: boolean = true;
 
-  ngOnInit() {
-    // 1. SUSCRIPCIÓN REACTIVA AL USUARIO
-    this.authService.usuarioActual$.subscribe(u => {
-      console.log('Usuario en el Header:', u);
+  // Controlamos la visibilidad del boton
+  mostrarBotonStore: boolean = true;
 
-      if (u) {
-        this.usuario = {
-          nombre: u.nombre || 'Usuario RoarMot',
-          email: u.email || '', 
-          // Usamos rol_id que es lo que envía el serializer de Django
-          rol_id: u.rol_id || 2,
-          urlImagenPerfil: u.urlImagenPerfil || u.URL_IMAGEN_PERFIL
-        };
-      } else {
-        this.usuario = null;
-      }
+  ngOnInit() {
+    // 1. SUSCRIPCIÓN REACTIVA SIMPLIFICADA
+    // Gracias al "traductor" del AuthService, 'u' ya tiene el formato correcto
+    this.authService.usuarioActual$.subscribe(u => {
+      this.usuario = u;
     });
 
-    // 2. CONTROL DEL MODO OSCURO (Inicialización única)
+    // 2. LÓGICA DE VISIBILIDAD DEL BOTÓN
+    // Escuchamos cada vez que la navegación termina con éxito
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      // Si la URL incluye 'store', ocultamos el botón
+      this.mostrarBotonStore = !event.urlAfterRedirects.includes('/app/store');
+    });
+
+    // Verificación inicial por si entramos directo a la URL de store
+    this.mostrarBotonStore = !this.router.url.includes('/app/store');
+
+    // 2. CONTROL DEL MODO OSCURO
     const savedTheme = localStorage.getItem('theme');
     this.isDarkMode = savedTheme !== 'light';
-    
     this.aplicarTema();
   }
 
@@ -63,6 +70,8 @@ export class HeaderDashboardComponent implements OnInit {
       document.documentElement.classList.remove('dark');
     }
   }
+
+  
 
   logout() {
     this.authService.logout();

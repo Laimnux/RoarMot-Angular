@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; 
+import { Router, ActivatedRoute } from '@angular/router'; 
 import { MotoComponent } from '../moto/moto';
 import { MotoService } from '../../services/moto.service';
 import { AlertaService } from '../../services/alerta.service';
 import { TIPS_MOTEROS } from '../../data/tips.data'; 
+import { StoreService } from '../../services/store';
+//import { clearInterval } from 'node:timers';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -29,13 +32,74 @@ export class Dashboard implements OnInit, OnDestroy {
   private alertaService = inject(AlertaService);
   private router = inject(Router); 
 
+  // NUEVAS VARIABLES PARA DESTACADOS
+  destacados: any[] = [];
+  destacadoActualIndex: number = 0;
+  animarDestacado: boolean = true;
+  private intervalDestacados: any;
+
+  private activatedRoute = inject(ActivatedRoute);
+
+  private storeService = inject(StoreService); // Inyectamos el servicio de la tienda
+
   ngOnInit(): void {
     this.obtenerMotos();
     this.iniciarCicloTips();
+    this.cargarDestacados();
   }
 
   ngOnDestroy(): void {
-    if (this.intervalTips) clearInterval(this.intervalTips);
+    if (this.intervalTips){
+      clearInterval(this.intervalTips);
+    } 
+    if (this.intervalDestacados) {
+      clearInterval(this.intervalDestacados); // Limpieza
+    } 
+  }
+
+  // --- LÓGICA DE PRODUCTOS DESTACADOS ---
+  cargarDestacados() {
+    // Asumiendo que tu servicio tiene un método para traer productos con descuento
+    this.storeService.getStoreProducts().subscribe({
+      next: (productos) => {
+        // Filtramos solo los que tienen oferta activa
+        this.destacados = productos.filter((p: any) => p.en_oferta);
+        if (this.destacados.length > 1) {
+          this.iniciarCicloDestacados();
+        }
+      },
+      error: (err) => console.error('Error al cargar destacados:', err)
+    });
+  }
+
+  iniciarCicloDestacados() {
+    this.intervalDestacados = setInterval(() => this.siguienteDestacado(), 10000); // Cada 10 segundos
+  }
+
+  siguienteDestacado() {
+    this.animarDestacado = false;
+    setTimeout(() => {
+      this.destacadoActualIndex = (this.destacadoActualIndex + 1) % this.destacados.length;
+      this.animarDestacado = true;
+    }, 500);
+  }
+
+  verDetalle(id: number) {
+    // 1. Verificación de seguridad
+    if (!id) {
+      // Si el 'id' llega vacío, intentamos sacarlo directamente del objeto actual
+      const productoActual = this.destacados[this.destacadoActualIndex];
+      id = productoActual.id || productoActual.id_producto; 
+    }
+
+    if (!id) {
+      console.error('Error: No se pudo determinar el ID del producto.', this.destacados[this.destacadoActualIndex]);
+      return;
+    }
+
+    // 2. Navegación ABSOLUTA (la más segura desde cualquier parte de la app)
+    // Esto te llevará directo a la vista que ya tienes funcionando en la Store
+    this.router.navigate(['/app/store/producto', id]);
   }
 
   // --- MÉTODOS DE TIPS (Sin cambios) ---

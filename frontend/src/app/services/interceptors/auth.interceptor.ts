@@ -1,36 +1,50 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // 1. Extraemos el token de sessionStorage (Clave para el aislamiento por pestaña)
+  const router = inject(Router); // Inyectamos el router para control de navegación
   const token = sessionStorage.getItem('auth_token');
 
-  // 2. Definimos las rutas que NO necesitan Token (Públicas)
   const publicUrls = [
     '/api/users/login/', 
     '/api/users/register/', 
     '/api/users/verificar-email/',
-    '/api/index/'
+    '/api/index/',
+    '/api/vendedor/store/'
   ];
 
-  // 3. Verificamos si la petición actual es a una ruta pública
   const isPublic = publicUrls.some(url => req.url.includes(url));
 
-  // 4. LÓGICA DE DECISIÓN
-  // Solo inyectamos el token si existe Y la ruta NO es pública
+  let clonedRequest = req;
+
+  // 1. Inyección del Token
   if (token && !isPublic) {
-    const cloned = req.clone({
+    clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log(`[Interceptor] Token inyectado para: ${req.url}`);
-    return next(cloned);
+    console.log(`[Roarmot-Auth] Token inyectado: ${req.url}`);
   }
 
-  // 5. Si es pública o no hay token, la petición sigue normal
-  if (isPublic) {
-    console.log(`[Interceptor] Ruta pública detectada: ${req.url}`);
-  }
-  
-  return next(req);
+  // 2. Manejo de la Respuesta y Errores Críticos
+  return next(clonedRequest).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Si el servidor responde 401 (No autorizado) o 403 (Prohibido)
+      if (error.status === 401 || error.status === 403) {
+        console.error('[Roarmot-Auth] Sesión inválida o expirada. Protocolo de re-autenticación.');
+        
+        // OJO: Solo redirigir si NO estamos ya en el login para evitar bucles
+        if (!router.url.includes('login')) {
+           // Opcional: sessionStorage.removeItem('auth_token');
+           // router.navigate(['/login']); 
+        }
+      }
+      
+      // Retornamos el error para que el componente (confirmarPedido) lo maneje
+      return throwError(() => error);
+    })
+  );
 };

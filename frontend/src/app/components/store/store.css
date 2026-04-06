@@ -3,7 +3,8 @@
 }
 
 .font-vt323 {
-  font-family: 'VT323', monospace;
+    font-family: 'VT323', monospace;
+    letter-spacing: 0.05em; /* Un poco de espacio para que no se peguen los números */
 }
 
 /* Efecto de cristal mejorado para las tarjetas */
@@ -39,4 +40,28 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Borde especial para productos en oferta */
+.border-orange-500\/40 {
+    border-color: rgba(249, 115, 22, 0.4) !important;
+}
+
+/* Reacción interactiva específica para tarjetas en OFERTA */
+.dark .bg-roar-card.border-orange-500\/40:hover {
+    border-color: rgba(249, 115, 22, 0.7); /* Naranja más intenso en hover */
+    box-shadow: 
+        0 10px 30px -10px rgba(0, 0, 0, 0.6),
+        inset 0 0 20px rgba(249, 115, 22, 0.1); /* Brillo interno naranja */
+}
+
+/* El título también debe cambiar a naranja si el producto es una oferta */
+.border-orange-500\/40:hover h3 {
+    color: #f97316 !important; /* orange-500 */
+    text-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
+}
+
+.group img {
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+    will-change: transform; /* Optimización de hardware para la animación */
 }

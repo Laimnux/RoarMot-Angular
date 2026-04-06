@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductoService } from '../../../services/vendedor/producto';
 import { Chart, registerables } from 'chart.js';
+import { VentaProveedor } from '../../../models/venta.model';
+import { VentaService } from '../../../services/vendedor/venta.service';
 
 Chart.register(...registerables);
 
@@ -24,19 +26,30 @@ export class DashboardComponent implements OnInit {
   totalUnidadesFisicas: number = 0;
   categoriaMasValiosa: string = 'N/A';
 
+  productosEnOferta: number = 0; 
+  listaOfertas: any[] = [];
+
   // Diccionario para traducir los IDs de tu base de datos a nombres legibles
   diccionarioCategorias: { [key: number]: string } = {
     1: 'CASCOS',
-    2: 'ACCESORIOS',
+    2: 'GUANTES',
     3: 'CHAQUETAS',
-    4: 'PROTECCIONES',
+    4: 'ACCESORIOS',
     5: 'REPUESTOS'
   };
 
-  constructor(private productoService: ProductoService) {}
+  // 1. Agregamos la lista de ventas y el total de ventas
+  listaVentas: VentaProveedor[] = [];
+  totalVentasRealizadas: number = 0;
+
+  constructor(
+    private productoService: ProductoService,
+    private ventaService: VentaService
+  ) {}
 
   ngOnInit(): void {
     this.cargarDatosYCalcular();
+    this.cargarLogistica();
   }
 
   cargarDatosYCalcular(): void {
@@ -56,6 +69,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ejecutarCalculos(): void {
+
     this.valorTotalInventario = this.productos.reduce((acc, p) => 
       acc + (Number(p.precio || 0) * Number(p.cantidad || 0)), 0);
 
@@ -65,7 +79,18 @@ export class DashboardComponent implements OnInit {
     this.totalUnidadesFisicas = this.productos.reduce((acc, p) => 
       acc + Number(p.cantidad || 0), 0);
 
+    // --- NUEVOS CÁLCULOS ---
+    this.listaOfertas = this.productos.filter(p => p.en_oferta);
+    this.productosEnOferta = this.listaOfertas.length;
+
     this.calcularCategoriaTop();
+  }
+
+  // Función auxiliar para obtener la imagen principal (igual que en inventario)
+  getImagenPrincipal(prod: any): string {
+    return (prod.imagenes && prod.imagenes.length > 0) 
+      ? prod.imagenes[0].imagen 
+      : 'assets/img/no-product.png';
   }
 
   calcularCategoriaTop(): void {
@@ -131,6 +156,19 @@ export class DashboardComponent implements OnInit {
             }
           }
         }
+      }
+    });
+  }
+
+  cargarLogistica(): void {
+    this.ventaService.obtenerDespachosPendientes().subscribe({
+      next: (data) => {
+        this.listaVentas = data;
+        // Calculamos el total de ventas realizadas para las métricas del dashboard
+        this.totalVentasRealizadas = this.listaVentas.length;
+      },
+      error: (err) => {
+        console.error('Error al cargar la logística de ventas:', err);
       }
     });
   }

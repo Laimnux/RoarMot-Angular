@@ -13,6 +13,7 @@ import { AuthService } from '../../services/auth'; // <--- Verifica que esta rut
 export class ProviderPanelComponent implements OnInit {
   isDarkMode: boolean = true;
   usuario: any = null;
+  private serverUrl = 'http://localhost:8000'; // Base del backend
 
   constructor(private authService: AuthService) {}
 
@@ -34,6 +35,20 @@ export class ProviderPanelComponent implements OnInit {
     if (!this.usuario) {
       this.usuario = JSON.parse(sessionStorage.getItem('user_session') || 'null');
     }
+  }
+
+  // NUEVA FUNCIÓN: Procesa la imagen para el HTML
+  getAvatarUrl(): string {
+    const url = this.usuario?.url_imagen_perfil || this.usuario?.urlImagenPerfil;
+    
+    if (!url) return 'assets/default-avatar.png'; // Imagen por defecto
+
+    // Si es una ruta relativa de Django, le ponemos el dominio
+    if (url.startsWith('/media/')) {
+      return `${this.serverUrl}${url}`;
+    }
+
+    return url;
   }
 
   toggleDarkMode(): void {

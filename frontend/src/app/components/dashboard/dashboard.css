@@ -116,6 +116,7 @@
     .bento-grid-layout { 
         grid-template-columns: 2.2fr 1fr; 
         grid-template-areas: "main-moto tips" "main-moto productos"; 
+        align-items: start; /* <--- CRUCIAL: Evita que las cajas de la derecha se estiren */
     } 
 }
 
@@ -127,6 +128,19 @@
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    height: 220px;     /* Altura fija constante */
+    min-height: 220px; /* Asegura que no se colapse */
+}
+
+/* Limitamos el texto del tip a un máximo de 4 líneas */
+.box-tips p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 80px; /* Reserva espacio para el texto */
 }
 
 .tip-category-tag {
@@ -216,4 +230,43 @@
 .text-tighter {
     letter-spacing: -0.05em;
     font-family: 'Oswald', sans-serif;
+}
+
+/* --- ANIMACIÓN CARRUSEL DESTACADOS (SENTIDO CONTRARIO) --- */
+
+.col-span-10 {
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* Estado 'Oculto' (Hacia la izquierda) */
+.col-span-10.ng-animate-hiding,
+.opacity-0 {
+  opacity: 0;
+  transform: translateX(-15px) scale(0.98); /* Mueve hacia la izquierda */
+}
+
+/* Estado 'Visible' (Centro) */
+.col-span-10.ng-animate-showing,
+.opacity-100 {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+/* Mejoras de tipografía para los precios */
+.font-bebas {
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Busca o crea esta regla para el contenedor de productos */
+.grid-box.group {
+    height: 180px;      /* Altura fija para la oferta */
+    min-height: 180px;
+    display: block;     /* Asegura que respete la altura */
+}
+
+/* Aseguramos que la imagen dentro del 60% siempre llene su espacio */
+.col-span-6 img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
 }

@@ -66,13 +66,59 @@
       </div>
       <!-- FInal Tips para moteros-->
 
-      <div class="grid-box box-productos bg-white dark:bg-roar-card border-1-fino p-6">
-        <h4 class="text-xs mb-2 uppercase text-gray-400">Destacados</h4>
-        <div
-          class="h-10 w-full bg-gray-100 dark:bg-white/5 rounded-lg border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center">
-          <span class="text-[8px] text-gray-400 uppercase">Próximamente</span>
+      <div
+        class="grid-box bg-white dark:bg-roar-card border-1-fino rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl overflow-hidden group">
+
+        <div *ngIf="destacados.length > 0; else noDestacados" (click)="verDetalle(destacados[destacadoActualIndex].id)"
+          class="cursor-pointer grid grid-cols-10 h-full relative">
+
+          <div class="col-span-6 relative overflow-hidden h-full">
+            <img [src]="destacados[destacadoActualIndex].imagenes[0]?.imagen"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              [alt]="destacados[destacadoActualIndex].nombre">
+
+            <div
+              class="absolute bottom-2 left-2 bg-[#A3D200] text-[#171A21] font-bebas px-4 py-1 text-2xl tracking-tight rounded-sm">
+              -{{ destacados[destacadoActualIndex].porcentaje_descuento }}%
+            </div>
+          </div>
+
+          <div class="col-span-4 p-5 flex flex-col justify-between h-full border-l border-white/5 bg-black/10">
+
+            <div>
+              <h4 class="text-[10px] mb-3 uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Oferta_del_Día
+              </h4>
+              <p class="text-xl font-bebas tracking-wider text-white leading-tight uppercase line-clamp-2">
+                {{ destacados[destacadoActualIndex].nombre }}
+              </p>
+            </div>
+
+            <div class="flex flex-col items-end gap-1 mt-auto">
+              <span class="text-[10px] text-gray-500 line-through font-mono tracking-tighter">
+                ${{ destacados[destacadoActualIndex].precio | number:'1.0-0' }}
+              </span>
+              <span class="text-2xl font-bebas text-[#A3D200] tracking-wider">
+                ${{ destacados[destacadoActualIndex].precio_oferta | number:'1.0-0' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="absolute top-2 right-2 flex gap-1.5">
+            <div *ngFor="let d of destacados; let i = index" class="w-1.5 h-1.5 rounded-full transition-all"
+              [ngClass]="i === destacadoActualIndex ? 'bg-rose-600 scale-125' : 'bg-white/20'">
+            </div>
+          </div>
         </div>
+
+        <ng-template #noDestacados>
+          <div
+            class="h-32 w-full bg-gray-100 dark:bg-white/5 rounded-lg border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center">
+            <span class="text-[8px] text-gray-400 uppercase tracking-widest">Sin promociones activas</span>
+          </div>
+        </ng-template>
       </div>
+
     </div>
   </section>
 

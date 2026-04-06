@@ -1,17 +1,22 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { share, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+
+// --- NUEVO IMPORT PARA EL DRAG & DROP ---
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 // Servicios
 import { ProductoService } from '../../../services/vendedor/producto';
 import { AuthService } from '../../../services/auth';
 import { NotificationService } from '../../../services/notification.service';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-inventario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+
+  imports: [CommonModule, FormsModule, DragDropModule, ConfirmModalComponent],
   templateUrl: './inventario.html',
   styleUrls: ['./inventario.css']
 })
@@ -26,6 +31,10 @@ export class InventarioComponent implements OnInit, OnDestroy {
   editingField: string | null = null;
   tempValue: any = null;
 
+  // --- NUEVAS VARIABLES PARA EL MODAL ---
+  mostrarModalOferta = false;
+  productoEnEdicion: any = null;
+
   private authSub!: Subscription;
 
   constructor(
@@ -33,6 +42,48 @@ export class InventarioComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private notification: NotificationService
   ) {}
+
+  // --- NUEVA FUNCIÓN PARA PROCESAR LA PROMOCIÓN AL SOLTAR ---
+  // --- FUNCIÓN LIMPIA PARA PROCESAR LA PROMOCIÓN ---
+  onDropInSpecial(event: CdkDragDrop<any[]>): void {
+    // 1. Guardamos el producto que se soltó
+    this.productoEnEdicion = event.item.data;
+
+    // 2. Notificación informativa (Opcional, pero da feedback visual)
+    this.notification.show(`CONFIGURANDO OFERTA: ${this.productoEnEdicion.nombre.toUpperCase()}`, 'info');
+
+    // 3. ABRIMOS EL MODAL (Y nada más, el modal se encarga del resto)
+    this.mostrarModalOferta = true;
+  }
+
+  // --- NUEVAS FUNCIONES PARA MANEJAR LA RESPUESTA DEL MODAL ---
+  cancelarOferta() {
+    this.mostrarModalOferta = false;
+    this.productoEnEdicion = null;
+  }
+
+  confirmarOferta(porcentaje: number) {
+    const producto = this.productoEnEdicion;
+
+    this.productoService.establecerPromocion(producto.id, {
+      en_oferta: true,
+      porcentaje_descuento: porcentaje
+    }).subscribe({
+      next: (res) => {
+        const idx = this.productos.findIndex(p => p.id === producto.id);
+        if (idx !== -1) {
+          this.productos[idx] = { ...this.productos[idx], ...res };
+          this.productosFiltrados = [...this.productos];
+        }
+        this.notification.show(`¡OFERTA DEL ${porcentaje}% ACTIVADA!`, 'success');
+        this.cancelarOferta(); // Cerramos el modal
+      },
+      error: () => {
+        this.notification.show('FALLO EN LA CONEXIÓN', 'error');
+        this.cancelarOferta();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.authSub = this.authService.usuarioActual$.subscribe({

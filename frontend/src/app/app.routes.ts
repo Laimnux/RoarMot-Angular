@@ -23,6 +23,11 @@ import { DashboardComponent as ProviderDashboard } from './components/provider-p
 import { InventarioComponent } from './components/provider-panel/inventario/inventario';
 import { FormularioProductoComponent } from './components/provider-panel/formulario-producto/formulario-producto';
 import { ProductDetailComponent } from './components/store/product-detail/product-detail';
+import { ProfileComponent } from './components/profile/profile'; 
+import { CartComponent } from './components/cart/cart'; 
+
+import { CheckoutComponent } from './components/checkout/checkout'; // <--- IMPORTAR AQUÍ
+import { PaymentMethodComponent } from './components/payment-method/payment-method';
 
 export const routes: Routes = [
     // --- GRUPO 1: PÚBLICO (Aquí agregamos la Store) ---
@@ -57,10 +62,14 @@ export const routes: Routes = [
       canActivate: [authGuard], 
       children: [
         { path: 'dashboard', component: Dashboard },
+        { path: 'perfil', component: ProfileComponent},
         { path: 'mantenimientos', component: Mantenimientos },
         { path: 'sos', component: Sos }, 
         { path: 'store', component: StoreComponent },
         { path: 'store/producto/:id', component: ProductDetailComponent },
+        { path: 'cart', component: CartComponent},
+        { path: 'payment', component: PaymentMethodComponent }, // <-- NUEVA RUTA de pago
+        { path: 'checkout', component: CheckoutComponent }, // <--- RUTA AGREGADA
         { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
       ]
     },
@@ -89,5 +98,7 @@ export const routes: Routes = [
     { path: 'dashboard', redirectTo: 'app/dashboard', pathMatch: 'full' },
     { path: 'mantenimientos', redirectTo: 'app/mantenimientos', pathMatch: 'full' },
     { path: 'inventario', redirectTo: 'vendedor/inventario', pathMatch: 'full' },
+    { path: 'cart', redirectTo: 'app/cart', pathMatch: 'full' },
+    { path: 'carrito', redirectTo: 'app/cart', pathMatch: 'full' },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

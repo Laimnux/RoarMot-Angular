@@ -1,0 +1,136 @@
+/* --- CONFIGURACIÓN BASE --- */
+.profile-container {
+    min-height: 100vh;
+    padding: 2.5rem;
+    background: transparent; 
+}
+
+/* --- TARJETAS BENTO (DASHBOARD) --- */
+.profile-card-tech {
+    background: white;
+    border: 1px solid rgba(156, 163, 175, 0.2); 
+    border-radius: 2rem;
+    padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode para la tarjeta */
+:host-context(.dark) .profile-card-tech {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(10px);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.profile-card-tech:hover {
+    border-color: #f7b731; /* Amarillo Roarmot */
+    box-shadow: 0 20px 40px -20px rgba(247, 183, 49, 0.15);
+}
+
+/* --- LABELS "CONSOLA DE COMANDOS" --- */
+.tech-label {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    color: #9ca3af; 
+    margin-bottom: 0.6rem;
+    transition: color 0.3s ease;
+}
+
+/* --- INLINE EDITING: EL LÁPIZ Y EL ESTADO ACTIVO --- */
+
+/* Contenedor del dato (Lectura) */
+.editable-field-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(156, 163, 175, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.editable-field-container:hover {
+    border-bottom-color: #f43f5e; /* Rose-500 al hacer hover */
+    padding-left: 4px;
+}
+
+/* Icono del lápiz */
+.pencil-icon {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    opacity: 0;
+    transition: all 0.3s ease;
+    transform: translateX(10px);
+}
+
+.editable-field-container:hover .pencil-icon {
+    opacity: 1;
+    color: #f43f5e;
+    transform: translateX(0);
+}
+
+/* --- INPUTS DE EDICIÓN ACTIVA --- */
+.roar-input-field {
+    width: 100%;
+    background: transparent !important;
+    border: none;
+    border-bottom: 2px solid #f43f5e; /* Rose para resaltar que estás editando */
+    padding: 0.7rem 0;
+    font-size: 0.95rem;
+    outline: none;
+    animation: inputGlow 1.5s infinite alternate;
+}
+
+/* Animación de pulso para el campo que se está editando */
+@keyframes inputGlow {
+    from {
+        border-bottom-color: #f43f5e;
+        filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.2));
+    }
+    to {
+        border-bottom-color: #f7b731;
+        filter: drop-shadow(0 0 8px rgba(247, 183, 49, 0.4));
+    }
+}
+
+/* --- BOTÓN DE RESPALDO (SINCRONIZAR) --- */
+.btn-roar-submit {
+    background: #f7b731;
+    color: #1a1a1a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    padding: 0.9rem 3rem;
+    border-radius: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 20px -6px rgba(247, 183, 49, 0.4);
+}
+
+.btn-roar-submit:hover {
+    background: #ffc857;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 30px -10px rgba(247, 183, 49, 0.6);
+}
+
+/* Efecto para el autoguardado (Emerald Pulse) */
+.status-pulse {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px #10b981;
+    animation: pulse-emerald 2s infinite;
+}
+
+@keyframes pulse-emerald {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}

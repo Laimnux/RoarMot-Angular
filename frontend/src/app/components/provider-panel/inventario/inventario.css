@@ -1,8 +1,143 @@
-/* --- ESTILO STEAM: SUBVENTANA DE GALERÍA --- */
+/* ==========================================================================
+   ESTILOS GLOBALES ROARMOT PARTNER - INVENTARIO
+   ========================================================================== */
 
-/* Scrollbar personalizada para la rejilla de miniaturas interna */
+/* --- 1. OPTIMIZACIONES DE LA TARJETA Y ANIMACIONES --- */
+.card-roarmot {
+  box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.card-roarmot:hover {
+  transform: translateY(-10px);
+  border-color: rgba(225, 29, 72, 0.3);
+  box-shadow: 0 20px 40px -20px rgba(225, 29, 72, 0.2);
+  z-index: 40;
+}
+
+/* --- 2. GALERÍA FLOTANTE (CORRECCIÓN DE INTERACCIÓN) --- */
+.galeria-flotante {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.galeria-flotante::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+}
+
+.group\/galeria_hover:hover .galeria-flotante {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  animation: slideUpSubWindow 0.3s ease-out forwards;
+}
+
+@keyframes slideUpSubWindow {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* --- 3. ESTADOS DE LA ZONA FLASH (OFERTA ESPECIAL) --- */
+.promo-drop-zone {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cuando la zona recibe un elemento (Drag over) */
+.promo-drop-zone.cdk-drop-list-receiving {
+  background-color: rgba(225, 29, 72, 0.15) !important;
+  border-color: #e11d48 !important;
+  border-style: solid !important;
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(225, 29, 72, 0.1);
+}
+
+/* Control de visibilidad de textos en la zona drop */
+.promo-drop-zone.cdk-drop-list-receiving .show-waiting { display: none; }
+.promo-drop-zone.cdk-drop-list-receiving .show-receiving { display: block !important; }
+
+/* Efectos visuales activos durante el drag over */
+.promo-drop-zone.cdk-drop-list-receiving .promo-gradient { opacity: 1; }
+.promo-drop-zone.cdk-drop-list-receiving .promo-icon-container { transform: scale(1.25); }
+.promo-drop-zone.cdk-drop-list-receiving .promo-bolt { animation: bounce-bolt 0.5s infinite; }
+.promo-drop-zone:not(.cdk-drop-list-receiving) .promo-bolt { animation: pulse-glow 2s infinite; }
+
+.promo-drop-zone.cdk-drop-list-receiving .promo-inner-border {
+  border-color: rgba(225, 29, 72, 0.3);
+}
+
+/* --- 4. LÓGICA DE DRAG & DROP (CDK OVERRIDES) --- */
+.cdk-drop-list-dragging .card-roarmot {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 2.5rem;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  background: #090C10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-handle {
+  cursor: grab;
+}
+
+.cdk-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* --- 5. ANIMACIONES PERSONALIZADAS --- */
+@keyframes bounce-bolt {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+}
+
+@keyframes pulse-low-stock {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse {
+  animation: pulse-low-stock 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* --- 6. SCROLLBAR Y ELEMENTOS DE FORMULARIO --- */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px; /* Muy delgada para no estorbar */
+  width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -11,53 +146,54 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(225, 29, 72, 0.3); /* Rose-600 sutil */
+  background: rgba(225, 29, 72, 0.3);
   border-radius: 10px;
-  transition: background 0.3s;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(225, 29, 72, 0.6); /* Más intenso al pasar el mouse */
+  background: rgba(225, 29, 72, 0.6);
 }
 
-/* Efecto de cristal esmerilado más profundo para la ventana flotante */
-.backdrop-blur-lg {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* --- OPTIMIZACIONES DE LA TARJETA --- */
-
-.card-roarmot {
-  box-shadow: 0 10px 30px -15px rgba(0,0,0,0.05);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transición más fluida */
-}
-
-.card-roarmot:hover {
-  transform: translateY(-10px);
-  border-color: rgba(225, 29, 72, 0.3);
-  box-shadow: 0 20px 40px -20px rgba(225, 29, 72, 0.2);
-}
-
-/* Animación para que la subventana aparezca con un ligero "vuelo" */
-.group-hover\/galeria_hover\:opacity-100 {
-  animation: slideUpSubWindow 0.3s ease-out;
-}
-
-@keyframes slideUpSubWindow {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Estilo para los inputs de edición inline para que no se vean toscos */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* --- 7. COMPORTAMIENTO STICKY Y Z-INDEX --- */
+@media (min-width: 1024px) {
+  .sticky {
+    position: sticky;
+    top: 2rem;
+  }
+}
+
+.group\/galeria_hover:hover .absolute.bottom-full {
+  z-index: 50;
+}
+
+.backdrop-blur-lg {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 8. EDICIÓN INLINE (HOVERS) --- */
+[class*="group/edit-"]:hover {
+  transform: translateX(2px);
+  transition: all 0.2s ease-in-out;
+}
+
+/* --- 9. RESPONSIVE --- */
+@media (max-width: 768px) {
+  .card-roarmot:hover {
+    transform: translateY(-5px);
+  }
+  
+  .galeria-flotante {
+    width: 90vw;
+    right: -10vw;
+  }
+  
+  .group\/galeria_hover:hover .galeria-flotante {
+    transform: translateY(0) scale(0.95);
+  }
 }

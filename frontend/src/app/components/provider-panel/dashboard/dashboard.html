@@ -1,108 +1,250 @@
 <div class="space-y-10 animate-fade-in pb-20">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
 
-        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+        <div
+            class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
             <div class="relative z-10">
-                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Valor_Total_Stock</p>
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Valor_Total_Stock</p>
                 <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white">
                     {{ valorTotalInventario | currency:'USD':'symbol':'1.0-0' }}
                 </h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">+ DATA_LIVE</span>
+                    <span
+                        class="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">+
+                        DATA_LIVE</span>
                 </div>
             </div>
-            <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-600/5 blur-3xl group-hover:bg-rose-600/10 transition-all"></div>
+            <div
+                class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-600/5 blur-3xl group-hover:bg-rose-600/10 transition-all">
+            </div>
+        </div>
+
+        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+            <div class="relative z-10">
+                <p class="text-[9px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Despachos_Pendientes</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-rose-600 uppercase">
+                    {{ listaVentas.length }} <span class="text-sm font-sans text-gray-400">Pedidos</span>
+                </h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Suministro_Activo</span>
+                </div>
+            </div>
         </div>
 
         <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all"
             [class.border-rose-600/50]="productosEnAlerta > 0">
             <div class="relative z-10">
-                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Alertas_Suministro</p>
-                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white" [class.text-rose-600]="productosEnAlerta > 0">
-                    {{ productosEnAlerta }} <span class="text-sm font-sans text-gray-400 dark:text-gray-500 uppercase">Items</span>
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Alertas_Suministro</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white"
+                    [class.text-rose-600]="productosEnAlerta > 0">
+                    {{ productosEnAlerta }} <span
+                        class="text-sm font-sans text-gray-400 dark:text-gray-500 uppercase">Items</span>
                 </h3>
                 <div class="mt-4 flex items-center gap-2">
                     <span *ngIf="productosEnAlerta > 0" class="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
-                    <span class="text-[10px] font-bold uppercase tracking-tighter" [class.text-rose-600]="productosEnAlerta > 0" [class.text-gray-500]="productosEnAlerta === 0">
+                    <span class="text-[10px] font-bold uppercase tracking-tighter"
+                        [class.text-rose-600]="productosEnAlerta > 0" [class.text-gray-500]="productosEnAlerta === 0">
                         {{ productosEnAlerta > 0 ? 'Reabastecimiento' : 'Stock Optimizado' }}
                     </span>
                 </div>
             </div>
         </div>
 
-        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+        <div
+            class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
             <div class="relative z-10">
-                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Unidades_Físicas</p>
-                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white">{{ totalUnidadesFisicas }}</h3>
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Unidades_Físicas</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-gray-900 dark:text-white">{{ totalUnidadesFisicas }}
+                </h3>
                 <div class="mt-4 flex items-center gap-2">
                     <i class="fas fa-boxes-stacked text-gray-400 dark:text-gray-600 text-[10px]"></i>
-                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Total_Bodega</span>
+                    <span
+                        class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Total_Bodega</span>
                 </div>
             </div>
         </div>
 
-        <div class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
+        <div
+            class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all">
             <div class="relative z-10">
-                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">Dominio_Mercado</p>
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Dominio_Mercado</p>
                 <h3 class="text-3xl font-bebas tracking-wider text-rose-600 uppercase">{{ categoriaMasValiosa }}</h3>
                 <div class="mt-4 flex items-center gap-2">
-                    <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Categoría_Principal</span>
+                    <span
+                        class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Categoría_Principal</span>
                 </div>
+            </div>
+        </div>
+
+        <div
+            class="relative group overflow-hidden bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6 rounded-[2rem] shadow-sm dark:shadow-none backdrop-blur-xl transition-all border-orange-500/30">
+            <div class="relative z-10">
+                <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-2">
+                    Campañas_Activas</p>
+                <h3 class="text-3xl font-bebas tracking-wider text-orange-500">
+                    {{ productosEnOferta }} <span
+                        class="text-sm font-sans text-gray-400 dark:text-gray-500 uppercase">Ofertas</span>
+                </h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <i class="fas fa-percentage text-orange-500 text-[10px]"></i>
+                    <span
+                        class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tighter">Zona_Flash_Live</span>
+                </div>
+            </div>
+            <div
+                class="absolute -right-4 -bottom-4 w-24 h-24 bg-orange-600/5 blur-3xl group-hover:bg-orange-600/10 transition-all">
             </div>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl flex flex-col items-center min-h-[400px]">
-            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase self-start">Distribución por Categoría</h4>
+
+        <div
+            class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl flex flex-col items-center min-h-[400px]">
+            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase self-start">
+                Distribución por Categoría</h4>
             <div class="relative w-full max-w-[280px] flex-1 flex items-center">
                 <canvas #donutCanvas></canvas>
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-4">
-                    <span class="text-gray-400 dark:text-gray-500 text-[10px] uppercase font-black tracking-widest">Total</span>
+                    <span
+                        class="text-gray-400 dark:text-gray-500 text-[10px] uppercase font-black tracking-widest">Total</span>
                     <span class="text-3xl font-bebas text-gray-900 dark:text-white">{{ totalUnidadesFisicas }}</span>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl min-h-[400px]">
-            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Monitor de Stock Crítico</h4>
-            <div class="space-y-6">
-                <div *ngFor="let p of productos.slice(0,6)" class="space-y-2">
-                    <div class="flex justify-between text-[10px] uppercase font-black tracking-widest">
-                        <span class="text-gray-500 dark:text-gray-400">{{ p.nombre }}</span>
-                        <span [class.text-rose-600]="p.cantidad < p.stock_minimo" class="text-gray-600 dark:text-gray-300">
-                            {{ p.cantidad }} / {{ p.stock_minimo }}
-                        </span>
+        <div
+            class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl min-h-[400px]">
+            <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Monitor de Stock
+                Crítico</h4>
+            <div class="space-y-5">
+                <div *ngFor="let p of productos | slice:0:5" class="flex items-center gap-4 group/item">
+                    <div
+                        class="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 dark:bg-black border border-white/5 flex-shrink-0">
+                        <img [src]="getImagenPrincipal(p)" class="w-full h-full object-cover">
                     </div>
-                    <div class="w-full h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full transition-all duration-1000 ease-out"
-                            [style.width.%]="(p.cantidad / (p.stock_minimo * 1.5)) * 100 > 100 ? 100 : (p.cantidad / (p.stock_minimo * 1.5)) * 100"
-                            [ngClass]="p.cantidad < p.stock_minimo ? 'bg-rose-600 shadow-[0_0_10px_#e11d48]' : 'bg-emerald-500'">
+                    <div class="flex-1 space-y-1">
+                        <div class="flex justify-between text-[9px] uppercase font-black tracking-widest">
+                            <span class="text-gray-500 dark:text-gray-400 truncate max-w-[150px]">{{ p.nombre }}</span>
+                            <span [class.text-rose-600]="p.cantidad < p.stock_minimo"
+                                class="text-gray-600 dark:text-gray-300">
+                                {{ p.cantidad }} / {{ p.stock_minimo }}
+                            </span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-1000"
+                                [style.width.%]="(p.cantidad / (p.stock_minimo * 1.5)) * 100 > 100 ? 100 : (p.cantidad / (p.stock_minimo * 1.5)) * 100"
+                                [ngClass]="p.cantidad < p.stock_minimo ? 'bg-rose-600' : 'bg-emerald-500'">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl overflow-hidden">
-        <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Registro de Operaciones Recientes</h4>
+    <div
+        class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl overflow-hidden">
+        <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">Registro de
+            Operaciones Recientes</h4>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div *ngFor="let p of productos.slice(0,4)"
-                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-rose-600/20 transition-all">
-                <div class="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-200 dark:bg-black flex-shrink-0">
-                    <img [src]="p.imagen" class="w-full h-full object-cover opacity-80 dark:opacity-60">
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-rose-600/20 transition-all group">
+
+                <div
+                    class="w-12 h-12 rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-200 dark:bg-black flex-shrink-0 shadow-inner">
+                    <img [src]="getImagenPrincipal(p)"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        [alt]="p.nombre">
                 </div>
+
                 <div class="flex-1 min-w-0">
                     <p class="text-[11px] font-bold text-gray-900 dark:text-white uppercase truncate">{{ p.nombre }}</p>
-                    <p class="text-[9px] text-gray-500 font-mono tracking-tighter">SKU: {{ p.sku || 'N/A' }}</p>
+                    <p class="text-[9px] text-gray-500 font-mono tracking-tighter">SKU: {{ p.sku || 'S/N' }}</p>
                 </div>
+
                 <div class="flex flex-col items-end">
                     <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-500">ACTIVO</span>
                     <span class="text-[9px] text-gray-400 dark:text-gray-600">SISTEMA_OK</span>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl overflow-hidden">
+        <h4 class="font-bebas text-xl tracking-widest text-gray-900 dark:text-white mb-6 uppercase">
+            Logística de Suministros
+        </h4>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div *ngFor="let venta of listaVentas"
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-rose-600/20 transition-all group">
+
+                <div class="w-1.5 h-10 rounded-full"
+                    [ngClass]="venta.estado === 'APROBADO' ? 'bg-emerald-500' : 'bg-orange-500'">
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-start">
+                        <p class="text-[12px] font-bold text-gray-900 dark:text-white uppercase truncate">
+                            {{ venta.cliente_nombre }} {{ venta.cliente_apellido }}
+                        </p>
+                        <span class="text-[8px] font-black px-2 py-0.5 rounded bg-black/20 text-gray-400">
+                            {{ venta.fecha | date:'shortTime' }}
+                        </span>
+                    </div>
+
+                    <p class="text-[12px] text-rose-600 font-black uppercase tracking-widest mt-1">
+                        {{ venta.nombre_producto }} <span class="text-gray-500 text-[9px]">(x{{ venta.cantidad
+                            }})</span>
+                    </p>
+
+                    <div class="flex items-center gap-3 mt-2 text-[12px] text-gray-500 font-mono tracking-tighter">
+                        <span><i class="fas fa-phone text-[8px] mr-1"></i> {{ venta.cliente_tel }}</span>
+                        <span class="truncate"><i class="fas fa-map-marker-alt text-[8px] mr-1"></i> {{
+                            venta.cliente_direccion }}, {{ venta.cliente_ciudad }}</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-end">
+                    <span class="text-[12px] font-black"
+                        [ngClass]="venta.estado === 'APROBADO' ? 'text-emerald-600' : 'text-orange-500'">
+                        {{ venta.estado }}
+                    </span>
+                    <span class="text-[9px] text-gray-400 dark:text-gray-600 uppercase font-bold">Logística</span>
+                </div>
+            </div>
+
+            <div *ngIf="listaVentas.length === 0" class="col-span-full py-10 text-center">
+                <p class="text-[12px] text-gray-500 font-black uppercase tracking-[0.3em]">Sin despachos pendientes de
+                    suministro</p>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-8 rounded-[2.5rem] shadow-sm dark:shadow-none backdrop-blur-xl mt-8">
+        <h4 class="font-bebas text-xl tracking-widest text-orange-500 mb-6 uppercase">Productos en Rebaja</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div *ngFor="let p of listaOfertas"
+                class="text-center p-3 rounded-2xl bg-orange-600/5 border border-orange-500/10 hover:border-orange-500/40 transition-all">
+                <img [src]="getImagenPrincipal(p)"
+                    class="w-12 h-12 mx-auto rounded-full object-cover mb-2 border border-orange-500/20">
+                <p class="text-[9px] font-black text-white uppercase truncate">{{ p.nombre }}</p>
+                <p class="text-[11px] font-bebas text-orange-500">-{{ p.porcentaje_descuento }}% OFF</p>
+            </div>
+            <div *ngIf="listaOfertas.length === 0"
+                class="col-span-full py-4 text-center text-[10px] text-gray-500 font-black uppercase">
+                No hay campañas activas en este momento
             </div>
         </div>
     </div>

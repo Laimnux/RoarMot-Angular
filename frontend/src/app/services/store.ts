@@ -13,7 +13,7 @@ export class StoreService {
 
   constructor(private http: HttpClient) {
     this.myAppUrl = environment.apiUrl;
-    this.myApiUrl = '/api/vendedor/store/';
+    this.myApiUrl = '/vendedor/store/';
   }
 
   // Obtener todos los productos para la tienda

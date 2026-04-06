@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductoViewSet, StoreListViewSet
+from .views import ProductoViewSet, StoreListViewSet, VentasProveedorView
 
 # 1. Configuramos el Router específico para el módulo vendedor
 # Usamos un nombre de variable claro para evitar conflictos
@@ -17,6 +17,9 @@ router_vendedor.register(r'store', StoreListViewSet, basename='store-global')
 
 # 3. Esquema de URLs de la aplicación
 urlpatterns = [
+    # NUEVA RUTA: Esta es la que usará Angular para la Logística de Suministros
+    # Acceso: http://127.0.0.1:8000/api/vendedor/ventas/
+    path('ventas/', VentasProveedorView.as_view(), name='ventas-proveedor'),
     # Incluye todas las rutas generadas automáticamente por el router_vendedor
     path('', include(router_vendedor.urls)),
 ]

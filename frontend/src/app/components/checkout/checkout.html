@@ -1,0 +1,130 @@
+<div class="min-h-screen bg-white dark:bg-[#0D1118] text-gray-900 dark:text-white p-4 sm:p-10 font-sans selection:bg-rose-600/30 transition-colors duration-500">
+  
+  <div class="max-w-7xl mx-auto animate__animated animate__fadeIn">
+    
+    <header class="flex justify-between items-end mb-10 border-b border-gray-200 dark:border-white/5 pb-6">
+      <div>
+        <nav class="text-[10px] text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-[0.4em] font-bold">
+          Tienda > <span class="text-rose-600">Protocolo de Despacho</span>
+        </nav>
+        <h1 class="font-bebas text-5xl tracking-tighter text-gray-900 dark:text-white uppercase">
+          Finalizar <span class="text-rose-600">Suministro</span>
+        </h1>
+      </div>
+      <div class="text-right hidden md:block">
+        <span class="text-[10px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-widest">Estado: Verificación de Usuario</span>
+        <p class="text-xs text-rose-500 font-mono mt-1 italic uppercase">Asegurando ruta de entrega...</p>
+      </div>
+    </header>
+
+    <div class="border border-rose-500/20 bg-rose-500/5 p-4 rounded-xl mb-10 flex items-center gap-4 transition-all hover:border-rose-500/40">
+      <i class="fas fa-shield-alt text-rose-600 animate-pulse"></i>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-rose-500/80">
+        Seguridad: Conexión cifrada con la central activa.
+      </p>
+    </div>
+
+    <div *ngIf="(itemsCarrito$ | async) as items; else cartEmpty">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10" *ngIf="items.length > 0; else cartEmpty">
+        
+        <div class="lg:col-span-7 space-y-6">
+          <div class="p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02] backdrop-blur-sm shadow-sm">
+            <h2 class="font-bebas text-3xl tracking-widest text-gray-800 dark:text-white mb-6 flex items-center gap-3">
+              <i class="fas fa-id-card text-rose-600 text-xl"></i> DATOS_DEL_USUARIO
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Identificación</label>
+                <p class="font-mono text-sm uppercase">{{ usuarioLogueado?.nombre }} {{ usuarioLogueado?.apellido }}</p>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Contacto Directo</label>
+                <p class="font-mono text-sm">{{ usuarioLogueado?.telefono || 'NO_REGISTRADO' }}</p>
+              </div>
+              
+              <div class="md:col-span-2 pt-4 border-t border-gray-100 dark:border-white/5 mt-2">
+                <div *ngIf="usuarioLogueado?.direccion; else noAddress" class="flex justify-between items-start">
+                  <div class="space-y-1">
+                    <label class="text-[10px] uppercase tracking-widest text-rose-600 font-bold italic">Coordenadas de Entrega</label>
+                    <p class="text-sm font-medium">{{ usuarioLogueado?.direccion }}</p>
+                    <p class="text-[11px] text-gray-500 uppercase">{{ usuarioLogueado?.ciudad }}, {{ usuarioLogueado?.departamento }}</p>
+                  </div>
+                  <button routerLink="/profile" class="text-[9px] font-black uppercase text-gray-400 hover:text-rose-500 transition-colors tracking-widest">[ EDITAR ]</button>
+                </div>
+                
+                <ng-template #noAddress>
+                  <div class="p-4 bg-rose-600/10 border border-rose-600/20 rounded-xl flex items-center justify-between">
+                    <p class="text-[10px] font-bold text-rose-500 uppercase tracking-tight">
+                       ERROR: No se han detectado coordenadas de envío en tu perfil.
+                    </p>
+                    <button routerLink="/app/perfil" class="px-4 py-2 bg-rose-600 text-white font-bebas text-sm tracking-widest rounded-lg">CONFIGURAR</button>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <button routerLink="/app/store" class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-rose-600 transition-colors flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> EDITAR_CARGA_EN_GARAJE
+          </button>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="sticky top-28 border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 bg-white dark:bg-white/[0.02] backdrop-blur-md shadow-xl">
+            <h2 class="font-bebas text-3xl tracking-widest text-gray-800 dark:text-white mb-6 border-b border-gray-100 dark:border-white/5 pb-4">
+              RESUMEN_ORDEN
+            </h2>
+
+            <div class="max-h-60 overflow-y-auto mb-8 pr-2 custom-scrollbar">
+              <div *ngFor="let item of items" class="flex justify-between items-center mb-4 text-[11px]">
+                <div class="flex flex-col">
+                  <span class="text-rose-600 font-bold uppercase tracking-tighter">{{ item.cantidad }}x {{ item.nombre }}</span>
+                  <span class="text-[9px] text-gray-500 font-mono italic">Unit: {{ (item.precio_oferta || item.precio) | currency:'USD':'symbol':'1.0-0' }}</span>
+                </div>
+                <span class="font-mono font-bold">{{ (item.precio_oferta || item.precio) * item.cantidad | currency:'USD':'symbol':'1.0-0' }}</span>
+              </div>
+            </div>
+
+            <div class="space-y-4 mb-10 pt-4 border-t border-gray-100 dark:border-white/5">
+              <div class="flex justify-between items-center text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-[0.2em]">
+                <span>Logística de Envío</span>
+                <span class="text-emerald-500 font-mono tracking-tighter">RUTA_GRATUITA</span>
+              </div>
+              <div class="pt-4 border-t border-gray-100 dark:border-white/5 flex justify-between items-end">
+                <span class="text-sm font-black text-rose-600 uppercase tracking-tighter italic">Total a Pagar</span>
+                <span class="text-4xl font-bebas text-gray-900 dark:text-white tracking-tighter leading-none">
+                  {{ cartService.total | currency:'USD':'symbol':'1.0-0' }}
+                </span>
+              </div>
+            </div>
+
+            <button 
+              (click)="confirmarPedido()"
+              [disabled]="enviando || !usuarioLogueado?.direccion"
+              class="sparkle-button w-full py-5 text-white font-bebas text-2xl tracking-[0.2em] rounded-xl shadow-lg shadow-rose-600/20 active:scale-[0.98] disabled:opacity-30 disabled:grayscale transition-all relative overflow-hidden">
+              
+              <span *ngIf="!enviando">DESPLEGAR_SUMINISTROS</span>
+              
+              <div class="flex items-center justify-center gap-3" *ngIf="enviando">
+                <span class="scanning-text">TRANSMITIENDO...</span>
+                <div class="scan-line"></div>
+              </div>
+            </button>
+
+            <div class="mt-8 text-center">
+              <p class="text-[8px] text-gray-400 dark:text-gray-600 font-bold uppercase leading-relaxed tracking-widest italic opacity-50">
+                Protocolo Seguro Roarmot <br>
+                Hardware & Software para Pilotos Reales
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #cartEmpty>
+  </ng-template>

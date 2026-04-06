@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Toast } from '../../../services/notification.service'; // Ajusta la ruta si es necesario
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-notification',
@@ -9,14 +10,10 @@ import { NotificationService, Toast } from '../../../services/notification.servi
   templateUrl: './notification.html',
   styleUrl: './notification.css'
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent {
+  // Usamos inject para seguir tu estilo actual
   private notifyService = inject(NotificationService);
-  toasts: Toast[] = [];
-
-  ngOnInit() {
-    // Escuchamos al servicio para saber cuándo mostrar una alerta
-    this.notifyService.toasts$.subscribe(toasts => {
-      this.toasts = toasts;
-    });
-  }
+  
+  // Definimos el observable que usaremos con el pipe async en el HTML
+  toasts$: Observable<Toast[]> = this.notifyService.toasts$;
 }

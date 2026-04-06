@@ -1,5 +1,5 @@
 /* =========================================================
-   CSS REFINADO - ROARMOT DASHBOARD
+   CSS REFINADO - ROARMOT DASHBOARD (FINAL V.2)
    ========================================================= */
 
 /* 1. Efecto de Texto Metálico (Shader) */
@@ -8,11 +8,11 @@
 }
 
 .dark .shader-text {
-    /* Gradiente tipo cromo/aluminio */
-    background: linear-gradient(180deg, #FFFFFF 30%, #94a3b8 100%);
+    /* Gradiente tipo cromo/aluminio más marcado */
+    background: linear-gradient(180deg, #FFFFFF 20%, #cbd5e1 50%, #94a3b8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
     letter-spacing: 0.02em;
 }
 
@@ -20,7 +20,7 @@
 .nav-item {
     @apply flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 text-sm font-bold;
     /* Modo Día: Contraste limpio */
-    @apply text-slate-700 hover:bg-slate-100;
+    @apply text-slate-700;
     /* Modo Noche: Profundidad y brillo sutil */
     @apply dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/10;
 }
@@ -33,37 +33,41 @@
 
 /* 3. Estados Activos (La "Barrita" y Colores) */
 .active-link {
-    @apply bg-rose-50/50 dark:bg-rose-500/5 !important;
+    @apply bg-rose-50/50 dark:bg-rose-500/10 !important;
     color: #e11d48 !important; /* rose-600 */
 }
 
 /* Indicador inferior (Barrita) */
 .indicator {
-    @apply transform origin-center transition-transform duration-500 ease-out;
+    /* Aseguramos que empiece invisible y pequeña */
+    transform: scaleX(0);
+    opacity: 0;
+    @apply absolute -bottom-1 left-2 right-2 h-0.5 bg-rose-600 transition-all duration-500 ease-out;
 }
 
+/* Activación de la barrita cuando el routerLink está activo */
 .active-link .indicator {
     transform: scaleX(1) !important;
     opacity: 1 !important;
-    display: block !important;
-    box-shadow: 0 0 10px rgba(225, 29, 71, 0.493) !important;
+    box-shadow: 0 0 12px rgba(225, 29, 71, 0.6) !important;
 }
 
 /* Efecto en el Icono cuando está activo */
 .active-link svg {
-    filter: drop-shadow(0 0 5px rgba(225, 29, 71, 0.144));
-    @apply scale-110;
+    filter: drop-shadow(0 0 8px rgba(225, 29, 71, 0.3));
+    @apply scale-110 text-rose-600;
 }
 
 /* 4. SOS Especial */
+/* Animación mejorada para que no sea molesta pero sí visible */
 .active-sos {
-    @apply ring-2 ring-red-600 ring-offset-2 dark:ring-offset-slate-900 !important;
-    animation: pulse-red 2s infinite;
+    @apply ring-2 ring-red-600 ring-offset-2 dark:ring-offset-[#0D1118] !important;
+    animation: pulse-red-roarmot 2s infinite;
 }
 
-@keyframes pulse-red {
-    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+@keyframes pulse-red-roarmot {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
     100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
 
@@ -72,10 +76,27 @@
     font-family: 'Inter', system-ui, sans-serif;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    font-size: 0.75rem; /* 12px aprox */
+    font-size: 0.7rem; /* 11px-12px aprox para look técnico */
 }
 
-/* Separador estético */
-.divider-v {
-    @apply w-px h-6 bg-slate-200 dark:bg-white/10 mx-2;
+/* Botón Sparkle (Para el botón de Store Accessories) */
+.sparkle-button {
+    position: relative;
+    overflow: hidden;
 }
+.sparkle-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: rotate(45deg);
+    transition: 0.5s;
+    display: block;
+}
+.sparkle-button:hover::after {
+    left: 120%;
+}
+

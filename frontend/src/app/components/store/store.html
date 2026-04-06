@@ -1,8 +1,27 @@
 <div
   class="min-h-screen bg-gray-50 dark:bg-roar-dark text-gray-900 dark:text-white p-4 md:p-8 font-sans transition-colors duration-500 overflow-x-hidden">
 
+  <div *ngIf="cartService.cantidadTotal > 0" class="fixed bottom-10 right-10 z-[100] animate-bounce-slow">
+    <button routerLink="/app/cart"
+      class="relative p-3 bg-gray-800 dark:bg-gray-800/20 text-white rounded-full hover:scale-110 transition-all group border border-gray-900 dark:border-white/20">
+
+      <i class="fas fa-shopping-cart text-2xl"></i>
+
+      <span
+        class="absolute -top-1 -right-1 bg-white text-red-500 text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-gray-600 shadow-sm">
+        {{ cartService.cantidadTotal }}
+      </span>
+
+      <span
+        class="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-[10px] py-2 px-4 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap font-mono tracking-[0.2em] border border-white/10 backdrop-blur-md">
+        TÚ_CARRITO
+      </span>
+    </button>
+  </div>
+
   <header
     class="max-w-7xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-end gap-6 border-b border-gray-200 dark:border-white/5 pb-6">
+
     <div class="relative">
       <div class="flex items-center gap-3 mb-2">
         <span class="w-2 h-2 rounded-full bg-rose-600 animate-pulse shadow-[0_0_8px_rgba(225,29,72,0.8)]"></span>
@@ -19,8 +38,10 @@
       <div
         class="absolute -inset-0.5 bg-gradient-to-r from-rose-600 to-transparent rounded-xl opacity-20 group-hover:opacity-40 transition duration-500">
       </div>
+
       <input (input)="onSearch($event)" type="text" placeholder="BUSCAR_SKU_O_PRODUCTO..."
         class="relative w-full bg-white dark:bg-black/40 border border-gray-300 dark:border-white/10 rounded-xl px-5 py-4 text-[11px] font-mono text-gray-800 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:border-rose-600/50 transition-all backdrop-blur-md">
+
       <div class="absolute right-4 top-4 text-gray-400">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -28,25 +49,33 @@
         </svg>
       </div>
     </div>
+
   </header>
 
   <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
     <div *ngFor="let producto of listProductos" (click)="verDetalle(producto.id)" class="group bg-white dark:bg-roar-card border border-gray-200 dark:border-white/5 rounded-[2rem] overflow-hidden 
-           hover:bg-gray-100 dark:hover:bg-[#1a1a1a] hover:border-rose-600/50 
-           transition-all duration-300 shadow-xl dark:shadow-none flex flex-col relative cursor-pointer">
+            hover:bg-gray-100 dark:hover:bg-[#1a1a1a] hover:border-rose-600/50 
+            transition-all duration-300 shadow-xl dark:shadow-none flex flex-col relative cursor-pointer"
+      [class.border-orange-500/40]="producto.en_oferta">
 
-      <div class="absolute top-4 left-4 right-4 z-10 flex justify-between items-start">
+      <div *ngIf="producto.en_oferta"
+        class="absolute top-4 right-4 z-20 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-[0_0_15px_rgba(234,88,12,0.5)] animate-bounce uppercase tracking-tighter">
+        -{{ producto.porcentaje_descuento }}%
+      </div>
+
+      <div class="absolute top-4 left-4 z-10">
         <span
           class="bg-black/60 backdrop-blur-md text-white text-[9px] font-black px-2 py-1 rounded border border-white/10 uppercase tracking-widest">
           {{ producto.marca }}
         </span>
-        <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
       </div>
 
-      <div class="relative h-64 overflow-hidden bg-gray-200 dark:bg-black">
-        <img [src]="producto.imagen_url || 'assets/img/no-image.png'" [alt]="producto.nombre"
-          class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-80">
+      <div class="relative h-64 overflow-hidden bg-black flex items-center justify-center">
+        <img [src]="getImagenPortada(producto)" [alt]="producto.nombre"
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:opacity-80"
+          (error)="$any($event.target).src = 'assets/img/no-image.png'">
+
         <div
           class="absolute inset-0 bg-gradient-to-t from-white dark:from-roar-card via-transparent to-transparent opacity-60">
         </div>
@@ -54,8 +83,9 @@
 
       <div class="p-6 flex-1 flex flex-col">
         <div class="flex justify-between items-center mb-2 font-mono">
-          <span class="text-[9px] text-gray-400 dark:text-gray-500 tracking-tighter uppercase">SKU: {{ producto.sku
-            }}</span>
+          <span class="text-[9px] text-gray-400 dark:text-gray-500 tracking-tighter uppercase">
+            SKU: {{ producto.sku }}
+          </span>
           <span class="text-[10px] font-bold uppercase"
             [ngClass]="producto.cantidad > 0 ? 'text-emerald-500' : 'text-rose-600'">
             {{ producto.cantidad > 0 ? 'DISPONIBLE' : 'AGOTADO' }}
@@ -69,13 +99,23 @@
 
         <div class="mt-auto pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
           <div class="flex flex-col">
-            <span class="text-[8px] uppercase font-bold text-gray-400 italic">Consultar Detalle</span>
-            <span class="text-2xl font-vt323 text-emerald-600 dark:text-emerald-400">
+            <span *ngIf="producto.en_oferta"
+              class="text-[10px] text-gray-500 line-through decoration-rose-600/60 font-mono">
               ${{ producto.precio | number:'1.0-0' }}
+            </span>
+
+            <span class="text-2xl font-vt323 leading-none" [class.text-orange-500]="producto.en_oferta"
+              [class.text-emerald-400]="!producto.en_oferta">
+              ${{ (producto.en_oferta ? producto.precio_oferta : producto.precio) | number:'1.0-0' }}
+            </span>
+
+            <span class="text-[8px] uppercase font-bold text-gray-500 mt-1 italic tracking-widest">
+              Protocolo_Pago_Seguro
             </span>
           </div>
 
-          <div class="text-gray-400 group-hover:text-rose-600 transition-colors">
+          <div
+            class="p-2 rounded-full bg-gray-100 dark:bg-white/5 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -85,7 +125,8 @@
       </div>
 
       <div
-        class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-600/20 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700">
+        class="absolute bottom-0 left-0 w-full h-1 transition-transform duration-700 scale-x-0 group-hover:scale-x-100 bg-gradient-to-r from-transparent"
+        [ngClass]="producto.en_oferta ? 'via-orange-500 to-transparent' : 'via-rose-600/20 to-transparent'">
       </div>
     </div>
   </div>

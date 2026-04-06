@@ -1,5 +1,5 @@
 <div class="notification-container">
-  @for (toast of toasts; track toast.id) {
+  @for (toast of toasts$ | async; track toast.id) {
     <div class="toast" [ngClass]="toast.type">
       {{ toast.message }}
       <div class="progress"></div>

@@ -32,7 +32,9 @@ class ProductoSerializer(serializers.ModelSerializer):
             'id_subcategoria', 
             'vendedor',
             'fecha_creacion',
-            'imagenes' # Sustituimos 'imagen' por la lista de 'imagenes'
+            'en_oferta', 'precio_oferta', 'porcentaje_descuento', 'fecha_fin_oferta',
+            'imagenes', # Sustituimos 'imagen' por la lista de 'imagenes'
+            
         ]
 
     # --- LÓGICA DE CREACIÓN MULTI-IMAGEN ---

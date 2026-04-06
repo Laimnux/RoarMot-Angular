@@ -1,31 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router'; // Importación necesaria para redirección
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // Importación necesaria para redirección
 import { AuthService } from '../../services/auth'; // Asegúrate que esta ruta sea correcta
 import { StoreService } from '../../services/store';
 import { Producto } from '../../models/producto.model';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { CartService } from '../../services/cart.service';
 
 
 @Component({
   selector: 'app-store',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './store.html',
   styleUrls: ['./store.css']
 })
 export class StoreComponent implements OnInit {
+  // Inyectamos el servicio de forma pública para el HTML
+  public cartService = inject(CartService); 
+  
+  private _storeService = inject(StoreService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+
   listProductos: Producto[] = [];
   loading: boolean = false;
   private buscador = new Subject<string>();
 
-  constructor(
-    private _storeService: StoreService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService
-  ) {
+  constructor() {
     // Lógica de redirección inteligente:
     // Si el usuario ya está logueado y entra por la URL pública (/tienda),
     // lo enviamos a la versión del Dashboard (/app/store) para que vea su Header de usuario.
@@ -71,5 +75,18 @@ export class StoreComponent implements OnInit {
     this.router.navigate(['producto', id], { relativeTo: this.activatedRoute });
     // Navegamos a la ruta de detalle pasando el ID del producto
     this.router.navigate(['/app/store/producto', id]);
+  }
+
+  getImagenPortada(producto: Producto): string {
+    if (producto.imagenes && producto.imagenes.length > 0) {
+      // 1. Buscamos la imagen que marcaste como principal en el backend
+      const portada = producto.imagenes.find(img => img.es_principal);
+      
+      // 2. Si existe, devolvemos su URL; si no, la primera del arreglo
+      return portada ? portada.imagen : producto.imagenes[0].imagen;
+    }
+    
+    // 3. Imagen por defecto si el producto no tiene fotos
+    return 'assets/img/no-image.png';
   }
 }

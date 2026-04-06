@@ -55,6 +55,12 @@ class Producto(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.marca}) - SKU: {self.sku}"
     
+    # --- SISTEMA DE PROMOCIONES ---
+    en_oferta = models.BooleanField(default=False, help_text="Activa el modo promoción")
+    precio_oferta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    porcentaje_descuento = models.PositiveIntegerField(default=0, help_text="Ej: 20 para un 20% de dto")
+    fecha_fin_oferta = models.DateTimeField(null=True, blank=True, help_text="Cuándo termina la promoción")
+    
 
 
 # NUEVO MODELO PARA LA GALERÍA
@@ -78,3 +84,4 @@ class ProductoImagen(models.Model):
 
     def __str__(self):
         return f"Imagen de {self.producto.nombre} {'(PORTADA)' if self.es_principal else ''}"
+    

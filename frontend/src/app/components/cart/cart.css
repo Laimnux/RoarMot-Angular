@@ -1,0 +1,36 @@
+.font-bebas { 
+    font-family: 'Bebas Neue', sans-serif; 
+}
+
+/* Botón con efecto de gradiente Roarmot */
+.sparkle-button {
+    background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sparkle-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(225, 29, 72, 0.4);
+    filter: brightness(1.1);
+}
+
+/* Scrollbar Minimalista */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e11d48;
+    border-radius: 10px;
+}
+
+/* Animación sutil de los cards al cargar */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.group {
+    animation: slideIn 0.5s ease backwards;
+}

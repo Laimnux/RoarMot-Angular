@@ -1,0 +1,166 @@
+<div class="min-h-screen bg-white dark:bg-[#0D1118] text-gray-900 dark:text-white p-4 sm:p-10 font-sans selection:bg-rose-600/30 transition-colors duration-500">
+
+    <div class="max-w-7xl mx-auto">
+
+        <header class="flex justify-between items-end mb-10 border-b border-gray-200 dark:border-white/5 pb-6">
+            <div>
+                <nav class="text-[10px] text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-[0.4em] font-bold">
+                    Tienda > <span class="text-rose-600">Checkout</span>
+                </nav>
+                <h1 class="font-bebas text-5xl tracking-tighter text-gray-900 dark:text-white">
+                    TU <span class="text-rose-600">GARAJE</span> DE COMPRAS
+                </h1>
+            </div>
+            <div class="text-right hidden md:block">
+                <span class="text-[10px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-widest">Protocolo de Adquisición: Activo</span>
+                <p class="text-xs text-rose-500 font-mono mt-1">{{ (cartService.cart$ | async)?.length || 0 }} ARTÍCULOS DETECTADOS</p>
+            </div>
+        </header>
+
+        <div class="border border-yellow-500/20 bg-yellow-500/5 p-4 rounded-xl mb-10 flex items-center gap-4 group transition-all hover:border-yellow-500/40">
+            <i class="fas fa-bolt text-yellow-500 animate-pulse"></i>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-yellow-500/80">
+                Aviso: Fluctuación de mercado detectada en uno o más artículos.
+            </p>
+        </div>
+
+        <div *ngIf="(cartService.cart$ | async) as items; else cartEmpty">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10" *ngIf="items.length > 0; else cartEmpty">
+
+                <div class="lg:col-span-8 space-y-4">
+                    <div *ngFor="let item of items"
+                        class="group flex flex-col md:flex-row items-center gap-8 p-6 rounded-2xl border border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02] hover:border-rose-600/30 dark:hover:border-rose-600/30 transition-all duration-500 backdrop-blur-sm">
+
+                        <div class="relative w-32 h-24 flex-shrink-0 overflow-hidden rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20">
+                            <img [src]="getImagenPortada(item)"
+                                class="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700">
+                        </div>
+
+                        <div class="flex-1 text-center md:text-left">
+                            <span class="text-[9px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-widest mb-1 block">ID: {{item.id}}</span>
+                            <h3 class="text-2xl font-bebas tracking-wide transition-colors uppercase text-gray-800 dark:text-white">
+                                {{item.nombre}}
+                            </h3>
+                            <p class="text-[10px] text-emerald-600 dark:text-emerald-500 uppercase font-bold mt-1 tracking-tighter italic">
+                                Stock Disponible // Original Part</p>
+                        </div>
+
+                        <div class="flex items-center border border-gray-200 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-white/5">
+                            <button (click)="restar(item.id)"
+                                class="w-10 h-10 flex items-center justify-center hover:bg-rose-600/10 transition-colors text-lg text-gray-500 dark:text-white">-</button>
+                            <span class="w-12 text-center font-mono text-sm font-bold border-x border-gray-200 dark:border-white/10 text-gray-800 dark:text-white">{{item.cantidad}}</span>
+                            <button (click)="sumar(item.id)"
+                                class="w-10 h-10 flex items-center justify-center hover:bg-emerald-600/10 transition-colors text-lg text-gray-500 dark:text-white">+</button>
+                        </div>
+
+                        <div class="text-right min-w-[140px]">
+                            <p class="text-2xl font-bebas tracking-tighter text-gray-900 dark:text-white">
+                                {{ (item.precio_oferta || item.precio) * item.cantidad | currency:'COL$ ':'symbol':'1.0-0' }}
+                            </p>
+                            <button (click)="eliminar(item.id)"
+                                class="text-[9px] font-black uppercase text-gray-400 hover:text-rose-500 transition-colors mt-2 tracking-[0.2em]">
+                                [ Eliminar ]
+                            </button>
+                        </div>
+                    </div>
+
+                    <button routerLink="/app/store"
+                        class="mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-rose-600 transition-colors flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> VOLVER_AL_CATÁLOGO
+                    </button>
+                </div>
+
+                <div class="lg:col-span-4">
+                    <div class="sticky top-28 border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 bg-white dark:bg-white/[0.02] backdrop-blur-md shadow-xl dark:shadow-2xl">
+                        <h2 class="font-bebas text-3xl tracking-widest text-gray-800 dark:text-white mb-8 border-b border-gray-100 dark:border-white/5 pb-4">
+                            ORDEN_TOTAL</h2>
+
+                        <div class="space-y-4 mb-10">
+                            <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-widest">
+                                <span>Subtotal</span>
+                                <span class="text-gray-800 dark:text-gray-300 font-mono">{{ cartService.total | currency:'COL$ ':'symbol':'1.0-0' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-widest">
+                                <span>Tarifa Envío</span>
+                                <span class="text-emerald-600 dark:text-emerald-500 font-mono">GRATIS</span>
+                            </div>
+                            <div class="pt-4 border-t border-gray-100 dark:border-white/5 flex justify-between items-end">
+                                <span class="text-sm font-black text-rose-600 uppercase tracking-tighter italic">Total a Pagar</span>
+                                <span class="text-4xl font-bebas text-gray-900 dark:text-white tracking-tighter leading-none">{{ cartService.total | currency:'COL$ ':'symbol':'1.0-0' }}</span>
+                            </div>
+                        </div>
+
+                        <button 
+                            routerLink="/app/payment" 
+                            class="sparkle-button w-full py-5 text-white font-bebas text-2xl tracking-[0.2em] rounded-xl shadow-lg shadow-rose-600/20 active:scale-[0.98] transition-all hover:shadow-rose-600/40 relative overflow-hidden group">
+                            
+                            <span class="relative z-10 flex items-center justify-center gap-3">
+                                INICIAR PROTOCOLO DE PAGO
+                            </span>
+
+                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                        </button>
+
+                        <div class="mt-8 pt-6 border-t border-gray-100 dark:border-white/5 text-center">
+                            <p class="text-[9px] text-gray-400 dark:text-gray-600 font-bold uppercase leading-relaxed tracking-widest italic">
+                                "MOTERO AYUDA MOTERO" <br>
+                                <span class="opacity-30">Roarmot Secure Protocol v2.0</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-32 pb-20">
+            <h2 class="text-gray-400 dark:text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mb-12 flex items-center gap-6">
+                Módulos Recomendados <div class="h-px flex-1 bg-gray-200 dark:bg-white/5"></div>
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div *ngFor="let rec of productosRecomendados"
+                    (click)="verProducto(rec.id)"
+                    class="group relative border border-gray-100 dark:border-white/5 p-0 rounded-2xl bg-gray-50 dark:bg-[#0f141c] overflow-hidden transition-all duration-300 cursor-pointer hover:border-rose-800 hover:shadow-[0_0_20px_rgba(159,18,57,0.15)]">
+                    
+                    <div class="h-48 w-full overflow-hidden bg-white dark:bg-black/40">
+                        <img [src]="getImagenPortada(rec)"
+                            class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0D1118] via-transparent to-transparent opacity-60"></div>
+                    </div>
+
+                    <div class="p-4 relative">
+                        <h4 class="text-[11px] font-bold uppercase tracking-widest mb-1 truncate text-gray-700 dark:text-gray-300 group-hover:text-rose-500 transition-colors">
+                            {{rec.nombre}}
+                        </h4>
+                        <div class="flex justify-between items-end">
+                            <p class="text-sm font-bebas text-rose-500 tracking-wider">
+                                {{rec.precio | currency:'COL$ ':'symbol':'1.0-0'}}
+                            </p>
+                            <span class="text-[8px] text-gray-600 dark:text-gray-500 font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                                Ver_Detalles
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 h-[2px] w-0 bg-rose-800 transition-all duration-500 group-hover:w-full"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<ng-template #cartEmpty>
+    <div class="flex flex-col items-center justify-center py-32 border border-dashed border-gray-200 dark:border-white/5 rounded-[3rem] bg-gray-50/30 dark:bg-transparent">
+        <div class="w-20 h-20 mb-8 border border-gray-200 dark:border-white/10 rounded-full flex items-center justify-center opacity-20">
+            <i class="fas fa-motorcycle text-4xl text-gray-400"></i>
+        </div>
+        <h2 class="font-bebas text-4xl text-gray-400 dark:text-gray-600 tracking-tighter uppercase mb-2">Garaje Vacío</h2>
+        <p class="text-[10px] text-gray-400 dark:text-gray-600 uppercase font-bold tracking-[0.4em] mb-10 text-center">
+            No se han detectado ítems en el sistema</p>
+        <button routerLink="/app/store"
+            class="px-10 py-4 border border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white transition-all font-bebas text-xl tracking-widest rounded-xl">
+            INICIAR ESCANEO DE TIENDA
+        </button>
+    </div>
+</ng-template>

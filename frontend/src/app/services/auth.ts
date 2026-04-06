@@ -1,22 +1,59 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
-
+import { Usuario } from '../models/usuario.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  // Centralizamos la URL para no repetir "api/users" en cada método
   private baseUrl = 'http://localhost:8000/api/users';
+  // Definimos la base del servidor para las imágenes
+  private serverUrl = 'http://localhost:8000'; 
 
-  private usuarioSubject = new BehaviorSubject<any>(JSON.parse(sessionStorage.getItem('user_session') || 'null'));
+  private usuarioSubject = new BehaviorSubject<Usuario | null>(this.obtenerSesionInicial());
   usuarioActual$ = this.usuarioSubject.asObservable();
 
   constructor() { }
 
-  // NUEVO: Método para verificar disponibilidad antes de avanzar en el registro
+  private transformarDatos(u: any): Usuario {
+    const actual = this.usuarioSubject.value;
+    
+    // --- LÓGICA PARA LA IMAGEN ---
+    let urlImagen = u.url_imagen_perfil || actual?.url_imagen_perfil;
+
+    // Si la URL viene del backend como "/media/..." (relativa)
+    // la convertimos en absoluta: "http://localhost:8000/media/..."
+    if (urlImagen && !urlImagen.startsWith('http') && !urlImagen.startsWith('data:')) {
+      urlImagen = `${this.serverUrl}${urlImagen}`;
+    }
+
+    return {
+      id: u.id || actual?.id,
+      nombre: u.nombre || actual?.nombre || 'Motero',
+      apellido: u.apellido || actual?.apellido || '',
+      email: u.email || actual?.email,
+      tipo_documento: u.tipo_documento || actual?.tipo_documento,
+      numero_usuario: u.numero_usuario || actual?.numero_usuario,
+      telefono: u.telefono || actual?.telefono,
+      rol_id: u.rol_id || actual?.rol_id,
+      nombre_empresa: u.nombre_empresa || actual?.nombre_empresa,
+      url_imagen_perfil: urlImagen, // <--- Usamos la URL procesada
+      
+      direccion: u.direccion !== undefined ? u.direccion : actual?.direccion, 
+      ciudad: u.ciudad !== undefined ? u.ciudad : actual?.ciudad,
+      departamento: u.departamento !== undefined ? u.departamento : actual?.departamento,
+      codigo_postal: u.codigo_postal !== undefined ? u.codigo_postal : actual?.codigo_postal,
+      notas: u.notas !== undefined ? u.notas : actual?.notas
+    };
+  }
+
+  private obtenerSesionInicial(): Usuario | null {
+    const data = sessionStorage.getItem('user_session');
+    return data ? JSON.parse(data) : null;
+  }
+
   verificarEmail(email: string): Observable<{ disponible: boolean }> {
     return this.http.get<{ disponible: boolean }>(`${this.baseUrl}/verificar-email/${email}/`);
   }
@@ -29,14 +66,20 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/login/`, credenciales).pipe(
       tap((response: any) => {
         if (response && response.usuario && response.token) {
-          this.guardarSesion(response.usuario, response.token);
+          const usuarioLimpio = this.transformarDatos(response.usuario);
+          this.guardarSesion(usuarioLimpio, response.token);
         }
       })
     );
   }
 
-  private guardarSesion(usuario: any, token: string) {
-    // CAMBIO: Todo a sessionStorage
+  actualizarEstadoUsuario(datosRaw: any) {
+    const usuarioLimpio = this.transformarDatos(datosRaw);
+    sessionStorage.setItem('user_session', JSON.stringify(usuarioLimpio));
+    this.usuarioSubject.next(usuarioLimpio);
+  }
+
+  private guardarSesion(usuario: Usuario, token: string) {
     sessionStorage.setItem('user_session', JSON.stringify(usuario));
     sessionStorage.setItem('auth_token', token); 
     sessionStorage.setItem('isLoggedIn', 'true');
@@ -44,25 +87,18 @@ export class AuthService {
   }
 
   logout() {
-    // CAMBIO: Limpiar sessionStorage
     sessionStorage.removeItem('user_session');
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('isLoggedIn');
     this.usuarioSubject.next(null);
-    
-    // Tip: Si quieres ser radical para evitar rastros:
-    // sessionStorage.clear();
     window.location.href = '/login'; 
   }
 
-  // --- MÉTODO A AGREGAR ---
   isLoggedIn(): boolean {
-    // Retorna true si existe el token o la bandera de login en sessionStorage
     return !!sessionStorage.getItem('auth_token') || sessionStorage.getItem('isLoggedIn') === 'true';
   }
-  // Dentro de tu AuthService
+
   get usuarioActualValue() {
     return this.usuarioSubject.value;
   }
-
 }

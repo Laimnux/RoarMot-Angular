@@ -1,0 +1,96 @@
+/* 1. TIPOGRAFÍA Y FUENTES EXTERNAS */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+.font-bebas {
+  font-family: 'Bebas Neue', cursive;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 2. ANIMACIÓN DE ESCANEO (SHIMMER) */
+@keyframes shimmer-scan {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-15deg);
+  }
+}
+
+.animate-shimmer-scan {
+  animation: shimmer-scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* 3. ESTILO DEL BOTÓN SPARKLE (ROARMOT SIGNATURE) */
+.sparkle-button {
+  background: #e11d48; /* rose-600 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sparkle-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.sparkle-button:active {
+  transform: scale(0.97);
+}
+
+/* 4. CUSTOM RADIO BUTTON LOGIC */
+/* Ocultamos el radio original pero usamos peer-checked en el HTML 
+   para disparar estos estilos */
+
+input[type="radio"]:checked + div {
+  background: rgba(225, 29, 72, 0.03); /* Un toque de rose muy sutil */
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.05);
+}
+
+/* 5. GLASSMORPHISM PARA DARK MODE */
+.dark .backdrop-blur-xl {
+  background-color: rgba(13, 17, 24, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+/* 6. ANIMACIONES DE ENTRADA */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.max-w-2xl {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+/* 7. SCROLLBAR MINIMALISTA PARA MÓVILES */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 8. EFECTO DE PULSO PARA ESTADOS ONLINE */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .4; }
+}

@@ -1,22 +1,122 @@
+/* FUENTES Y BASE */
 .font-bebas { font-family: 'Bebas Neue', sans-serif; }
 .font-vt323 { font-family: 'VT323', monospace; }
 
+/* ANIMACIONES DE ENTRADA */
 .animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Efecto de cristal para los paneles */
+/* EFECTO CRISTAL INDUSTRIAL (GLASSMORPHISM) */
 .backdrop-blur-md {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Para que la transición de colores no sea brusca al cambiar de modo */
+.backdrop-blur-3xl {
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+/* EL FAMOSO SPARKLE BUTTON (ROARMOT STYLE) */
+.sparkle-button {
+  position: relative;
+  background: linear-gradient(90deg, #e11d48, #9f1239); /* Rose 600 a 800 */
+  border: none;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  z-index: 1;
+}
+
+.sparkle-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+  z-index: -1;
+}
+
+.sparkle-button:hover::before {
+  left: 100%;
+}
+
+.sparkle-button:hover {
+  letter-spacing: 0.1em;
+  box-shadow: 0 0 30px rgba(225, 29, 72, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ESTILIZACIÓN DE SCROLLBAR (MINIMALISTA) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* EFECTO DE ESCANEO PARA IMÁGENES (HOVER) */
+.group:hover img {
+  filter: contrast(1.1) brightness(1.1);
+}
+
+/* TRACEADO DE LÍNEA DE CARGA (OPCIONAL) */
+@keyframes loading-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.loading-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e11d48, transparent);
+  animation: loading-bar 2s infinite linear;
+}
+
+/* AJUSTES PARA MODO OSCURO VS CLARO */
 .transition-colors {
-  transition-property: background-color, border-color, color, fill, stroke;
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 500ms;
+}
+
+/* BADGE DE OFERTA CON PULSO */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .8; transform: scale(0.95); }
+}
+
+/* Animación de escaneo para Roarmot */
+@keyframes shimmer-scan {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(100%) skewX(-15deg);
+  }
+}
+
+.group-hover\:animate-shimmer-scan:hover {
+  animation: shimmer-scan 1.5s infinite;
+}
+
+/* Opcional: Para que el brillo se vea más "tecnológico" */
+.bg-gradient-to-r {
+  background-size: 200% 100%;
 }

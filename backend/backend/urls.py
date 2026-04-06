@@ -36,5 +36,7 @@ urlpatterns = [
     path('api/mantenimientos/', include('mantenimientos.urls')), 
 ]
 
+# ESTA PARTE ES CRÍTICA:
+# Añade esto al final de todo el archivo para servir archivos subidos por usuarios
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

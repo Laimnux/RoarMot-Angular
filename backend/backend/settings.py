@@ -164,3 +164,7 @@ LANGUAGE_CODE = 'es-co'
 TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
+
+# settings.py (Backend)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB en bytes
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB en bytes
